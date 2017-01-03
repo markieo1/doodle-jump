@@ -14,10 +14,10 @@ public abstract class Entity {
     private int width;
     private Bitmap image;
 
-    public Entity(int x, int y, int heigth, int width, Bitmap image){
+    public Entity(int x, int y, int height, int width, Bitmap image){
         this.x = x;
         this.y = y;
-        this.height = heigth;
+        this.height = height;
         this.width = width;
         this.image = image;
     }
@@ -49,8 +49,8 @@ public abstract class Entity {
         return height;
     }
 
-    public void setHeight(int heigth) {
-        this.height = heigth;
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     public int getWidth() {
@@ -70,4 +70,8 @@ public abstract class Entity {
     }
 
     public abstract void draw(Canvas canvas);
+
+    public abstract void update();
+
+    public abstract void handleInput();
 }

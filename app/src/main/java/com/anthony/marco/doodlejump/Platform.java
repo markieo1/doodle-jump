@@ -17,4 +17,14 @@ public class Platform extends Entity {
     public void draw(Canvas canvas) {
 
     }
+
+    @Override
+    public void update() {
+
+    }
+
+    @Override
+    public void handleInput() {
+
+    }
 }

@@ -6,7 +6,7 @@ import android.graphics.Canvas;
 import java.util.ArrayList;
 
 /**
- * Created by antho on 3-1-2017.
+ * Created by anthony on 3-1-2017.
  */
 
 public class Doodle extends Entity {
@@ -31,10 +31,6 @@ public class Doodle extends Entity {
         this.velocityY = velocityY;
     }
 
-    public void handleInput(){
-        //TODO: handle input..
-    }
-
     public Boolean checkCollision(ArrayList<Entity> Platforms){
 
         return null;
@@ -42,6 +38,17 @@ public class Doodle extends Entity {
 
     @Override
     public void draw(Canvas canvas) {
+
+    }
+
+
+    @Override
+    public void handleInput(){
+        //TODO: handle input..
+    }
+
+    @Override
+    public void update() {
 
     }
 }
