@@ -1,6 +1,7 @@
 package com.anthony.marco.doodlejump;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.Log;
 
 /**
@@ -33,6 +34,7 @@ public class GameThread extends Thread {
             if (canvas != null) {
                 synchronized (doodleSurfaceView.getHolder()) {
                     // Draw here using the local canvas variable
+                    canvas.drawColor(Color.BLACK);
                     doodleGame.draw(canvas);
                 }
 

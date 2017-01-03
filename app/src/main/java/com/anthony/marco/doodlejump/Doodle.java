@@ -2,6 +2,8 @@ package com.anthony.marco.doodlejump;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import java.util.ArrayList;
 
@@ -19,12 +21,32 @@ public class Doodle extends Entity {
         this.velocityY = velocityY;
     }
 
-    public Boolean checkCollision(ArrayList<Entity> Platforms){
-
-        return null;
+    public boolean checkCollision(ArrayList<Entity> entities) {
+        return false;
     }
 
-    public void handleInput(){
+    public void handleInput() {
         //TODO: handle input..
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        int newX = this.getX() + velocityX;
+        int newY = this.getY() + velocityY;
+
+        setX(newX);
+        setY(newY);
+
+        // TODO: Add collision checks
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setColor(Color.YELLOW);
+        paint.setStyle(Paint.Style.FILL);
+        canvas.drawCircle(getX(), getY(), getWidth(), paint);
     }
 }

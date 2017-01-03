@@ -33,6 +33,9 @@ public class DoodleGame {
         for (int i = 0; i < 40; i++) {
             entities.add(new Entity(100, 100 * i, 10, 10, bitmap));
         }
+
+        Doodle doodle = new Doodle(500, 500, 25, 25, null, 2, 2);
+        entities.add(doodle);
     }
 
     public void update() {
