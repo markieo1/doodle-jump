@@ -2,6 +2,8 @@ package com.anthony.marco.doodlejump;
 
 import android.graphics.Bitmap;
 
+import java.util.ArrayList;
+
 /**
  * Created by antho on 3-1-2017.
  */
@@ -10,9 +12,14 @@ public class Doodle extends Entity {
     private int velocityX;
     private int velocityY;
 
-    
+    public Doodle(){
+        super();
+        this.velocityX = 0;
+        this.velocityY = 0;
+    }
 
     public Doodle(int velocityX, int velocityY) {
+        super();
         this.velocityX = velocityX;
         this.velocityY = velocityY;
     }
@@ -21,5 +28,14 @@ public class Doodle extends Entity {
         super(x, y, heigth, width, image);
         this.velocityX = velocityX;
         this.velocityY = velocityY;
+    }
+
+    public void handleInput(){
+        //TODO: handle input..
+    }
+
+    public Boolean handleInput(ArrayList<Entity> Platforms){
+
+        return null;
     }
 }
