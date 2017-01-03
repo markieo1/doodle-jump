@@ -2,6 +2,7 @@ package com.anthony.marco.doodlejump;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 
 /**
  * Created by anthony on 3-1-2017.
@@ -62,9 +63,11 @@ public class Entity {
         this.image = image;
     }
 
-    public void draw(Canvas canvas){};
+    public void draw(Canvas canvas){
+        canvas.drawBitmap(getImage(), (float)getX(), (float)getY(), null);
+    }
 
-    public void update(){};
+    public void update(){}
 
-    public void handleInput(){};
+    public void handleInput(){}
 }

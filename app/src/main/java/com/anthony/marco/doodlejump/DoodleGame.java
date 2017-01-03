@@ -13,6 +13,7 @@ public class DoodleGame {
 
     public DoodleGame() {
         entities = new ArrayList<>();
+        generatePlatforms();
     }
 
     public void startGame() {

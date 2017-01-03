@@ -24,11 +24,6 @@ public class Doodle extends Entity {
         return null;
     }
 
-    @Override
-    public void draw(Canvas canvas) {
-
-    }
-
     public void handleInput(){
         //TODO: handle input..
     }
