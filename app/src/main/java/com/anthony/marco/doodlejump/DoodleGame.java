@@ -1,6 +1,10 @@
 package com.anthony.marco.doodlejump;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
 
@@ -25,9 +29,10 @@ public class DoodleGame {
     }
 
     private void generatePlatforms() {
-         for (int i = 0; i < 4; i++){
-             entities.add(new Entity(100, 100 * i, 10,10,null));
-         }
+        Bitmap bitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
+        for (int i = 0; i < 40; i++) {
+            entities.add(new Entity(100, 100 * i, 10, 10, bitmap));
+        }
     }
 
     public void update() {

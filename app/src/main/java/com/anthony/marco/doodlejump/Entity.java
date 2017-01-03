@@ -3,6 +3,8 @@ package com.anthony.marco.doodlejump;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.util.Log;
 
 /**
  * Created by anthony on 3-1-2017.
@@ -15,7 +17,7 @@ public class Entity {
     private int width;
     private Bitmap image;
 
-    public Entity(int x, int y, int height, int width, Bitmap image){
+    public Entity(int x, int y, int height, int width, Bitmap image) {
         this.x = x;
         this.y = y;
         this.height = height;
@@ -63,11 +65,13 @@ public class Entity {
         this.image = image;
     }
 
-    public void draw(Canvas canvas){
-        canvas.drawBitmap(getImage(), (float)getX(), (float)getY(), null);
+    public void draw(Canvas canvas) {
+        canvas.drawBitmap(getImage(), null, new Rect(getX(), getY(), getX() + getWidth(), getY() + getHeight()), null);
     }
 
-    public void update(){}
+    public void update() {
+    }
 
-    public void handleInput(){}
+    public void handleInput() {
+    }
 }
