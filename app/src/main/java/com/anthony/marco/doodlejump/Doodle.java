@@ -41,14 +41,7 @@ public class Doodle extends Entity {
 
     }
 
-
-    @Override
     public void handleInput(){
         //TODO: handle input..
-    }
-
-    @Override
-    public void update() {
-
     }
 }

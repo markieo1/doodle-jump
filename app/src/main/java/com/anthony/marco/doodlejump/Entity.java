@@ -71,7 +71,7 @@ public abstract class Entity {
 
     public abstract void draw(Canvas canvas);
 
-    public abstract void update();
+    public void update(){};
 
-    public abstract void handleInput();
+    public void handleInput(){};
 }
