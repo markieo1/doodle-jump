@@ -7,7 +7,7 @@ import android.graphics.Canvas;
  * Created by anthony on 3-1-2017.
  */
 
-public abstract class Entity {
+public class Entity {
     private int x;
     private int y;
     private int height;
@@ -20,13 +20,6 @@ public abstract class Entity {
         this.height = height;
         this.width = width;
         this.image = image;
-    }
-
-    public Entity(){
-        x = 0;
-        y = 0;
-        height = 0;
-        width = 0;
     }
 
     public int getX() {
@@ -69,7 +62,7 @@ public abstract class Entity {
         this.image = image;
     }
 
-    public abstract void draw(Canvas canvas);
+    public void draw(Canvas canvas){};
 
     public void update(){};
 

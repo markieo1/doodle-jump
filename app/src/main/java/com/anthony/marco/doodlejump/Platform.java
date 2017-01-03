@@ -1,5 +1,6 @@
 package com.anthony.marco.doodlejump;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 /**
@@ -7,17 +8,15 @@ import android.graphics.Canvas;
  */
 
 public class Platform extends Entity {
-    public Platform(){
-        //TODO: set image
-
-        //this.setImage();
+    public Platform(int x, int y, int height, int width, Bitmap image) {
+        super(x, y, height, width, image);
     }
 
     @Override
     public void draw(Canvas canvas) {
 
     }
-    
+
     public void update() {
 
     }

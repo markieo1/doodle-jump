@@ -24,7 +24,9 @@ public class DoodleGame {
     }
 
     private void generatePlatforms() {
-
+         for (int i = 0; i < 4; i++){
+             entities.add(new Entity(100, 100 * i, 10,10,null));
+         }
     }
 
     public void update() {

@@ -13,20 +13,8 @@ public class Doodle extends Entity {
     private int velocityX;
     private int velocityY;
 
-    public Doodle(){
-        super();
-        this.velocityX = 0;
-        this.velocityY = 0;
-    }
-
-    public Doodle(int velocityX, int velocityY) {
-        super();
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
-    }
-
-    public Doodle(int x, int y, int heigth, int width, Bitmap image, int velocityX, int velocityY) {
-        super(x, y, heigth, width, image);
+    public Doodle(int x, int y, int height, int width, Bitmap image, int velocityX, int velocityY) {
+        super(x, y, height, width, image);
         this.velocityX = velocityX;
         this.velocityY = velocityY;
     }
