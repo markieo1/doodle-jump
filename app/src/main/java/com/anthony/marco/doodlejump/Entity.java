@@ -9,14 +9,14 @@ import android.graphics.Bitmap;
 public class Entity {
     private int x;
     private int y;
-    private int heigth;
+    private int height;
     private int width;
     private Bitmap image;
 
     public Entity(int x, int y, int heigth, int width, Bitmap image){
         this.x = x;
         this.y = y;
-        this.heigth = heigth;
+        this.height = heigth;
         this.width = width;
         this.image = image;
     }
@@ -24,7 +24,7 @@ public class Entity {
     public Entity(){
         x = 0;
         y = 0;
-        heigth = 0;
+        height = 0;
         width = 0;
     }
 
@@ -45,11 +45,11 @@ public class Entity {
     }
 
     public int getHeigth() {
-        return heigth;
+        return height;
     }
 
     public void setHeigth(int heigth) {
-        this.heigth = heigth;
+        this.height = heigth;
     }
 
     public int getWidth() {

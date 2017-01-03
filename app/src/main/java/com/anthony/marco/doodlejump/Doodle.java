@@ -34,7 +34,7 @@ public class Doodle extends Entity {
         //TODO: handle input..
     }
 
-    public Boolean handleInput(ArrayList<Entity> Platforms){
+    public Boolean checkCollision(ArrayList<Entity> Platforms){
 
         return null;
     }
