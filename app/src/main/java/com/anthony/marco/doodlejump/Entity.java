@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
  * Created by anthony on 3-1-2017.
  */
 
-public class Entity {
+public abstract class Entity {
     private int x;
     private int y;
     private int height;
@@ -44,11 +44,11 @@ public class Entity {
         this.y = y;
     }
 
-    public int getHeigth() {
+    public int getHeight() {
         return height;
     }
 
-    public void setHeigth(int heigth) {
+    public void setHeight(int heigth) {
         this.height = heigth;
     }
 
@@ -68,7 +68,5 @@ public class Entity {
         this.image = image;
     }
 
-    public void draw(){
-        //TODO: implement
-    }
+    public abstract void draw();
 }

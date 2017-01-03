@@ -38,4 +38,9 @@ public class Doodle extends Entity {
 
         return null;
     }
+
+    @Override
+    public void draw() {
+
+    }
 }
