@@ -22,6 +22,10 @@ public class GameThread extends Thread {
     @Override
     public void run() {
         while (isRunning) {
+            // 1. Handle Input
+            // 2. Update
+            // 3. Draw
+            
             Canvas canvas = doodleSurfaceView.getHolder().lockCanvas();
 
             if (canvas != null) {
