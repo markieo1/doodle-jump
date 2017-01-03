@@ -1,5 +1,7 @@
 package com.anthony.marco.doodlejump;
 
+import android.graphics.Canvas;
+
 /**
  * Created by antho on 3-1-2017.
  */
@@ -12,7 +14,7 @@ public class Platform extends Entity {
     }
 
     @Override
-    public void draw() {
+    public void draw(Canvas canvas) {
 
     }
 }

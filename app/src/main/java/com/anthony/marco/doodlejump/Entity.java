@@ -1,6 +1,7 @@
 package com.anthony.marco.doodlejump;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 
 /**
  * Created by anthony on 3-1-2017.
@@ -68,5 +69,5 @@ public abstract class Entity {
         this.image = image;
     }
 
-    public abstract void draw();
+    public abstract void draw(Canvas canvas);
 }

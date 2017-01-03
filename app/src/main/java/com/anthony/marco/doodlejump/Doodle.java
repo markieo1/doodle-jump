@@ -1,6 +1,7 @@
 package com.anthony.marco.doodlejump;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 
 import java.util.ArrayList;
 
@@ -40,7 +41,7 @@ public class Doodle extends Entity {
     }
 
     @Override
-    public void draw() {
+    public void draw(Canvas canvas) {
 
     }
 }
