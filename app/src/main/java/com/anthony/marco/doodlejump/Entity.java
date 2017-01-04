@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 
 /**
@@ -11,13 +12,13 @@ import android.util.Log;
  */
 
 public class Entity {
-    private int x;
-    private int y;
-    private int height;
-    private int width;
+    private float x;
+    private float y;
+    private float height;
+    private float width;
     private Bitmap image;
 
-    public Entity(int x, int y, int height, int width, Bitmap image) {
+    public Entity(float x, float y, float height, float width, Bitmap image) {
         this.x = x;
         this.y = y;
         this.height = height;
@@ -25,35 +26,35 @@ public class Entity {
         this.image = image;
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public void setX(int x) {
+    public void setX(float x) {
         this.x = x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 
-    public void setY(int y) {
+    public void setY(float y) {
         this.y = y;
     }
 
-    public int getHeight() {
+    public float getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(float height) {
         this.height = height;
     }
 
-    public int getWidth() {
+    public float getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(float width) {
         this.width = width;
     }
 
@@ -65,8 +66,10 @@ public class Entity {
         this.image = image;
     }
 
-    public void draw(Canvas canvas) {
-        canvas.drawBitmap(getImage(), null, new Rect(getX(), getY(), getX() + getWidth(), getY() + getHeight()), null);
+    public void draw(ScrollingCamera camera, Canvas canvas) {
+        float relativeXPos = camera.getRelativeX(getX());
+        float relativeYPos = camera.getRelativeY(getY());
+        canvas.drawBitmap(getImage(), null, new RectF(relativeXPos, relativeYPos, relativeXPos + getWidth(), relativeYPos + getHeight()), null);
     }
 
     public void update() {

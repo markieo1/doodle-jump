@@ -12,12 +12,12 @@ import java.util.ArrayList;
  */
 
 public class Doodle extends Entity {
-    private int velocityX;
-    private int velocityY;
+    private float velocityX;
+    private float velocityY;
     private int jumpSize;
     private boolean collisionOccured;
 
-    public Doodle(int x, int y, int height, int width, Bitmap image, int velocityX, int velocityY) {
+    public Doodle(float x, float y, float height, float width, Bitmap image, float velocityX, float velocityY) {
         super(x, y, height, width, image);
         this.velocityX = velocityX;
         this.velocityY = velocityY;
@@ -51,18 +51,19 @@ public class Doodle extends Entity {
 
         //int newX = this.getX() - velocityX;
 
-        int newY = this.getY() - jumpSize;
+        float newY = this.getY() - jumpSize;
         setY(newY);
         //setX(newX);
         // TODO: Add collision checks
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(ScrollingCamera camera, Canvas canvas) {
         Paint paint = new Paint();
         paint.setColor(Color.YELLOW);
         paint.setStyle(Paint.Style.FILL);
-        canvas.drawCircle(getX(), getY(), getWidth(), paint);
+
+        canvas.drawCircle(camera.getRelativeX(getX()), camera.getRelativeY(getY()), getWidth(), paint);
     }
 
     public int getJumpSize() {
