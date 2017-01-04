@@ -43,7 +43,7 @@ public class DoodleGame {
         Bitmap bitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
         for (int j = 0; j < 20; j++) {
             for (int i = 0; i < 20; i++) {
-                entities.add(new Entity(200 * j, 150 * i, 10, 100, bitmap));
+                entities.add(new Entity(200 * j, 1000 * i, 10, 100, bitmap));
             }
         }
 
@@ -103,9 +103,9 @@ public class DoodleGame {
     }
 
 
-    public void setDistanceToJump(int distanceToJump) {
+    public void setNumberToIncreaseVelocity(int distanceToJump) {
         if (doodle !=null){
-            this.doodle.setDistanceToJump(distanceToJump);
+            this.doodle.setnumberToIncreaseVelocity(distanceToJump);
         }
     }
 }
