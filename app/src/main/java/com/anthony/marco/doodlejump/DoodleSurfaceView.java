@@ -1,9 +1,12 @@
 package com.anthony.marco.doodlejump;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.util.AttributeSet;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 
 /**
  * Created by marco on 3-1-2017.
@@ -30,7 +33,12 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 
     private void initialize(){
-        this.gameThread = new GameThread(this);
+        WindowManager wm = (WindowManager) getContext().getSystemService(getContext().WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+
+        this.gameThread = new GameThread(this, size.x, size.y);
         this.gameThread.setRunning(true);
 
         this.surfaceHolder = getHolder();

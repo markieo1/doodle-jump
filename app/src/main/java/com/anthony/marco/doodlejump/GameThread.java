@@ -15,9 +15,9 @@ public class GameThread extends Thread {
 
     private boolean isRunning;
 
-    public GameThread(DoodleSurfaceView doodleSurfaceView) {
+    public GameThread(DoodleSurfaceView doodleSurfaceView, int screenWidth, int screenHeight) {
         this.doodleSurfaceView = doodleSurfaceView;
-        this.doodleGame = new DoodleGame();
+        this.doodleGame = new DoodleGame(screenWidth,screenHeight);
     }
 
     @Override

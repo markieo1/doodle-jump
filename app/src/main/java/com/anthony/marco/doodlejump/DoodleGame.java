@@ -14,8 +14,13 @@ import java.util.ArrayList;
 
 public class DoodleGame {
     private ArrayList<Entity> entities;
+    private int screenWidth;
+    private int screenHeight;
 
-    public DoodleGame() {
+    public DoodleGame(int screenWidth,int screenHeight) {
+        this.screenHeight = screenHeight;
+        this.screenWidth = screenWidth;
+
         entities = new ArrayList<>();
         generatePlatforms();
     }
@@ -30,11 +35,13 @@ public class DoodleGame {
 
     private void generatePlatforms() {
         Bitmap bitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
-        for (int i = 0; i < 40; i++) {
-            entities.add(new Entity(100, 100 * i, 10, 10, bitmap));
+        for (int j = 0; j < 20; j++) {
+            for (int i = 0; i < 20; i++) {
+                entities.add(new Entity(200 * j, 150 * i, 10, 100, bitmap));
+            }
         }
 
-        Doodle doodle = new Doodle(500, 500, 25, 25, null, 2, 2);
+        Doodle doodle = new Doodle(500, 500, 25, 25, null, 10, 10);
         entities.add(doodle);
     }
 
@@ -57,5 +64,13 @@ public class DoodleGame {
         for (Entity entity : entities) {
             entity.draw(canvas);
         }
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
     }
 }
