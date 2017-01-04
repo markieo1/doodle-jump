@@ -56,6 +56,7 @@ public class DoodleGame {
 
     public void update() {
         camera.update();
+        this.doodle.checkCollision(entities);
         // TODO: Update all entities here
         /*for (Entity entity : entities) {
             entity.update();
