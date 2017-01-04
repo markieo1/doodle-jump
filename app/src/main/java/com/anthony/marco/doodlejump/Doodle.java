@@ -32,7 +32,7 @@ public class Doodle extends Entity {
         for (Entity entity : entities){
             if (!entity.getClass().equals(Doodle.class)) {
                 if (this.getX() > entity.getX() && this.getX() < (entity.getX() + entity.getWidth())) {
-                    if (this.getY() + this.getHeight() == entity.getY()){
+                    if (this.getY() + this.getHeight() == entity.getY() || this.getY() + this.getHeight() - jumpSize == entity.getY()){
                         if(distancePassed) {
                             collisionOccured = true;
                             jumpSize = 0;
@@ -55,19 +55,31 @@ public class Doodle extends Entity {
         super.update();
 
         //int newX = this.getX() - velocityX;
-        if (distanceToJump >= 0){
+        if (distanceToJump > 0){
             distancePassed = false;
-            distanceToJump -= jumpSize;
+            distanceToJump -= jumpSize + 10;
+
             float newY = this.getY() - jumpSize;
             setY(newY);
-        }
-        else{
-            distancePassed = true;
-            if( jumpSize > 0){
-                jumpSize *= -1;
+            if (jumpSize > 3){
+                jumpSize -= 1;
             }
-            float newY = this.getY() - jumpSize;
+            if (distanceToJump ==0){
+                distanceToJump = -1;
+            }
+        }
+        else if (distanceToJump < 0){
+            distancePassed = true;
+
+            if (collisionOccured){
+                jumpSize =0;
+            }
+
+            jumpSize +=1;
+
+            float newY = this.getY() + jumpSize;
             setY(newY);
+
         }
     }
 

@@ -47,7 +47,7 @@ public class DoodleGame {
             }
         }
 
-        doodle = new Doodle(getScreenWidth()/2 - 50, getScreenHeight() - (doodleSize.x + doodleSize.y), doodleSize.x, doodleSize.y, null, 10, 10);
+        doodle = new Doodle(getScreenWidth()/2 - 50, getScreenHeight()  - (doodleSize.x + doodleSize.y), doodleSize.x, doodleSize.y, null, 10, 10);
         entities.add(doodle);
         camera.setEntities(entities);
 

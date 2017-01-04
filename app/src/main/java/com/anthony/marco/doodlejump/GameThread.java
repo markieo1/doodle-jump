@@ -56,8 +56,8 @@ public class GameThread extends Thread {
     }
 
     public void onScreenTouched(){
-        this.doodleGame.setDistanceToJump(100);
-        this.doodleGame.setJumpSize(10);
+        this.doodleGame.setDistanceToJump(500);
+        this.doodleGame.setJumpSize(20);
     }
 
     public void setRunning(boolean running) {
