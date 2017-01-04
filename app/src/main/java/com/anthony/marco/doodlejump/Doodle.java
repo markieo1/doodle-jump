@@ -95,7 +95,7 @@ public class Doodle extends Entity {
         paint.setColor(Color.YELLOW);
         paint.setStyle(Paint.Style.FILL);
 
-        canvas.drawCircle(camera.getRelativeX(getX()), camera.getRelativeY(getY()), getWidth(), paint);
+        canvas.drawCircle(getX(), camera.getRelativeYPosition(getY()), getWidth(), paint);
     }
 
     public int getJumpSize() {

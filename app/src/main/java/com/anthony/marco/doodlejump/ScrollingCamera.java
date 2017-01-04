@@ -12,27 +12,36 @@ import java.util.ArrayList;
 
 public class ScrollingCamera {
     private ArrayList<Entity> entities;
-    private float x, y;
-    private float xOffset, yOffset;
+
+    /**
+     * The current y position of the camera
+     */
+    private float cameraY;
+
+    /**
+     * The bounds of the screen
+     */
     private Rect bounds;
 
     public ScrollingCamera(Rect bounds) {
         entities = new ArrayList<>();
         this.bounds = bounds;
+        this.cameraY = bounds.top - bounds.height();
     }
 
-    public void update(){
+    public void update(Doodle doodle) {
         for (Entity entity : entities) {
             entity.update();
         }
 
-        //yOffset -= 2;
+        // make the camera follow the player
+        cameraY = doodle.getY() - bounds.height() / 2;
     }
 
     public void draw(Canvas canvas) {
         int totalDrawn = 0;
         for (Entity entity : entities) {
-            if (isInScreen(entity)) {
+            if (this.isEntityInScreen(entity)) {
                 totalDrawn++;
                 entity.draw(this, canvas);
             }
@@ -41,23 +50,27 @@ public class ScrollingCamera {
         //Log.i("ScrollingCamera", "Total drawn: " + totalDrawn);
     }
 
+    /**
+     * Checks if an entity is in the screen
+     * @param entity The entity to check
+     * @return true if the entitiy is within the screen bounds
+     */
+    private boolean isEntityInScreen(Entity entity) {
+        float screenCoordinateY = entity.getY() - cameraY;
+
+        return (entity.getX() >= bounds.left && entity.getX() + entity.getWidth() <= bounds.right) && (screenCoordinateY >= bounds.top && screenCoordinateY + entity.getHeight() <= bounds.bottom);
+    }
+
     public void setEntities(ArrayList<Entity> entities) {
         this.entities = entities;
     }
 
-    private boolean isInScreen(Entity entity) {
-        float relativeXPos = getRelativeX(entity.getX());
-        float relativeYPos = getRelativeY(entity.getY());
-
-        return (relativeXPos >= bounds.left && relativeXPos + entity.getWidth() <= bounds.right
-                && relativeYPos >= bounds.top && relativeYPos + entity.getHeight() <= bounds.bottom);
-    }
-
-    public float getRelativeX(float xPos){
-        return xPos - xOffset;
-    }
-
-    public float getRelativeY(float yPos){
-        return yPos - yOffset;
+    /**
+     * Gets the position in screen coordinates
+     * @param yPos The position to translate
+     * @return the position in screen coordinates
+     */
+    public float getRelativeYPosition(float yPos) {
+        return yPos - this.cameraY;
     }
 }
