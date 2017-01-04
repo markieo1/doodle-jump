@@ -30,6 +30,8 @@ public class ScrollingCamera {
     }
 
     public void update(Doodle doodle) {
+        doodle.checkCollision(entities);
+
         for (Entity entity : entities) {
             entity.update();
         }

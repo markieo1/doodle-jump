@@ -21,7 +21,7 @@ public class DoodleGame {
     private int screenWidth;
     private int screenHeight;
     private ScrollingCamera camera;
-    Doodle doodle;
+    private Doodle doodle;
     private Point doodleSize;
 
     public DoodleGame(){
@@ -55,7 +55,7 @@ public class DoodleGame {
     }
 
     public void update() {
-        this.doodle.checkCollision(entities);
+        //this.doodle.checkCollision(entities);
         camera.update(doodle);
         // TODO: Update all entities here
         /*for (Entity entity : entities) {
@@ -99,13 +99,6 @@ public class DoodleGame {
     public void setJumpSize(int jumpSize) {
         if (doodle != null){
             this.doodle.setJumpSize(jumpSize);
-        }
-    }
-
-
-    public void setDistanceToJump(int distanceToJump) {
-        if (doodle !=null){
-            this.doodle.setDistanceToJump(distanceToJump);
         }
     }
 }
