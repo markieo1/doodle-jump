@@ -17,9 +17,8 @@ public class Doodle extends Entity {
     private float velocityY;
     private int jumpSize;
     private boolean collisionOccured;
-    private int numberToIncreaseVelocity;
+    private int distanceToJump;
     private boolean distancePassed;
-    private int maxJumpSize;
 
     public Doodle(float x, float y, float height, float width, Bitmap image, float velocityX, float velocityY) {
         super(x, y, height, width, image);
@@ -28,7 +27,6 @@ public class Doodle extends Entity {
         jumpSize = 0;
         collisionOccured =false;
         distancePassed = false;
-        maxJumpSize = 40;
     }
 
     public boolean checkCollision(ArrayList<Entity> entities) {
@@ -37,10 +35,14 @@ public class Doodle extends Entity {
                 if (this.getX() > entity.getX() && this.getX() < (entity.getX() + entity.getWidth())) {
                     float currentYlocationPlatform = entity.getY();
                     float ballLocation = this.getY() + this.getHeight();
-                    if (this.getY() + this.getHeight() < entity.getY() && this.getY() + this.getHeight() > entity.getY() - maxJumpSize) {
+                    if (this.getY() + this.getHeight() < entity.getY() && this.getY() + this.getHeight() >
+                            entity.getY() - 20) {
                         if (distancePassed) {
                             this.setY(entity.getY() - this.getHeight());
                             collisionOccured = true;
+                        }
+                        else{
+                            collisionOccured = false;
                         }
                     }
                 }
@@ -56,39 +58,37 @@ public class Doodle extends Entity {
     @Override
     public void update() {
         super.update();
-        if (numberToIncreaseVelocity > 0) {
+
+        //int newX = this.getX() - velocityX;
+        if (distanceToJump > 0){
             distancePassed = false;
-            numberToIncreaseVelocity -= jumpSize;
+            distanceToJump -= jumpSize;
 
             float newY = this.getY() - jumpSize;
             setY(newY);
-            if (numberToIncreaseVelocity % 2 == 0 || numberToIncreaseVelocity % 3 == 0) {
-                jumpSize -= 1;
-            }
-            if (numberToIncreaseVelocity < 0) {
-                numberToIncreaseVelocity = 0;
-            }
-            if (jumpSize < 0) {
-                numberToIncreaseVelocity = -1;
-            }
-        } else if (numberToIncreaseVelocity < 0) {
-            if (collisionOccured) {
-                jumpSize = 0;
-                numberToIncreaseVelocity = 0;
-                collisionOccured=false;
-            }
-            else{
-                distancePassed = true;
-                if (jumpSize > -maxJumpSize){
+                if (distanceToJump % 2 == 0) {
                     jumpSize -= 1;
                 }
-
-                float newY = this.getY() - jumpSize;
-                setY(newY);
+                if (distanceToJump < 0) {
+                    distanceToJump = 0;
+                }
+            if (jumpSize < 0){
+                distanceToJump = -1;
             }
         }
+        else if (distanceToJump < 0){
+            distancePassed = true;
+            jumpSize -=2;
+            if (collisionOccured){
 
-        Log.i("distanceToJump", Integer.toString(numberToIncreaseVelocity));
+                jumpSize =0;
+                distanceToJump = 0;
+            }
+            float newY = this.getY() - jumpSize;
+            setY(newY);
+        }
+
+        Log.i("distanceToJump", Integer.toString(distanceToJump));
         Log.i("jumpSize", Integer.toString(jumpSize));
     }
 
@@ -109,11 +109,11 @@ public class Doodle extends Entity {
         this.jumpSize = jumpSize;
     }
 
-    public int getnumberToIncreaseVelocity() {
-        return numberToIncreaseVelocity;
+    public int getDistanceToJump() {
+        return distanceToJump;
     }
 
-    public void setnumberToIncreaseVelocity(int distanceToJump) {
-        this.numberToIncreaseVelocity = distanceToJump;
+    public void setDistanceToJump(int distanceToJump) {
+        this.distanceToJump = distanceToJump;
     }
 }

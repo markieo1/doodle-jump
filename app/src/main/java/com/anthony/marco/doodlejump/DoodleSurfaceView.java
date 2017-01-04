@@ -2,7 +2,6 @@ package com.anthony.marco.doodlejump;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.hardware.SensorEvent;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -67,5 +66,4 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         this.gameThread.onScreenTouched();
         return super.onTouchEvent(event);
     }
-
 }
