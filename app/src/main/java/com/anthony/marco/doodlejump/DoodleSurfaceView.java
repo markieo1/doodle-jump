@@ -2,7 +2,13 @@ package com.anthony.marco.doodlejump;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -13,9 +19,13 @@ import android.view.WindowManager;
  * Created by marco on 3-1-2017.
  */
 
-public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
+public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
     private SurfaceHolder surfaceHolder;
     private GameThread gameThread;
+    private SensorManager mSensorManager;
+    private Sensor mSensor;
+
+
 
     public DoodleSurfaceView(Context context) {
         super(context);
@@ -38,12 +48,17 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         this.gameThread.setRunning(true);
         this.surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
+
+        mSensorManager = (SensorManager) App.getContext().getSystemService(Context.SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+
+        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        this.gameThread.setScreenWidth(surfaceHolder.getSurfaceFrame().width());
-        this.gameThread.setScreenHeight(surfaceHolder.getSurfaceFrame().height());
+        Rect surfaceFrame = surfaceHolder.getSurfaceFrame();
+        this.gameThread.setScreenSize(surfaceFrame.width(), surfaceFrame.height());
         gameThread.start();
     }
 
@@ -63,7 +78,23 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        this.gameThread.onScreenTouched();
+        this.gameThread.onScreenTouched(event.getX(), event.getY());
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        float accelartionX = sensorEvent.values[0];
+        float accelartionY = sensorEvent.values[1];
+        float accelartionZ = sensorEvent.values[2];
+
+        Log.i("DoodleSurfaceView", "Sensor changed X: " +  accelartionX);
+        Log.i("DoodleSurfaceView", "Sensor changed Y: " +  accelartionY);
+        Log.i("DoodleSurfaceView", "Sensor changed Z: " +  accelartionZ);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
     }
 }

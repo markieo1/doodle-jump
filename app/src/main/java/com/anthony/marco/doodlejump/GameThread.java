@@ -12,14 +12,14 @@ public class GameThread extends Thread {
     private final String TAG = "GameThread";
     private DoodleSurfaceView doodleSurfaceView;
     private DoodleGame doodleGame;
-    private int screenWidth;
-    private int screenHeight;
+    private DoodleListener doodleListener;
 
     private boolean isRunning;
 
     public GameThread(DoodleSurfaceView doodleSurfaceView) {
         this.doodleSurfaceView = doodleSurfaceView;
         this.doodleGame = new DoodleGame();
+        this.doodleListener = doodleGame;
     }
 
     @Override
@@ -55,29 +55,20 @@ public class GameThread extends Thread {
         }
     }
 
-    public void onScreenTouched(){
-        this.doodleGame.setJumpSize(10);
+    /**
+     * The screen touched callback
+     * @param xPosition The x position of the touch
+     * @param yPosition The y position of the touch
+     */
+    public void onScreenTouched(float xPosition, float yPosition){
+        this.doodleListener.screenTouched(xPosition, yPosition);
     }
 
     public void setRunning(boolean running) {
         isRunning = running;
     }
 
-    public int getScreenHeight() {
-        return screenHeight;
-    }
-
-    public void setScreenHeight(int screenHeight) {
-        this.screenHeight = screenHeight;
-        this.doodleGame.setScreenHeight(screenHeight);
-    }
-
-    public int getScreenWidth() {
-        return screenWidth;
-    }
-
-    public void setScreenWidth(int screenWidth) {
-        this.screenWidth = screenWidth;
-        this.doodleGame.setScreenWidth(screenWidth);
+    public void setScreenSize(int screenWidth, int screenHeight){
+        this.doodleListener.screenSizeChanged(screenWidth, screenHeight);
     }
 }
