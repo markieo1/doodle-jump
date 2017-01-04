@@ -63,7 +63,6 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int i =0;
         this.gameThread.onScreenTouched();
         return super.onTouchEvent(event);
     }

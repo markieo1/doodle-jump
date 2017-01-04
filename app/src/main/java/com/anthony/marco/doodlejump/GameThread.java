@@ -14,7 +14,6 @@ public class GameThread extends Thread {
     private DoodleGame doodleGame;
     private int screenWidth;
     private int screenHeight;
-    private int jumpSize;
 
     private boolean isRunning;
 
@@ -48,7 +47,7 @@ public class GameThread extends Thread {
             }
 
             // Sleep
-            try {
+             try {
                 sleep(1000 / 60);
             } catch (InterruptedException ex) {
                 Log.e(TAG, ex.getLocalizedMessage());
@@ -57,8 +56,8 @@ public class GameThread extends Thread {
     }
 
     public void onScreenTouched(){
-        jumpSize = 5;
-        this.doodleGame.setJumpSize(jumpSize);
+        this.doodleGame.setDistanceToJump(100);
+        this.doodleGame.setJumpSize(10);
     }
 
     public void setRunning(boolean running) {

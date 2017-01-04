@@ -101,4 +101,11 @@ public class DoodleGame {
             this.doodle.setJumpSize(jumpSize);
         }
     }
+
+
+    public void setDistanceToJump(int distanceToJump) {
+        if (doodle !=null){
+            this.doodle.setDistanceToJump(distanceToJump);
+        }
+    }
 }

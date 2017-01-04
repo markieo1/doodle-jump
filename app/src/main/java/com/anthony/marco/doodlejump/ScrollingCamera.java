@@ -26,7 +26,7 @@ public class ScrollingCamera {
             entity.update();
         }
 
-        yOffset += 5;
+        //yOffset -= 2;
     }
 
     public void draw(Canvas canvas) {
