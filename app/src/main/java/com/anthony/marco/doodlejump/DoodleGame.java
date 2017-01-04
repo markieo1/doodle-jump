@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
@@ -16,9 +17,12 @@ public class DoodleGame {
     private ArrayList<Entity> entities;
     private int screenWidth;
     private int screenHeight;
+    Doodle doodle;
+    private Point doodleSize;
 
     public DoodleGame() {
         entities = new ArrayList<>();
+        doodleSize = new Point(25,25);
     }
 
     public void startGame() {
@@ -37,7 +41,7 @@ public class DoodleGame {
             }
         }
 
-        Doodle doodle = new Doodle(screenWidth/2, screenHeight - 50, 25, 25, null, 10, 10);
+        doodle = new Doodle(getScreenWidth()/2 - 50, getScreenHeight() - (doodleSize.x + doodleSize.y), doodleSize.x, doodleSize.y, null, 10, 10);
         entities.add(doodle);
     }
 
@@ -57,8 +61,10 @@ public class DoodleGame {
 
     public void draw(Canvas canvas) {
         // TODO: Draw the entities on the screen
-        for (Entity entity : entities) {
-            entity.draw(canvas);
+        if(!this.doodle.checkCollision(entities)){
+            for (Entity entity : entities) {
+                entity.draw(canvas);
+            }
         }
     }
 
@@ -76,5 +82,11 @@ public class DoodleGame {
 
     public void setScreenHeight(int screenHeight) {
         this.screenHeight = screenHeight;
+    }
+
+    public void setJumpSize(int jumpSize) {
+        if (doodle != null){
+            this.doodle.setJumpSize(jumpSize);
+        }
     }
 }

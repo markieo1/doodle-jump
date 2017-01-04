@@ -14,6 +14,7 @@ public class GameThread extends Thread {
     private DoodleGame doodleGame;
     private int screenWidth;
     private int screenHeight;
+    private int jumpSize;
 
     private boolean isRunning;
 
@@ -53,6 +54,11 @@ public class GameThread extends Thread {
                 Log.e(TAG, ex.getLocalizedMessage());
             }
         }
+    }
+
+    public void onScreenTouched(){
+        jumpSize = 5;
+        this.doodleGame.setJumpSize(jumpSize);
     }
 
     public void setRunning(boolean running) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
@@ -47,10 +48,7 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
-
-    }
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) { }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
@@ -61,5 +59,12 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         } catch (InterruptedException e) {
 
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int i =0;
+        this.gameThread.onScreenTouched();
+        return super.onTouchEvent(event);
     }
 }
