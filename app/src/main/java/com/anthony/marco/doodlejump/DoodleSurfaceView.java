@@ -22,10 +22,6 @@ import android.view.WindowManager;
 public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
     private SurfaceHolder surfaceHolder;
     private GameThread gameThread;
-    private SensorManager mSensorManager;
-    private Sensor mSensor;
-
-
 
     public DoodleSurfaceView(Context context) {
         super(context);
@@ -48,11 +44,6 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         this.gameThread.setRunning(true);
         this.surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
-
-        mSensorManager = (SensorManager) App.getContext().getSystemService(Context.SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-
-        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
