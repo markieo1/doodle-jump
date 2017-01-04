@@ -36,13 +36,15 @@ public class Doodle extends Entity {
                     float currentYlocationPlatform = entity.getY();
                     float ballLocation = this.getY() + this.getHeight();
                     if (this.getY() + this.getHeight() < entity.getY() && this.getY() + this.getHeight() >
-                            entity.getY() -10 ){
-                        if(distancePassed) {
+                            entity.getY() - 20) {
+                        if (distancePassed) {
+                            this.setY(entity.getY() - this.getHeight());
                             collisionOccured = true;
                         }
+                        else{
+                            collisionOccured = false;
+                        }
                     }
-                } else {
-                    collisionOccured = false;
                 }
             }
         }
@@ -78,6 +80,7 @@ public class Doodle extends Entity {
             distancePassed = true;
             jumpSize -=2;
             if (collisionOccured){
+
                 jumpSize =0;
                 distanceToJump = 0;
             }
