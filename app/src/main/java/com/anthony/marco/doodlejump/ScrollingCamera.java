@@ -38,7 +38,7 @@ public class ScrollingCamera {
             }
         }
 
-        Log.i("ScrollingCamera", "Total drawn: " + totalDrawn);
+        //Log.i("ScrollingCamera", "Total drawn: " + totalDrawn);
     }
 
     public void setEntities(ArrayList<Entity> entities) {

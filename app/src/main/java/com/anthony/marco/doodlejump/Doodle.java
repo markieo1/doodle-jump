@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -32,10 +33,12 @@ public class Doodle extends Entity {
         for (Entity entity : entities){
             if (!entity.getClass().equals(Doodle.class)) {
                 if (this.getX() > entity.getX() && this.getX() < (entity.getX() + entity.getWidth())) {
-                    if (this.getY() + this.getHeight() == entity.getY() || this.getY() + this.getHeight() - jumpSize == entity.getY()){
+                    float currentYlocationPlatform = entity.getY();
+                    float ballLocation = this.getY() + this.getHeight();
+                    if (this.getY() + this.getHeight() < entity.getY() && this.getY() + this.getHeight() >
+                            entity.getY() -10 ){
                         if(distancePassed) {
                             collisionOccured = true;
-                            jumpSize = 0;
                         }
                     }
                 } else {
@@ -57,30 +60,33 @@ public class Doodle extends Entity {
         //int newX = this.getX() - velocityX;
         if (distanceToJump > 0){
             distancePassed = false;
-            distanceToJump -= jumpSize + 10;
+            distanceToJump -= jumpSize;
 
             float newY = this.getY() - jumpSize;
             setY(newY);
-            if (jumpSize > 3){
-                jumpSize -= 1;
-            }
-            if (distanceToJump ==0){
+                if (distanceToJump % 2 == 0) {
+                    jumpSize -= 1;
+                }
+                if (distanceToJump < 0) {
+                    distanceToJump = 0;
+                }
+            if (jumpSize < 0){
                 distanceToJump = -1;
             }
         }
         else if (distanceToJump < 0){
             distancePassed = true;
-
+            jumpSize -=2;
             if (collisionOccured){
                 jumpSize =0;
+                distanceToJump = 0;
             }
-
-            jumpSize +=1;
-
-            float newY = this.getY() + jumpSize;
+            float newY = this.getY() - jumpSize;
             setY(newY);
-
         }
+
+        Log.i("distanceToJump", Integer.toString(distanceToJump));
+        Log.i("jumpSize", Integer.toString(jumpSize));
     }
 
     @Override
