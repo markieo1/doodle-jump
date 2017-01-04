@@ -81,7 +81,7 @@ public class DoodleGame implements DoodleListener {
 
     @Override
     public void screenTouched(float xPosition, float yPosition) {
-        setJumpSize(10);
+        setJumpSize(40);
     }
 
     @Override

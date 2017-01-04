@@ -91,11 +91,11 @@ public class Doodle extends Entity {
             @Override
             public void run() {
                 shouldFall = true;
-                velocityY = 0;
+                //velocityY = 0;
             }
         };
 
         Timer timer = new Timer();
-        timer.schedule(fallingTask, 2000);
+        timer.schedule(fallingTask, 100);
     }
 }
