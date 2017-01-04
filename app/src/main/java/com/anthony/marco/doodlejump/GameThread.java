@@ -12,16 +12,21 @@ public class GameThread extends Thread {
     private final String TAG = "GameThread";
     private DoodleSurfaceView doodleSurfaceView;
     private DoodleGame doodleGame;
+    private int screenWidth;
+    private int screenHeight;
 
     private boolean isRunning;
 
-    public GameThread(DoodleSurfaceView doodleSurfaceView, int screenWidth, int screenHeight) {
+    public GameThread(DoodleSurfaceView doodleSurfaceView) {
         this.doodleSurfaceView = doodleSurfaceView;
-        this.doodleGame = new DoodleGame(screenWidth,screenHeight);
+        this.doodleGame = new DoodleGame();
     }
 
     @Override
     public void run() {
+        // should be in doodlegame.start?
+        this.doodleGame.generatePlatforms();
+
         while (isRunning) {
             // 1. Handle Input
             // 2. Update
@@ -52,5 +57,23 @@ public class GameThread extends Thread {
 
     public void setRunning(boolean running) {
         isRunning = running;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
+    }
+
+    public void setScreenHeight(int screenHeight) {
+        this.screenHeight = screenHeight;
+        this.doodleGame.setScreenHeight(screenHeight);
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public void setScreenWidth(int screenWidth) {
+        this.screenWidth = screenWidth;
+        this.doodleGame.setScreenWidth(screenWidth);
     }
 }

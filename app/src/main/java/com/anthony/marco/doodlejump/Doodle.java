@@ -22,6 +22,7 @@ public class Doodle extends Entity {
     }
 
     public boolean checkCollision(ArrayList<Entity> entities) {
+
         return false;
     }
 

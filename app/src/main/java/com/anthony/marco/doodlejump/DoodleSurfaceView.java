@@ -33,26 +33,22 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 
     private void initialize(){
-        WindowManager wm = (WindowManager) getContext().getSystemService(getContext().WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-
-        this.gameThread = new GameThread(this, size.x, size.y);
+        this.gameThread = new GameThread(this);
         this.gameThread.setRunning(true);
-
         this.surfaceHolder = getHolder();
-
         surfaceHolder.addCallback(this);
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        this.gameThread.setScreenWidth(surfaceHolder.getSurfaceFrame().width());
+        this.gameThread.setScreenHeight(surfaceHolder.getSurfaceFrame().height());
         gameThread.start();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
 
     }
 

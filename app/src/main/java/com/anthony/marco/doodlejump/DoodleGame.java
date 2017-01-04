@@ -17,12 +17,8 @@ public class DoodleGame {
     private int screenWidth;
     private int screenHeight;
 
-    public DoodleGame(int screenWidth,int screenHeight) {
-        this.screenHeight = screenHeight;
-        this.screenWidth = screenWidth;
-
+    public DoodleGame() {
         entities = new ArrayList<>();
-        generatePlatforms();
     }
 
     public void startGame() {
@@ -33,7 +29,7 @@ public class DoodleGame {
 
     }
 
-    private void generatePlatforms() {
+    public void generatePlatforms() {
         Bitmap bitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
         for (int j = 0; j < 20; j++) {
             for (int i = 0; i < 20; i++) {
@@ -41,7 +37,7 @@ public class DoodleGame {
             }
         }
 
-        Doodle doodle = new Doodle(500, 500, 25, 25, null, 10, 10);
+        Doodle doodle = new Doodle(screenWidth/2, screenHeight - 50, 25, 25, null, 10, 10);
         entities.add(doodle);
     }
 
@@ -72,5 +68,13 @@ public class DoodleGame {
 
     public int getScreenHeight() {
         return screenHeight;
+    }
+
+    public void setScreenWidth(int screenWidth) {
+        this.screenWidth = screenWidth;
+    }
+
+    public void setScreenHeight(int screenHeight) {
+        this.screenHeight = screenHeight;
     }
 }
