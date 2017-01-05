@@ -12,14 +12,14 @@ public class GameThread extends Thread {
     private final String TAG = "GameThread";
     private DoodleSurfaceView doodleSurfaceView;
     private DoodleGame doodleGame;
-    private DoodleListener doodleListener;
+    private ScreenListener screenListener;
 
     private boolean isRunning;
 
     public GameThread(DoodleSurfaceView doodleSurfaceView) {
         this.doodleSurfaceView = doodleSurfaceView;
         this.doodleGame = new DoodleGame();
-        this.doodleListener = doodleGame;
+        this.screenListener = doodleGame;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class GameThread extends Thread {
      * @param yPosition The y position of the touch
      */
     public void onScreenTouched(float xPosition, float yPosition){
-        this.doodleListener.screenTouched(xPosition, yPosition);
+        this.screenListener.screenTouched(xPosition, yPosition);
     }
 
     public void setRunning(boolean running) {
@@ -69,6 +69,6 @@ public class GameThread extends Thread {
     }
 
     public void setScreenSize(int screenWidth, int screenHeight){
-        this.doodleListener.screenSizeChanged(screenWidth, screenHeight);
+        this.screenListener.screenSizeChanged(screenWidth, screenHeight);
     }
 }

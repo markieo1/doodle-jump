@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * Created by marco on 3-1-2017.
  */
 
-public class DoodleGame implements DoodleListener {
+public class DoodleGame implements ScreenListener {
     private ArrayList<Entity> entities;
     private int screenWidth;
     private int screenHeight;

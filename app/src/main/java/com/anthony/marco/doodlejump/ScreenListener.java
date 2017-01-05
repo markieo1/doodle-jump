@@ -4,7 +4,7 @@ package com.anthony.marco.doodlejump;
  * Created by marco on 4-1-2017.
  */
 
-public interface DoodleListener {
+public interface ScreenListener {
     /**
      * The screen touched callback
      * @param xPosition The x position of the touch
