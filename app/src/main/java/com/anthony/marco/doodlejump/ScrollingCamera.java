@@ -38,6 +38,12 @@ public class ScrollingCamera {
 
         // make the camera follow the player
         cameraY = doodle.getY() - bounds.height() / 2;
+
+        if (doodle.getX() >= bounds.width()) {
+            doodle.setX(0 - doodle.getWidth());
+        } else if (doodle.getX() < 0 - doodle.getWidth()) {
+            doodle.setX(bounds.width());
+        }
     }
 
     public void draw(Canvas canvas) {
@@ -54,6 +60,7 @@ public class ScrollingCamera {
 
     /**
      * Checks if an entity is in the screen
+     *
      * @param entity The entity to check
      * @return true if the entitiy is within the screen bounds
      */
@@ -69,6 +76,7 @@ public class ScrollingCamera {
 
     /**
      * Gets the position in screen coordinates
+     *
      * @param yPos The position to translate
      * @return the position in screen coordinates
      */
