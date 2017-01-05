@@ -4,92 +4,117 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by anthony on 3-1-2017.
  */
 
 public class Doodle extends Entity {
+    private final String TAG = "Doodle";
+
     private float velocityX;
     private float velocityY;
-    private int jumpSize;
-    private boolean collisionOccured;
-    private int distanceToJump;
-    private boolean distancePassed;
+    private boolean shouldFall;
 
-    public Doodle(float x, float y, float height, float width, Bitmap image, float velocityX, float velocityY) {
+    public Doodle(float x, float y, float height, float width, Bitmap image) {
         super(x, y, height, width, image);
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
-        jumpSize = 0;
-        collisionOccured =false;
-        distancePassed = false;
+        this.velocityX = 0;
+        this.velocityY = 0;
+        this.shouldFall = true;
     }
 
-    public boolean checkCollision(ArrayList<Entity> entities) {
-        for (Entity entity : entities){
-            if (!entity.getClass().equals(Doodle.class)) {
-                if (this.getX() > entity.getX() && this.getX() < (entity.getX() + entity.getWidth())) {
-                    float currentYlocationPlatform = entity.getY();
-                    float ballLocation = this.getY() + this.getHeight();
-                    if (this.getY() + this.getHeight() < entity.getY() && this.getY() + this.getHeight() >
-                            entity.getY() - 20) {
-                        if (distancePassed) {
-                            this.setY(entity.getY() - this.getHeight());
-                            collisionOccured = true;
-                        }
-                        else{
-                            collisionOccured = false;
-                        }
-                    }
-                }
-            }
+    public void checkCollision(ArrayList<Entity> entities) {
+        boolean colliding = collidingWithPlatforms(entities);
+        if (colliding) {
+            this.shouldFall = false;
+            this.velocityY = 0;
+        } else {
+            // we are not colliding so we should fall
+            this.shouldFall = true;
         }
-        return collisionOccured;
     }
 
     public void handleInput() {
         //TODO: handle input..
     }
 
+    private boolean collidingWithPlatforms(ArrayList<Entity> entities) {
+        boolean isCollidingWithPlatform = false;
+        for (Entity platform : entities) {
+            if (platform instanceof Doodle)
+                continue;
+
+            if (isColliding(platform, velocityY)) {
+                isCollidingWithPlatform = true;
+
+                // Move because we might have passed the platform by a bit.
+                this.setY(platform.getY() - this.getHeight());
+                break;
+            }
+
+        }
+
+        return isCollidingWithPlatform;
+    }
+
+    /**
+     * Checks if the doodle is colliding with the specified entity. Taking into account the velocity for the bounding box of the entity.
+     * @param entity The entity to check if we are colliding with it
+     * @param velocityY The velocity to take into account.
+     * @return
+     */
+    private boolean isColliding(Entity entity, float velocityY) {
+        boolean isColliding = false;
+
+        float myXPosition = getX();
+        float myWidth = getWidth();
+        float myXEnd = myXPosition + myWidth;
+
+        float entityXPosition = entity.getX();
+        float entityWidth = entity.getWidth();
+        float entityXEnd = entityXPosition + entityWidth;
+
+        if (myXPosition >= entityXPosition && myXEnd <= entityXEnd) {
+            // Doodle is between the platform
+            float myYPosition = getY();
+            float myHeight = getHeight();
+            float myYEnd = myYPosition + myHeight;
+
+            float entityYPosition = entity.getY();
+            float entityHeight = entity.getHeight() + velocityY;
+            float entityYEnd = entityYPosition + entityHeight;
+
+            if (myYEnd >= entityYPosition && myYEnd <= entityYEnd) {
+                if (shouldFall)
+                    isColliding = true;
+            }
+            float newY = this.getY() - jumpSize;
+            setY(newY);
+        }
+
+        return isColliding;
+    }
+
     @Override
     public void update() {
         super.update();
 
-        //int newX = this.getX() - velocityX;
-        if (distanceToJump > 0){
-            distancePassed = false;
-            distanceToJump -= jumpSize;
-
-            float newY = this.getY() - jumpSize;
-            setY(newY);
-                if (distanceToJump % 2 == 0) {
-                    jumpSize -= 1;
-                }
-                if (distanceToJump < 0) {
-                    distanceToJump = 0;
-                }
-            if (jumpSize < 0){
-                distanceToJump = -1;
-            }
-        }
-        else if (distanceToJump < 0){
-            distancePassed = true;
-            jumpSize -=2;
-            if (collisionOccured){
-
-                jumpSize =0;
-                distanceToJump = 0;
-            }
-            float newY = this.getY() - jumpSize;
-            setY(newY);
+        if (shouldFall) {
+            velocityY += 1;
         }
 
-        Log.i("distanceToJump", Integer.toString(distanceToJump));
-        Log.i("jumpSize", Integer.toString(jumpSize));
+        float newX = this.getX() + velocityX;
+        float newY = this.getY() + velocityY;
+
+        setX(newX);
+        setY(newY);
     }
 
     @Override
@@ -101,19 +126,25 @@ public class Doodle extends Entity {
         canvas.drawCircle(getX(), camera.getRelativeYPosition(getY()), getWidth(), paint);
     }
 
-    public int getJumpSize() {
-        return jumpSize;
-    }
-
     public void setJumpSize(int jumpSize) {
-        this.jumpSize = jumpSize;
+        Log.i(TAG, "Jump Size changed, new: " + jumpSize);
+
+        this.velocityY = -jumpSize;
+
+        TimerTask fallingTask = new TimerTask() {
+            @Override
+            public void run() {
+                shouldFall = true;
+
+                Log.i(TAG, "Ball falling commenced!");
+            }
+        };
+
+        Timer timer = new Timer();
+        timer.schedule(fallingTask, 100);
     }
 
-    public int getDistanceToJump() {
-        return distanceToJump;
-    }
-
-    public void setDistanceToJump(int distanceToJump) {
-        this.distanceToJump = distanceToJump;
+    public void setVelocityX(float velocityX) {
+        this.velocityX = velocityX;
     }
 }

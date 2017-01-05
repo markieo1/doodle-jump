@@ -30,12 +30,20 @@ public class ScrollingCamera {
     }
 
     public void update(Doodle doodle) {
+        doodle.checkCollision(entities);
+
         for (Entity entity : entities) {
             entity.update();
         }
 
         // make the camera follow the player
         cameraY = doodle.getY() - bounds.height() / 2;
+
+        if (doodle.getX() >= bounds.width()) {
+            doodle.setX(0 - doodle.getWidth());
+        } else if (doodle.getX() < 0 - doodle.getWidth()) {
+            doodle.setX(bounds.width());
+        }
     }
 
     public void draw(Canvas canvas) {
@@ -47,11 +55,12 @@ public class ScrollingCamera {
             }
         }
 
-        Log.i("ScrollingCamera", "Total drawn: " + totalDrawn);
+        //Log.i("ScrollingCamera", "Total drawn: " + totalDrawn);
     }
 
     /**
      * Checks if an entity is in the screen
+     *
      * @param entity The entity to check
      * @return true if the entitiy is within the screen bounds
      */
@@ -67,6 +76,7 @@ public class ScrollingCamera {
 
     /**
      * Gets the position in screen coordinates
+     *
      * @param yPos The position to translate
      * @return the position in screen coordinates
      */
