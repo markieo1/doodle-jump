@@ -1,13 +1,10 @@
 package com.anthony.marco.doodlejump;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -16,17 +13,17 @@ import java.util.ArrayList;
  * Created by marco on 3-1-2017.
  */
 
-public class DoodleGame {
+public class DoodleGame implements ScreenListener {
     private ArrayList<Entity> entities;
     private int screenWidth;
     private int screenHeight;
     private ScrollingCamera camera;
-    Doodle doodle;
+    private Doodle doodle;
     private Point doodleSize;
 
-    public DoodleGame(){
+    public DoodleGame() {
         entities = new ArrayList<>();
-        doodleSize = new Point(25,25);
+        doodleSize = new Point(25, 25);
     }
 
     public void startGame() {
@@ -47,7 +44,7 @@ public class DoodleGame {
             }
         }
 
-        doodle = new Doodle(getScreenWidth()/2 - 50, getScreenHeight()  - (doodleSize.x + doodleSize.y), doodleSize.x, doodleSize.y, null, 10, 10);
+        doodle = new Doodle(getScreenWidth() / 2 - 50, getScreenHeight() - (doodleSize.x + doodleSize.y), doodleSize.x, doodleSize.y, null, 10, 10);
         entities.add(doodle);
         camera.setEntities(entities);
 
@@ -55,16 +52,10 @@ public class DoodleGame {
     }
 
     public void update() {
-        this.doodle.checkCollision(entities);
         camera.update(doodle);
-        // TODO: Update all entities here
-        /*for (Entity entity : entities) {
-            entity.update();
-        }*/
     }
 
     public void handleInput() {
-        // TODO: Handle input for the entities that require it
         for (Entity entity : entities) {
             entity.handleInput();
         }
@@ -72,12 +63,6 @@ public class DoodleGame {
 
     public void draw(Canvas canvas) {
         camera.draw(canvas);
-        // TODO: Draw the entities on the screen
-        /*if(!this.doodle.checkCollision(entities)){
-            for (Entity entity : entities) {
-                entity.draw(canvas);
-            }
-        }*/
     }
 
     public int getScreenWidth() {
@@ -88,24 +73,25 @@ public class DoodleGame {
         return screenHeight;
     }
 
-    public void setScreenWidth(int screenWidth) {
-        this.screenWidth = screenWidth;
-    }
-
-    public void setScreenHeight(int screenHeight) {
-        this.screenHeight = screenHeight;
-    }
-
     public void setJumpSize(int jumpSize) {
-        if (doodle != null){
+        if (doodle != null) {
             this.doodle.setJumpSize(jumpSize);
         }
     }
 
+    @Override
+    public void screenTouched(float xPosition, float yPosition) {
+        setJumpSize(40);
+    }
 
-    public void setNumberToIncreaseVelocity(int distanceToJump) {
-        if (doodle !=null){
-            this.doodle.setnumberToIncreaseVelocity(distanceToJump);
-        }
+    @Override
+    public void screenSizeChanged(int width, int height) {
+        this.screenWidth = width;
+        this.screenHeight = height;
+    }
+
+    @Override
+    public void rotationChanged(float newRotation) {
+
     }
 }
