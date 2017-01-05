@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -29,32 +31,73 @@ public class Doodle extends Entity {
     }
 
     public void checkCollision(ArrayList<Entity> entities) {
-        for (Entity entity : entities) {
-            // If the entity is a doodle just skip
-            if (entity instanceof Doodle)
-                continue;
-
-            if (this.getX() > entity.getX() && this.getX() < (entity.getX() + entity.getWidth())) {
-                float doodlePos = this.getY() + this.velocityY;
-                float doodlePosHeight = doodlePos + this.getHeight() + this.velocityY;
-
-                float platformPos = entity.getY();
-                float platformPosHeight = platformPos + entity.getHeight();
-
-                if (platformPos > doodlePos && platformPosHeight < doodlePosHeight) {
-                    this.shouldFall = false;
-                    this.velocityY = 0;
-                    this.setY(platformPos - this.getHeight());
-                    break;
-                }
-
-                // TODO: Check if the ball is not floating in the air when not jumping
-            }
+        boolean colliding = collidingWithPlatforms(entities);
+        if (colliding) {
+            this.shouldFall = false;
+            this.velocityY = 0;
+        } else {
+            // we are not colliding so we should fall
+            this.shouldFall = true;
         }
     }
 
     public void handleInput() {
         //TODO: handle input..
+    }
+
+    private boolean collidingWithPlatforms(ArrayList<Entity> entities) {
+        boolean isCollidingWithPlatform = false;
+        for (Entity platform : entities) {
+            if (platform instanceof Doodle)
+                continue;
+
+            if (isColliding(platform, velocityY)) {
+                isCollidingWithPlatform = true;
+
+                // Move because we might have passed the platform by a bit.
+                this.setY(platform.getY() - this.getHeight());
+                break;
+            }
+
+        }
+
+        return isCollidingWithPlatform;
+    }
+
+    /**
+     * Checks if the doodle is colliding with the specified entity. Taking into account the velocity for the bounding box of the entity.
+     * @param entity The entity to check if we are colliding with it
+     * @param velocityY The velocity to take into account.
+     * @return
+     */
+    private boolean isColliding(Entity entity, float velocityY) {
+        boolean isColliding = false;
+
+        float myXPosition = getX();
+        float myWidth = getWidth();
+        float myXEnd = myXPosition + myWidth;
+
+        float entityXPosition = entity.getX();
+        float entityWidth = entity.getWidth();
+        float entityXEnd = entityXPosition + entityWidth;
+
+        if (myXPosition >= entityXPosition && myXEnd <= entityXEnd) {
+            // Doodle is between the platform
+            float myYPosition = getY();
+            float myHeight = getHeight();
+            float myYEnd = myYPosition + myHeight;
+
+            float entityYPosition = entity.getY();
+            float entityHeight = entity.getHeight() + velocityY;
+            float entityYEnd = entityYPosition + entityHeight;
+
+            if (myYEnd >= entityYPosition && myYEnd <= entityYEnd) {
+                if (shouldFall)
+                    isColliding = true;
+            }
+        }
+
+        return isColliding;
     }
 
     @Override
