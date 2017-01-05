@@ -20,8 +20,10 @@ import android.view.WindowManager;
  */
 
 public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
+    private static final String TAG = "DoodleSurfaceView";
     private SurfaceHolder surfaceHolder;
     private GameThread gameThread;
+    private static final int FROM_RADS_TO_DEGS = -57;
 
     public DoodleSurfaceView(Context context) {
         super(context);
@@ -39,7 +41,7 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     }
 
 
-    private void initialize(){
+    private void initialize() {
         this.gameThread = new GameThread(this);
         this.gameThread.setRunning(true);
         this.surfaceHolder = getHolder();
@@ -54,7 +56,8 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) { }
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+    }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
@@ -75,13 +78,21 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        float accelartionX = sensorEvent.values[0];
-        float accelartionY = sensorEvent.values[1];
-        float accelartionZ = sensorEvent.values[2];
+        float[] rotationMatrix = new float[9];
+        SensorManager.getRotationMatrixFromVector(rotationMatrix, sensorEvent.values);
+        int worldAxisX = SensorManager.AXIS_X;
+        int worldAxisZ = SensorManager.AXIS_Z;
+        float[] adjustedRotationMatrix = new float[9];
+        SensorManager.remapCoordinateSystem(rotationMatrix, worldAxisX, worldAxisZ, adjustedRotationMatrix);
+        float[] orientation = new float[3];
+        SensorManager.getOrientation(adjustedRotationMatrix, orientation);
 
-        Log.i("DoodleSurfaceView", "Sensor changed X: " +  accelartionX);
-        Log.i("DoodleSurfaceView", "Sensor changed Y: " +  accelartionY);
-        Log.i("DoodleSurfaceView", "Sensor changed Z: " +  accelartionZ);
+        float roll = orientation[2] * FROM_RADS_TO_DEGS;
+
+        if(roll >= -90 && roll <= 90){
+            Log.i("DoodleSurfaceView", "Rotation = " + roll);
+            this.gameThread.screenRotated(roll);
+        }
     }
 
     @Override

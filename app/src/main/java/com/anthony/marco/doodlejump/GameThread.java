@@ -64,6 +64,10 @@ public class GameThread extends Thread {
         this.screenListener.screenTouched(xPosition, yPosition);
     }
 
+    public void screenRotated(float newRotation){
+        this.screenListener.rotationChanged(newRotation);
+    }
+
     public void setRunning(boolean running) {
         isRunning = running;
     }

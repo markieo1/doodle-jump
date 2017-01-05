@@ -15,15 +15,16 @@ import java.util.TimerTask;
  */
 
 public class Doodle extends Entity {
+    private final String TAG = "Doodle";
+
     private float velocityX;
     private float velocityY;
     private boolean shouldFall;
-    private TimerTask fallingTask;
 
-    public Doodle(float x, float y, float height, float width, Bitmap image, float velocityX, final float velocityY) {
+    public Doodle(float x, float y, float height, float width, Bitmap image) {
         super(x, y, height, width, image);
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
+        this.velocityX = 0;
+        this.velocityY = 0;
         this.shouldFall = true;
     }
 
@@ -47,11 +48,7 @@ public class Doodle extends Entity {
                     break;
                 }
 
-
-                /*if (this.getY() + this.getHeight() < entity.getY() && this.getY() + this.getHeight() > entity.getY() - 20) {
-                        this.velocityY = 0;
-                    break;
-                }*/
+                // TODO: Check if the ball is not floating in the air when not jumping
             }
         }
     }
@@ -64,15 +61,15 @@ public class Doodle extends Entity {
     public void update() {
         super.update();
 
-        if(shouldFall){
+        if (shouldFall) {
             velocityY += 1;
         }
 
+        float newX = this.getX() + velocityX;
         float newY = this.getY() + velocityY;
 
+        setX(newX);
         setY(newY);
-
-        Log.i("Velocity", "" + velocityY);
     }
 
     @Override
@@ -85,17 +82,24 @@ public class Doodle extends Entity {
     }
 
     public void setJumpSize(int jumpSize) {
+        Log.i(TAG, "Jump Size changed, new: " + jumpSize);
+
         this.velocityY = -jumpSize;
 
-        fallingTask = new TimerTask() {
+        TimerTask fallingTask = new TimerTask() {
             @Override
             public void run() {
                 shouldFall = true;
-                //velocityY = 0;
+
+                Log.i(TAG, "Ball falling commenced!");
             }
         };
 
         Timer timer = new Timer();
         timer.schedule(fallingTask, 100);
+    }
+
+    public void setVelocityX(float velocityX) {
+        this.velocityX = velocityX;
     }
 }

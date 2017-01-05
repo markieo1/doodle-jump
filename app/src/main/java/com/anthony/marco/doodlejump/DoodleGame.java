@@ -44,7 +44,7 @@ public class DoodleGame implements ScreenListener {
             }
         }
 
-        doodle = new Doodle(getScreenWidth() / 2 - 50, getScreenHeight() - (doodleSize.x + doodleSize.y), doodleSize.x, doodleSize.y, null, 10, 10);
+        doodle = new Doodle(getScreenWidth() / 2 - 50, getScreenHeight() - (doodleSize.x + doodleSize.y), doodleSize.x, doodleSize.y, null);
         entities.add(doodle);
         camera.setEntities(entities);
 
@@ -92,6 +92,11 @@ public class DoodleGame implements ScreenListener {
 
     @Override
     public void rotationChanged(float newRotation) {
+        // Roll -90 is device rotated completely to the eg. landscape mode
+        // Roll 90 is device rotated to the left eg. landscape mode
+        // TODO: Translate this into correct velocity.
 
+        if (doodle != null)
+            doodle.setVelocityX(0);
     }
 }

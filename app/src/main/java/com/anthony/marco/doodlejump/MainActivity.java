@@ -22,7 +22,6 @@ public class MainActivity extends Activity {
 
         mSensorManager = (SensorManager) App.getContext().getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-
         mSensorManager.registerListener(doodleSurfaceView, mSensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
