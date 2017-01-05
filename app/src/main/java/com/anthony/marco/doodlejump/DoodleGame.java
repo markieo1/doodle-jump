@@ -94,9 +94,10 @@ public class DoodleGame implements ScreenListener {
     public void rotationChanged(float newRotation) {
         // Roll -90 is device rotated completely to the eg. landscape mode
         // Roll 90 is device rotated to the left eg. landscape mode
-        // TODO: Translate this into correct velocity.
+        // So we need to flip the roll
+        float velocityX = newRotation * -1;
 
         if (doodle != null)
-            doodle.setVelocityX(0);
+            doodle.setVelocityX(velocityX);
     }
 }

@@ -15,7 +15,7 @@ public interface ScreenListener {
 
     /**
      * Occurs when the rotation is changed
-     * @param newRotation the new value of rotation
+     * @param newRotation the new value of rotation in degrees
      */
     void rotationChanged(float newRotation);
 }
