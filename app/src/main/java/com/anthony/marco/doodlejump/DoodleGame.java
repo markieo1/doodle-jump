@@ -15,25 +15,40 @@ import java.util.Random;
  */
 
 public class DoodleGame implements ScreenListener {
+    private final String TAG = "DoodleGame";
+
     private ArrayList<Entity> entities;
     private int screenWidth;
     private int screenHeight;
     private ScrollingCamera camera;
     private Doodle doodle;
     private Point doodleSize;
+    private boolean isStarted;
+
+    private DoodleListener doodleListener;
 
     public DoodleGame() {
         entities = new ArrayList<>();
         doodleSize = new Point(25, 25);
-
+        isStarted = false;
     }
 
-    public void startGame() {
+    public void startGame(DoodleListener doodleListener) {
+        this.doodleListener = doodleListener;
+        Log.i(TAG, "Game started!");
+        camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
 
+        doodle = new Doodle(getScreenWidth() / 2 - 50, -100, doodleSize.x, doodleSize.y, null);
+        entities.add(doodle);
+
+        this.generatePlatforms();
+
+        isStarted = true;
     }
 
     public void stopGame() {
-
+        Log.i(TAG, "Game stopped!");
+        isStarted = false;
     }
 
     public void generatePlatforms() {
@@ -48,7 +63,7 @@ public class DoodleGame implements ScreenListener {
             }
         }
         */
-        if (camera.getTotalDrawnEntities() <10) {
+        if (camera.getTotalDrawnEntities() < 10) {
             Random rnd = new Random();
 
             int x = rnd.nextInt(getScreenWidth() - 100) + 1;
@@ -62,30 +77,44 @@ public class DoodleGame implements ScreenListener {
 
             int y = rnd.nextInt(maxY) + getScreenHeight() / 2;
 
-            if (y + getScreenHeight() > doodle.getY()){
+            if (y + getScreenHeight() > doodle.getY()) {
                 entities.add(new Entity(x, -y, 10, 100, bitmap));
             }
 
             camera.setEntities(entities);
         }
 
-        Log.i("DoodleGame", "Total drawn entities " +camera.getTotalDrawnEntities());
-        Log.i("DoodleGame", "Total entities" + entities.size());
+        Log.i(TAG, "Total drawn entities " + camera.getTotalDrawnEntities());
+        Log.i(TAG, "Total entities" + entities.size());
     }
 
     public void update() {
-        camera.update(doodle);
-        generatePlatforms();
+        if (isStarted) {
+            camera.update(doodle);
+            generatePlatforms();
+
+            if (!doodle.isInScreen(camera)) {
+                if (doodleListener != null) {
+                    float resultScore = doodle.getHighestY() * -1;
+                    doodleListener.gameOver(Math.round(resultScore));
+                }
+                Log.i(TAG, "Doodle left screen");
+                stopGame();
+            }
+        }
     }
 
     public void handleInput() {
-        for (Entity entity : entities) {
-            entity.handleInput();
+        if (isStarted) {
+            for (Entity entity : entities) {
+                entity.handleInput();
+            }
         }
     }
 
     public void draw(Canvas canvas) {
-        camera.draw(canvas);
+        if (isStarted)
+            camera.draw(canvas);
     }
 
     public int getScreenWidth() {
@@ -104,17 +133,15 @@ public class DoodleGame implements ScreenListener {
 
     @Override
     public void screenTouched(float xPosition, float yPosition) {
+        Log.i(TAG, "Screen touched, xPosition = " + xPosition + ", yPosition = " + yPosition);
         setJumpSize(40);
     }
 
     @Override
     public void screenSizeChanged(int width, int height) {
+        Log.i(TAG, "Screen size changed, width = " + width + ", height = " + height);
         this.screenWidth = width;
         this.screenHeight = height;
-        camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
-
-        doodle = new Doodle(getScreenWidth() / 2 - 50, -100, doodleSize.x, doodleSize.y, null);
-        entities.add(doodle);
     }
 
     @Override

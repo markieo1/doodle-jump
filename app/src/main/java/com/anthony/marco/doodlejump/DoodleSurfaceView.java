@@ -70,9 +70,17 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         }
     }
 
+    public void startGame(DoodleListener doodleListener) {
+        this.gameThread.startGame(doodleListener);
+    }
+
+    public void stopGame() {
+        this.gameThread.stopGame();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        this.gameThread.onScreenTouched(event.getX(), event.getY());
+        this.gameThread.screenTouched(event.getX(), event.getY());
         return super.onTouchEvent(event);
     }
 
@@ -89,7 +97,7 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
         float roll = orientation[2] * FROM_RADS_TO_DEGS;
 
-        if(roll >= -90 && roll <= 90){
+        if (roll >= -90 && roll <= 90) {
             Log.i("DoodleSurfaceView", "Rotation = " + roll);
             this.gameThread.screenRotated(roll);
         }

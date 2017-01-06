@@ -24,9 +24,6 @@ public class GameThread extends Thread {
 
     @Override
     public void run() {
-        // should be in doodlegame.start?
-        //this.doodleGame.generatePlatforms();
-
         while (isRunning) {
             // 1. Handle Input
             // 2. Update
@@ -47,7 +44,7 @@ public class GameThread extends Thread {
             }
 
             // Sleep
-             try {
+            try {
                 sleep(1000 / 60);
             } catch (InterruptedException ex) {
                 Log.e(TAG, ex.getLocalizedMessage());
@@ -55,16 +52,25 @@ public class GameThread extends Thread {
         }
     }
 
+    public void startGame(DoodleListener doodleListener) {
+        this.doodleGame.startGame(doodleListener);
+    }
+
+    public void stopGame() {
+        this.doodleGame.stopGame();
+    }
+
     /**
      * The screen touched callback
+     *
      * @param xPosition The x position of the touch
      * @param yPosition The y position of the touch
      */
-    public void onScreenTouched(float xPosition, float yPosition){
+    public void screenTouched(float xPosition, float yPosition) {
         this.screenListener.screenTouched(xPosition, yPosition);
     }
 
-    public void screenRotated(float newRotation){
+    public void screenRotated(float newRotation) {
         this.screenListener.rotationChanged(newRotation);
     }
 
@@ -72,7 +78,7 @@ public class GameThread extends Thread {
         isRunning = running;
     }
 
-    public void setScreenSize(int screenWidth, int screenHeight){
+    public void setScreenSize(int screenWidth, int screenHeight) {
         this.screenListener.screenSizeChanged(screenWidth, screenHeight);
     }
 }
