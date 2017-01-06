@@ -66,13 +66,13 @@ public class DoodleGame implements ScreenListener {
             int x = rnd.nextInt(getScreenWidth() - 100) + 1;
 
 
-            int doodleInvertedY = ((int) doodle.getY() - getScreenHeight() / 2) * -1;
+            int maxY = ((int) doodle.getY() - getScreenHeight() / 2);
 
-            if (doodleInvertedY < 0) {
-                doodleInvertedY *= -1;
+            if (maxY < 0) {
+                maxY *= -1;
             }
 
-            int y = rnd.nextInt((doodleInvertedY)) + getScreenHeight() / 2;
+            int y = rnd.nextInt(maxY) + getScreenHeight() / 2;
 
             entities.add(new Entity(x, -y, 10, 100, bitmap));
 
