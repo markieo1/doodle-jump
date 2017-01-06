@@ -62,13 +62,8 @@ public class DoodleGame implements ScreenListener {
 
             int y = rnd.nextInt(maxY) + getScreenHeight() / 2;
 
-            entities.add(new Entity(x, -y, 10, 100, bitmap));
-
-            for (Entity entity : entities) {
-                if (entity.getY() < doodle.getY()) {
-                    //TODO: remove entities under the screen
-                    //entities.remove(entity);
-                }
+            if (y + getScreenHeight() > doodle.getY()){
+                entities.add(new Entity(x, -y, 10, 100, bitmap));
             }
 
             camera.setEntities(entities);
