@@ -9,8 +9,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements DoodleListener {
 
     private DoodleSurfaceView doodleSurfaceView;
 
@@ -98,7 +99,7 @@ public class MainActivity extends Activity {
         mainMenuButtonsView.setVisibility(View.GONE);
         gameButtonsView.setVisibility(View.VISIBLE);
 
-        doodleSurfaceView.startGame();
+        doodleSurfaceView.startGame(this);
     }
 
     private void stopGame() {
@@ -109,5 +110,15 @@ public class MainActivity extends Activity {
         gameButtonsView.setVisibility(View.GONE);
 
         doodleSurfaceView.stopGame();
+    }
+
+    @Override
+    public void gameOver(final int score) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "Score was: " + score, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

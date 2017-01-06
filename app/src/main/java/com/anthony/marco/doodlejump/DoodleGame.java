@@ -25,13 +25,16 @@ public class DoodleGame implements ScreenListener {
     private Point doodleSize;
     private boolean isStarted;
 
+    private DoodleListener doodleListener;
+
     public DoodleGame() {
         entities = new ArrayList<>();
         doodleSize = new Point(25, 25);
         isStarted = false;
     }
 
-    public void startGame() {
+    public void startGame(DoodleListener doodleListener) {
+        this.doodleListener = doodleListener;
         Log.i(TAG, "Game started!");
         camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
 
@@ -60,7 +63,7 @@ public class DoodleGame implements ScreenListener {
             }
         }
         */
-        if (camera.getTotalDrawnEntities() <10) {
+        if (camera.getTotalDrawnEntities() < 10) {
             Random rnd = new Random();
 
             int x = rnd.nextInt(getScreenWidth() - 100) + 1;
@@ -74,14 +77,14 @@ public class DoodleGame implements ScreenListener {
 
             int y = rnd.nextInt(maxY) + getScreenHeight() / 2;
 
-            if (y + getScreenHeight() > doodle.getY()){
+            if (y + getScreenHeight() > doodle.getY()) {
                 entities.add(new Entity(x, -y, 10, 100, bitmap));
             }
 
             camera.setEntities(entities);
         }
 
-        Log.i(TAG, "Total drawn entities " +camera.getTotalDrawnEntities());
+        Log.i(TAG, "Total drawn entities " + camera.getTotalDrawnEntities());
         Log.i(TAG, "Total entities" + entities.size());
     }
 
@@ -89,6 +92,15 @@ public class DoodleGame implements ScreenListener {
         if (isStarted) {
             camera.update(doodle);
             generatePlatforms();
+
+            if (!doodle.isInScreen(camera)) {
+                if (doodleListener != null) {
+                    float resultScore = doodle.getHighestY() * -1;
+                    doodleListener.gameOver(Math.round(resultScore));
+                }
+                Log.i(TAG, "Doodle left screen");
+                stopGame();
+            }
         }
     }
 

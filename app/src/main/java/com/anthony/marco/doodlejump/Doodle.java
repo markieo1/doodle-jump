@@ -1,6 +1,7 @@
 package com.anthony.marco.doodlejump;
 
 import android.graphics.Bitmap;
+import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -22,6 +23,8 @@ public class Doodle extends Entity {
     private float velocityX;
     private float velocityY;
     private boolean shouldFall;
+
+    private float highestY;
 
     public Doodle(float x, float y, float height, float width, Bitmap image) {
         super(x, y, height, width, image);
@@ -66,7 +69,8 @@ public class Doodle extends Entity {
 
     /**
      * Checks if the doodle is colliding with the specified entity. Taking into account the velocity for the bounding box of the entity.
-     * @param entity The entity to check if we are colliding with it
+     *
+     * @param entity    The entity to check if we are colliding with it
      * @param velocityY The velocity to take into account.
      * @return
      */
@@ -124,6 +128,15 @@ public class Doodle extends Entity {
         canvas.drawCircle(getX(), camera.getRelativeYPosition(getY()), getWidth(), paint);
     }
 
+    @Override
+    public void setY(float y) {
+        super.setY(y);
+
+        if (y <= this.highestY) {
+            this.highestY = y;
+        }
+    }
+
     public void setJumpSize(int jumpSize) {
         Log.i(TAG, "Jump Size changed, new: " + jumpSize);
 
@@ -144,5 +157,15 @@ public class Doodle extends Entity {
 
     public void setVelocityX(float velocityX) {
         this.velocityX = velocityX;
+    }
+
+    public boolean isInScreen(ScrollingCamera camera) {
+        float relativeYPosition = camera.getRelativeYPosition(getY());
+
+        return camera.getScreenHeight() > relativeYPosition;
+    }
+
+    public float getHighestY() {
+        return highestY;
     }
 }

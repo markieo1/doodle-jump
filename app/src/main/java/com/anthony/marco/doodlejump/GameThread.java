@@ -52,8 +52,8 @@ public class GameThread extends Thread {
         }
     }
 
-    public void startGame() {
-        this.doodleGame.startGame();
+    public void startGame(DoodleListener doodleListener) {
+        this.doodleGame.startGame(doodleListener);
     }
 
     public void stopGame() {

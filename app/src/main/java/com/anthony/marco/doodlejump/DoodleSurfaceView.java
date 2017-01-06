@@ -70,8 +70,8 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         }
     }
 
-    public void startGame() {
-        this.gameThread.startGame();
+    public void startGame(DoodleListener doodleListener) {
+        this.gameThread.startGame(doodleListener);
     }
 
     public void stopGame() {

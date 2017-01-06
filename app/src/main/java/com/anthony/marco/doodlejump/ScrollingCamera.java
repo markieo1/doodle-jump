@@ -20,6 +20,8 @@ public class ScrollingCamera {
      */
     private float cameraY;
 
+    private float lastY;
+
     /**
      * The bounds of the screen
      */
@@ -38,9 +40,17 @@ public class ScrollingCamera {
             entity.update();
         }
 
+        lastY = cameraY;
+
+
         // make the camera follow the player
         cameraY = doodle.getY() - bounds.height() / 2;
 
+        // Check if we are not moving downwards, eq. moving positive on the Y axis.
+        if (cameraY >= lastY)
+            cameraY = lastY;
+
+        // Check if the doodle is not leaving the screen
         if (doodle.getX() >= bounds.width()) {
             doodle.setX(0 - doodle.getWidth());
         } else if (doodle.getX() < 0 - doodle.getWidth()) {
@@ -67,7 +77,7 @@ public class ScrollingCamera {
      * @return true if the entitiy is within the screen bounds
      */
     private boolean isEntityInScreen(Entity entity) {
-        float screenCoordinateY = entity.getY() - cameraY;
+        float screenCoordinateY = getRelativeYPosition(entity.getY());
 
         return (entity.getX() >= bounds.left && entity.getX() + entity.getWidth() <= bounds.right) && (screenCoordinateY >= bounds.top && screenCoordinateY + entity.getHeight() <= bounds.bottom);
     }
@@ -86,8 +96,16 @@ public class ScrollingCamera {
         return yPos - this.cameraY;
     }
 
-    public int getTotalDrawnEntities(){
+    public int getTotalDrawnEntities() {
         return totalDrawnEntities;
+    }
+
+    public int getScreenWidth() {
+        return bounds.width();
+    }
+
+    public int getScreenHeight() {
+        return bounds.height();
     }
 
 }
