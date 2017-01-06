@@ -54,9 +54,12 @@ public class DoodleGame implements ScreenListener {
             Random rnd = new Random();
 
             int x = rnd.nextInt(getScreenWidth() - 100) + 1;
-            int y = rnd.nextInt((int)doodle.getY() - (getScreenHeight() /2)) + ((int)doodle.getY() + (getScreenHeight() /2));
+            int doodleInvertedY = ((int)doodle.getY() - getScreenHeight() /2) * -1;
 
-            entities.add(new Entity(x, y, 10, 100, bitmap));
+
+            int y = rnd.nextInt((doodleInvertedY)) + getScreenHeight();
+
+            entities.add(new Entity(x, -y, 10, 100, bitmap));
 
         }
 
@@ -107,7 +110,7 @@ public class DoodleGame implements ScreenListener {
         this.screenHeight = height;
         camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
 
-        doodle = new Doodle(getScreenWidth() / 2 - 50, getScreenHeight() - (doodleSize.x + doodleSize.y), doodleSize.x, doodleSize.y, null);
+        doodle = new Doodle(getScreenWidth() / 2 - 50, -100, doodleSize.x, doodleSize.y, null);
         entities.add(doodle);
     }
 
