@@ -95,7 +95,7 @@ public class Doodle extends Entity {
                 if (shouldFall)
                     isColliding = true;
             }
-            float newY = this.getY() - jumpSize;
+            float newY = this.getY() ;
             setY(newY);
         }
 

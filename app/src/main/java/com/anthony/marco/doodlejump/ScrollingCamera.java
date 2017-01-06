@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class ScrollingCamera {
     private ArrayList<Entity> entities;
+    private int totalDrawnEntities;
 
     /**
      * The current y position of the camera
@@ -54,7 +55,7 @@ public class ScrollingCamera {
                 entity.draw(this, canvas);
             }
         }
-
+        totalDrawnEntities = totalDrawn;
         //Log.i("ScrollingCamera", "Total drawn: " + totalDrawn);
     }
 
@@ -82,5 +83,9 @@ public class ScrollingCamera {
      */
     public float getRelativeYPosition(float yPos) {
         return yPos - this.cameraY;
+    }
+
+    public int getTotalDrawnEntities(){
+        return totalDrawnEntities;
     }
 }

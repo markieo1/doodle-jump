@@ -25,7 +25,7 @@ public class GameThread extends Thread {
     @Override
     public void run() {
         // should be in doodlegame.start?
-        this.doodleGame.generatePlatforms();
+        //this.doodleGame.generatePlatforms();
 
         while (isRunning) {
             // 1. Handle Input

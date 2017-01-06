@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by marco on 3-1-2017.
@@ -24,6 +25,7 @@ public class DoodleGame implements ScreenListener {
     public DoodleGame() {
         entities = new ArrayList<>();
         doodleSize = new Point(25, 25);
+
     }
 
     public void startGame() {
@@ -35,24 +37,39 @@ public class DoodleGame implements ScreenListener {
     }
 
     public void generatePlatforms() {
-        camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
-
+        //entities.clear();
         Bitmap bitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
-        for (int j = 0; j < 20; j++) {
-            for (int i = 0; i < 20; i++) {
-                entities.add(new Entity(200 * j, 150 * i, 10, 100, bitmap));
+        /*
+        //Vertical
+        for (int j = 0; j < 10; j++) {
+            //Horizontal
+            for (int i = 0; i < 10; i++) {
+
             }
         }
+        */
 
-        doodle = new Doodle(getScreenWidth() / 2 - 50, getScreenHeight() - (doodleSize.x + doodleSize.y), doodleSize.x, doodleSize.y, null);
-        entities.add(doodle);
+
+        if (camera.getTotalDrawnEntities() <6) {
+            Random rnd = new Random();
+
+            int x = rnd.nextInt(getScreenWidth() - 100) + 1;
+            int y = rnd.nextInt((int)doodle.getY() - (getScreenHeight() /2)) + ((int)doodle.getY() + (getScreenHeight() /2));
+
+            entities.add(new Entity(x, y, 10, 100, bitmap));
+
+        }
+
         camera.setEntities(entities);
+
+
 
         Log.i("DoodleGame", "Total entities" + entities.size());
     }
 
     public void update() {
         camera.update(doodle);
+        generatePlatforms();
     }
 
     public void handleInput() {
@@ -88,6 +105,10 @@ public class DoodleGame implements ScreenListener {
     public void screenSizeChanged(int width, int height) {
         this.screenWidth = width;
         this.screenHeight = height;
+        camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
+
+        doodle = new Doodle(getScreenWidth() / 2 - 50, getScreenHeight() - (doodleSize.x + doodleSize.y), doodleSize.x, doodleSize.y, null);
+        entities.add(doodle);
     }
 
     @Override
