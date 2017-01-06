@@ -24,6 +24,7 @@ public class DoodleGame implements ScreenListener {
     private Doodle doodle;
     private Point doodleSize;
     private boolean isStarted;
+    private Bitmap bitmap;
 
     private DoodleListener doodleListener;
 
@@ -31,6 +32,7 @@ public class DoodleGame implements ScreenListener {
         entities = new ArrayList<>();
         doodleSize = new Point(25, 25);
         isStarted = false;
+        bitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
     }
 
     public void startGame(DoodleListener doodleListener) {
@@ -38,10 +40,12 @@ public class DoodleGame implements ScreenListener {
         Log.i(TAG, "Game started!");
         camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
 
+        entities.clear();
         doodle = new Doodle(getScreenWidth() / 2 - 50, -100, doodleSize.x, doodleSize.y, null);
+        doodle.setVelocityX(0);
         entities.add(doodle);
 
-        this.generatePlatforms();
+        //this.generatePlatforms();
 
         isStarted = true;
     }
@@ -52,23 +56,25 @@ public class DoodleGame implements ScreenListener {
     }
 
     public void generatePlatforms() {
-        //entities.clear();
-        Bitmap bitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
-        /*
-        //Vertical
-        for (int j = 0; j < 10; j++) {
-            //Horizontal
-            for (int i = 0; i < 10; i++) {
 
+        Random rnd = new Random();
+
+        int x = rnd.nextInt(getScreenWidth() - 100) + 1;
+
+        ArrayList<Integer> entityIndexToRemove = new ArrayList<>();
+
+        for (Entity entity : entities){
+            // Remove all entities under the screen border
+            if (entity.getY() > (doodle.getY() + getScreenWidth()/2)){
+                entityIndexToRemove.add(entities.indexOf(entity));
             }
         }
-        */
+
+        for (int i = 0; i < entityIndexToRemove.size(); i++){
+            entities.remove(entityIndexToRemove.get(i));
+        }
+
         if (camera.getTotalDrawnEntities() < 10) {
-            Random rnd = new Random();
-
-            int x = rnd.nextInt(getScreenWidth() - 100) + 1;
-
-
             int maxY = ((int) doodle.getY() - getScreenHeight() / 2);
 
             if (maxY < 0) {
