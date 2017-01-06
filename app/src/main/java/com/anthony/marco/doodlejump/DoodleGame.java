@@ -86,8 +86,8 @@ public class DoodleGame implements ScreenListener {
             camera.setEntities(entities);
         }
 
-        Log.i("DoodleGame", "Total drawn entities " +camera.getTotalDrawnEntities());
-        Log.i("DoodleGame", "Total entities" + entities.size());
+        Log.i(TAG, "Total drawn entities " +camera.getTotalDrawnEntities());
+        Log.i(TAG, "Total entities" + entities.size());
     }
 
     public void update() {
