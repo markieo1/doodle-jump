@@ -48,25 +48,33 @@ public class DoodleGame implements ScreenListener {
             }
         }
         */
-
-
-        if (camera.getTotalDrawnEntities() <6) {
+        if (camera.getTotalDrawnEntities() <10) {
             Random rnd = new Random();
 
             int x = rnd.nextInt(getScreenWidth() - 100) + 1;
-            int doodleInvertedY = ((int)doodle.getY() - getScreenHeight() /2) * -1;
 
 
-            int y = rnd.nextInt((doodleInvertedY)) + getScreenHeight();
+            int doodleInvertedY = ((int) doodle.getY() - getScreenHeight() / 2) * -1;
+
+            if (doodleInvertedY < 0) {
+                doodleInvertedY *= -1;
+            }
+
+            int y = rnd.nextInt((doodleInvertedY)) + getScreenHeight() / 2;
 
             entities.add(new Entity(x, -y, 10, 100, bitmap));
 
+            for (Entity entity : entities) {
+                if (entity.getY() < doodle.getY()) {
+                    //TODO: remove entities under the screen
+                    //entities.remove(entity);
+                }
+            }
+
+            camera.setEntities(entities);
         }
 
-        camera.setEntities(entities);
-
-
-
+        Log.i("DoodleGame", "Total drawn entities " +camera.getTotalDrawnEntities());
         Log.i("DoodleGame", "Total entities" + entities.size());
     }
 

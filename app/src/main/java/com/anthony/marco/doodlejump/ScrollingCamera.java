@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class ScrollingCamera {
     private ArrayList<Entity> entities;
+
     private int totalDrawnEntities;
 
     /**
@@ -88,4 +89,5 @@ public class ScrollingCamera {
     public int getTotalDrawnEntities(){
         return totalDrawnEntities;
     }
+
 }
