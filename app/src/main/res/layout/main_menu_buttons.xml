@@ -13,14 +13,14 @@
             android:id="@+id/start_game_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start Game" />
+            android:text="@string/start_game" />
 
         <Button
             android:id="@+id/about_us_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="About us" />
+            android:text="@string/about_us" />
     </LinearLayout>
 
 
