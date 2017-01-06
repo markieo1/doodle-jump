@@ -14,27 +14,36 @@ import java.util.ArrayList;
  */
 
 public class DoodleGame implements ScreenListener {
+    private final String TAG = "DoodleGame";
+
     private ArrayList<Entity> entities;
     private int screenWidth;
     private int screenHeight;
     private ScrollingCamera camera;
     private Doodle doodle;
     private Point doodleSize;
+    private boolean isStarted;
 
     public DoodleGame() {
         entities = new ArrayList<>();
         doodleSize = new Point(25, 25);
+        isStarted = false;
     }
 
     public void startGame() {
-
+        Log.i(TAG, "Game started!");
+        this.generatePlatforms();
+        isStarted = true;
     }
 
     public void stopGame() {
-
+        Log.i(TAG, "Game stopped!");
+        isStarted = false;
     }
 
-    public void generatePlatforms() {
+    private void generatePlatforms() {
+        entities = new ArrayList<>();
+
         camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
 
         Bitmap bitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
@@ -44,25 +53,29 @@ public class DoodleGame implements ScreenListener {
             }
         }
 
+        Log.i(TAG, "Total generated platforms = " + entities.size());
+
         doodle = new Doodle(getScreenWidth() / 2 - 50, getScreenHeight() - (doodleSize.x + doodleSize.y), doodleSize.x, doodleSize.y, null);
         entities.add(doodle);
         camera.setEntities(entities);
-
-        Log.i("DoodleGame", "Total entities" + entities.size());
     }
 
     public void update() {
-        camera.update(doodle);
+        if (isStarted)
+            camera.update(doodle);
     }
 
     public void handleInput() {
-        for (Entity entity : entities) {
-            entity.handleInput();
+        if (isStarted) {
+            for (Entity entity : entities) {
+                entity.handleInput();
+            }
         }
     }
 
     public void draw(Canvas canvas) {
-        camera.draw(canvas);
+        if (isStarted)
+            camera.draw(canvas);
     }
 
     public int getScreenWidth() {
@@ -81,11 +94,13 @@ public class DoodleGame implements ScreenListener {
 
     @Override
     public void screenTouched(float xPosition, float yPosition) {
+        Log.i(TAG, "Screen touched, xPosition = " + xPosition + ", yPosition = " + yPosition);
         setJumpSize(40);
     }
 
     @Override
     public void screenSizeChanged(int width, int height) {
+        Log.i(TAG, "Screen size changed, width = " + width + ", height = " + height);
         this.screenWidth = width;
         this.screenHeight = height;
     }
