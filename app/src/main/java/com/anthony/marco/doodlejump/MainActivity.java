@@ -14,6 +14,9 @@ public class MainActivity extends Activity {
 
     private DoodleSurfaceView doodleSurfaceView;
 
+    private View gameButtonsView;
+    private View mainMenuButtonsView;
+
     private Button startGameButton;
     private Button stopGameButton;
 
@@ -32,8 +35,12 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         doodleSurfaceView = (DoodleSurfaceView) findViewById(R.id.doodle_surface_view);
-        startGameButton = (Button) findViewById(R.id.start_game_button);
-        stopGameButton = (Button) findViewById(R.id.stop_game_button);
+
+        gameButtonsView = findViewById(R.id.game_buttons);
+        mainMenuButtonsView = findViewById(R.id.main_menu_buttons);
+
+        startGameButton = (Button) mainMenuButtonsView.findViewById(R.id.start_game_button);
+        stopGameButton = (Button) gameButtonsView.findViewById(R.id.stop_game_button);
 
         startGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,8 +83,8 @@ public class MainActivity extends Activity {
 
         if (isGameStarted) {
             mSensorManager.registerListener(doodleSurfaceView, mSensor, SensorManager.SENSOR_DELAY_GAME);
-            startGameButton.setVisibility(View.GONE);
-            stopGameButton.setVisibility(View.VISIBLE);
+            mainMenuButtonsView.setVisibility(View.GONE);
+            gameButtonsView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -88,8 +95,8 @@ public class MainActivity extends Activity {
         mSensorManager.registerListener(doodleSurfaceView, mSensor, SensorManager.SENSOR_DELAY_GAME);
 
         // Hide the buttons
-        startGameButton.setVisibility(View.GONE);
-        stopGameButton.setVisibility(View.VISIBLE);
+        mainMenuButtonsView.setVisibility(View.GONE);
+        gameButtonsView.setVisibility(View.VISIBLE);
 
         doodleSurfaceView.startGame();
     }
@@ -98,8 +105,8 @@ public class MainActivity extends Activity {
         mSensorManager.unregisterListener(doodleSurfaceView);
         isGameStarted = false;
 
-        startGameButton.setVisibility(View.VISIBLE);
-        stopGameButton.setVisibility(View.GONE);
+        mainMenuButtonsView.setVisibility(View.VISIBLE);
+        gameButtonsView.setVisibility(View.GONE);
 
         doodleSurfaceView.stopGame();
     }

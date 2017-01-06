@@ -11,24 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <RelativeLayout
-        android:id="@+id/button_layout"
+    <include
+        android:id="@+id/game_buttons"
+        layout="@layout/game_buttons"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
-        <Button
-            android:id="@+id/stop_game_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:visibility="gone"
-            android:text="Stop" />
-
-        <Button
-            android:id="@+id/start_game_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Start Game" />
-    </RelativeLayout>
+    <include
+        android:id="@+id/main_menu_buttons"
+        layout="@layout/main_menu_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </FrameLayout>
