@@ -96,8 +96,7 @@ public class MainActivity extends Activity implements DoodleListener {
         mSensorManager.registerListener(doodleSurfaceView, mSensor, SensorManager.SENSOR_DELAY_GAME);
 
         // Hide the buttons
-        mainMenuButtonsView.setVisibility(View.GONE);
-        gameButtonsView.setVisibility(View.VISIBLE);
+        hideViews();
 
         doodleSurfaceView.startGame(this);
     }
@@ -106,10 +105,14 @@ public class MainActivity extends Activity implements DoodleListener {
         mSensorManager.unregisterListener(doodleSurfaceView);
         isGameStarted = false;
 
-        mainMenuButtonsView.setVisibility(View.VISIBLE);
-        gameButtonsView.setVisibility(View.GONE);
+        hideViews();
 
         doodleSurfaceView.stopGame();
+    }
+
+    private void hideViews() {
+        mainMenuButtonsView.setVisibility(isGameStarted ? View.GONE : View.VISIBLE);
+        gameButtonsView.setVisibility(isGameStarted ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -117,6 +120,10 @@ public class MainActivity extends Activity implements DoodleListener {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                mSensorManager.unregisterListener(doodleSurfaceView);
+                isGameStarted = false;
+                hideViews();
+                
                 Toast.makeText(getApplicationContext(), "Score was: " + score, Toast.LENGTH_LONG).show();
             }
         });
