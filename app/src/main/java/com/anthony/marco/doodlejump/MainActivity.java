@@ -76,7 +76,8 @@ public class MainActivity extends Activity {
 
         if (isGameStarted) {
             mSensorManager.registerListener(doodleSurfaceView, mSensor, SensorManager.SENSOR_DELAY_GAME);
-            startGameButton.setVisibility(View.INVISIBLE);
+            startGameButton.setVisibility(View.GONE);
+            stopGameButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -87,7 +88,7 @@ public class MainActivity extends Activity {
         mSensorManager.registerListener(doodleSurfaceView, mSensor, SensorManager.SENSOR_DELAY_GAME);
 
         // Hide the buttons
-        startGameButton.setVisibility(View.INVISIBLE);
+        startGameButton.setVisibility(View.GONE);
         stopGameButton.setVisibility(View.VISIBLE);
 
         doodleSurfaceView.startGame();
@@ -98,7 +99,7 @@ public class MainActivity extends Activity {
         isGameStarted = false;
 
         startGameButton.setVisibility(View.VISIBLE);
-        stopGameButton.setVisibility(View.INVISIBLE);
+        stopGameButton.setVisibility(View.GONE);
 
         doodleSurfaceView.stopGame();
     }
