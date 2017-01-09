@@ -5,4 +5,6 @@
     <string name="about_us">About us</string>
     <string name="created_by">Created by</string>
     <string name="creators" translatable="false">Anthony Peeters &amp; Marco Havermans</string>
+    <string name="play_again">Play again</string>
+    <string name="score">Score:</string>
 </resources>
