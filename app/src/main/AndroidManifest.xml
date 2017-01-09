@@ -18,7 +18,8 @@
         </activity>
         <activity
             android:name=".view.AboutUsActivity"
-            android:parentActivityName=".view.MainActivity" />
+            android:parentActivityName=".view.MainActivity"
+            android:theme="@style/AppTheme.AboutUs" />
     </application>
 
 </manifest>
