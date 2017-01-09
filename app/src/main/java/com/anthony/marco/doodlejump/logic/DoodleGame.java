@@ -108,6 +108,11 @@ public class DoodleGame implements ScreenListener {
         ses.shutdown();
 
         isStarted = false;
+
+        if (doodleListener != null) {
+            float resultScore = doodle.getHighestY() * -1;
+            doodleListener.gameOver(Math.round(resultScore));
+        }
     }
 
     public void update() {
