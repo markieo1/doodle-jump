@@ -2,9 +2,11 @@ package com.anthony.marco.doodlejump.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -22,8 +24,6 @@ public class MainActivity extends Activity implements DoodleListener {
     private View gameButtonsView;
     private View mainMenuButtonsView;
 
-    private Button startGameButton;
-    private Button stopGameButton;
     private TextView scoreTextView;
 
     private SensorManager mSensorManager;
@@ -45,10 +45,7 @@ public class MainActivity extends Activity implements DoodleListener {
         gameButtonsView = findViewById(R.id.game_buttons);
         mainMenuButtonsView = findViewById(R.id.main_menu_buttons);
 
-        startGameButton = (Button) mainMenuButtonsView.findViewById(R.id.start_game_button);
-        stopGameButton = (Button) gameButtonsView.findViewById(R.id.stop_game_button);
-        scoreTextView = (TextView) gameButtonsView.findViewById(R.id.score_text_view);
-
+        Button startGameButton = (Button) mainMenuButtonsView.findViewById(R.id.start_game_button);
         startGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,6 +53,20 @@ public class MainActivity extends Activity implements DoodleListener {
             }
         });
 
+        Button aboutUsButton = (Button) mainMenuButtonsView.findViewById(R.id.about_us_button);
+        aboutUsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getBaseContext(), AboutUsActivity.class);
+
+                // Start the intent
+                startActivity(intent);
+            }
+        });
+
+        scoreTextView = (TextView) gameButtonsView.findViewById(R.id.score_text_view);
+
+        Button stopGameButton = (Button) gameButtonsView.findViewById(R.id.stop_game_button);
         stopGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,17 +74,30 @@ public class MainActivity extends Activity implements DoodleListener {
             }
         });
 
+        hideSystemUI();
+
+        getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                hideSystemUI();
+            }
+        });
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        mSensorManager = (SensorManager) App.getContext().getSystemService(Context.SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+    }
+
+    private void hideSystemUI() {
         int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        getWindow().getDecorView().setSystemUiVisibility(uiOptions);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        mSensorManager = (SensorManager) App.getContext().getSystemService(Context.SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        getWindow().getDecorView().setSystemUiVisibility(uiOptions);
     }
 
     @Override
