@@ -1,4 +1,4 @@
-package com.anthony.marco.doodlejump;
+package com.anthony.marco.doodlejump.view;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.anthony.marco.doodlejump.App;
+import com.anthony.marco.doodlejump.listener.DoodleListener;
+import com.anthony.marco.doodlejump.R;
 
 public class MainActivity extends Activity implements DoodleListener {
 

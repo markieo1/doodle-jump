@@ -1,8 +1,10 @@
-package com.anthony.marco.doodlejump;
+package com.anthony.marco.doodlejump.logic;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.util.Log;
+
+import com.anthony.marco.doodlejump.model.Doodle;
+import com.anthony.marco.doodlejump.model.Entity;
 
 import java.util.ArrayList;
 

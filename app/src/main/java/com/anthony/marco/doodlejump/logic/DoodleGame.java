@@ -1,4 +1,4 @@
-package com.anthony.marco.doodlejump;
+package com.anthony.marco.doodlejump.logic;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,10 +7,15 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 
+import com.anthony.marco.doodlejump.App;
+import com.anthony.marco.doodlejump.model.Doodle;
+import com.anthony.marco.doodlejump.listener.DoodleListener;
+import com.anthony.marco.doodlejump.model.Entity;
+import com.anthony.marco.doodlejump.R;
+import com.anthony.marco.doodlejump.listener.ScreenListener;
+
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
