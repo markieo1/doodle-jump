@@ -6,4 +6,5 @@ package com.anthony.marco.doodlejump;
 
 public interface DoodleListener {
     void gameOver(int score);
+    void scoreChanged(int newScore);
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements DoodleListener {
@@ -20,6 +21,7 @@ public class MainActivity extends Activity implements DoodleListener {
 
     private Button startGameButton;
     private Button stopGameButton;
+    private TextView scoreTextView;
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -42,6 +44,7 @@ public class MainActivity extends Activity implements DoodleListener {
 
         startGameButton = (Button) mainMenuButtonsView.findViewById(R.id.start_game_button);
         stopGameButton = (Button) gameButtonsView.findViewById(R.id.stop_game_button);
+        scoreTextView = (TextView) gameButtonsView.findViewById(R.id.score_text_view);
 
         startGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,8 +126,19 @@ public class MainActivity extends Activity implements DoodleListener {
                 mSensorManager.unregisterListener(doodleSurfaceView);
                 isGameStarted = false;
                 hideViews();
-                
+
                 Toast.makeText(getApplicationContext(), "Score was: " + score, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
+    public void scoreChanged(final int newScore) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Update the score label
+                scoreTextView.setText(String.valueOf(newScore));
             }
         });
     }

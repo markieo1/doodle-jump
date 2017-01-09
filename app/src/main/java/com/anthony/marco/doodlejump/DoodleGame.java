@@ -9,6 +9,11 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by marco on 3-1-2017.
@@ -28,6 +33,8 @@ public class DoodleGame implements ScreenListener {
 
     private DoodleListener doodleListener;
 
+    private ScheduledExecutorService ses;
+
     public DoodleGame() {
         entities = new ArrayList<>();
         doodleSize = new Point(25, 25);
@@ -35,7 +42,7 @@ public class DoodleGame implements ScreenListener {
         bitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
     }
 
-    public void startGame(DoodleListener doodleListener) {
+    public void startGame(final DoodleListener doodleListener) {
         this.doodleListener = doodleListener;
         Log.i(TAG, "Game started!");
         camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
@@ -47,11 +54,27 @@ public class DoodleGame implements ScreenListener {
 
         //this.generatePlatforms();
 
+        ses = Executors.newSingleThreadScheduledExecutor();
+
+        ses.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                // code to run
+                if (doodleListener != null && doodle != null) {
+                    float resultScore = doodle.getHighestY() * -1;
+                    doodleListener.scoreChanged(Math.round(resultScore));
+                }
+            }
+        }, 0, 100, TimeUnit.MILLISECONDS);
+
         isStarted = true;
     }
 
     public void stopGame() {
         Log.i(TAG, "Game stopped!");
+
+        ses.shutdown();
+
         isStarted = false;
     }
 
@@ -63,14 +86,14 @@ public class DoodleGame implements ScreenListener {
 
         ArrayList<Integer> entityIndexToRemove = new ArrayList<>();
 
-        for (Entity entity : entities){
+        for (Entity entity : entities) {
             // Remove all entities under the screen border
-            if (entity.getY() > (doodle.getY() + getScreenWidth()/2)){
+            if (entity.getY() > (doodle.getY() + getScreenWidth() / 2)) {
                 entityIndexToRemove.add(entities.indexOf(entity));
             }
         }
 
-        for (int i = 0; i < entityIndexToRemove.size(); i++){
+        for (int i = 0; i < entityIndexToRemove.size(); i++) {
             entities.remove(entityIndexToRemove.get(i));
         }
 
