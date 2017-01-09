@@ -1,8 +1,13 @@
-package com.anthony.marco.doodlejump;
+package com.anthony.marco.doodlejump.logic;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
+
+import com.anthony.marco.doodlejump.listener.DoodleListener;
+import com.anthony.marco.doodlejump.listener.ScreenListener;
+import com.anthony.marco.doodlejump.logic.DoodleGame;
+import com.anthony.marco.doodlejump.view.DoodleSurfaceView;
 
 /**
  * Created by marco on 3-1-2017.

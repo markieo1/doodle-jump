@@ -1,19 +1,18 @@
-package com.anthony.marco.doodlejump;
+package com.anthony.marco.doodlejump.view;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.WindowManager;
+
+import com.anthony.marco.doodlejump.logic.GameThread;
+import com.anthony.marco.doodlejump.listener.DoodleListener;
 
 /**
  * Created by marco on 3-1-2017.
