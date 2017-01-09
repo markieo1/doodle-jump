@@ -26,10 +26,13 @@ public class Doodle extends Entity {
 
     private float highestY;
 
-    public Doodle(float x, float y, float height, float width, Bitmap image) {
+    private float jumpSize;
+
+    public Doodle(float x, float y, float jumpSize, float height, float width, Bitmap image) {
         super(x, y, height, width, image);
         this.velocityX = 0;
         this.velocityY = 0;
+        this.jumpSize = jumpSize;
         this.shouldFall = true;
     }
 
@@ -137,8 +140,8 @@ public class Doodle extends Entity {
         }
     }
 
-    public void setJumpSize(int jumpSize) {
-        Log.i(TAG, "Jump Size changed, new: " + jumpSize);
+    public void jump() {
+        Log.i(TAG, "Doodle jump occured!");
 
         this.velocityY = -jumpSize;
 

@@ -98,7 +98,7 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         float roll = orientation[2] * FROM_RADS_TO_DEGS;
 
         if (roll >= -90 && roll <= 90) {
-            Log.i("DoodleSurfaceView", "Rotation = " + roll);
+            //Log.i("DoodleSurfaceView", "Rotation = " + roll);
             this.gameThread.screenRotated(roll);
         }
     }
