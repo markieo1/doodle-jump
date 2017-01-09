@@ -47,10 +47,6 @@ public class Doodle extends Entity {
         }
     }
 
-    public void handleInput() {
-        //TODO: handle input..
-    }
-
     private boolean collidingWithPlatforms(ArrayList<Entity> entities) {
         boolean isCollidingWithPlatform = false;
         for (Entity platform : entities) {

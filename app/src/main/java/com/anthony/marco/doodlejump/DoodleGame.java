@@ -9,6 +9,11 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by marco on 3-1-2017.
@@ -27,6 +32,8 @@ public class DoodleGame implements ScreenListener {
     private Bitmap bitmap;
 
     private DoodleListener doodleListener;
+
+    private ScheduledExecutorService ses;
 
     private float lastYGenerated;
 
@@ -59,7 +66,7 @@ public class DoodleGame implements ScreenListener {
         bitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
     }
 
-    public void startGame(DoodleListener doodleListener) {
+    public void startGame(final DoodleListener doodleListener) {
         this.doodleListener = doodleListener;
         Log.i(TAG, "Game started!");
         camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
@@ -74,11 +81,27 @@ public class DoodleGame implements ScreenListener {
         Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), 10, 100, bitmap);
         entities.add(platform);
 
+        ses = Executors.newSingleThreadScheduledExecutor();
+
+        ses.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                // code to run
+                if (doodleListener != null && doodle != null) {
+                    float resultScore = doodle.getHighestY() * -1;
+                    doodleListener.scoreChanged(Math.round(resultScore));
+                }
+            }
+        }, 0, 100, TimeUnit.MILLISECONDS);
+
         isStarted = true;
     }
 
     public void stopGame() {
         Log.i(TAG, "Game stopped!");
+
+        ses.shutdown();
+
         isStarted = false;
     }
 
