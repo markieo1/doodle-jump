@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.anthony.marco.doodlejump.listener.DoodleListener;
 import com.anthony.marco.doodlejump.listener.ScreenListener;
+import com.anthony.marco.doodlejump.logic.DoodleGame;
 import com.anthony.marco.doodlejump.view.DoodleSurfaceView;
 
 /**
@@ -29,10 +30,8 @@ public class GameThread extends Thread {
     @Override
     public void run() {
         while (isRunning) {
-            // 1. Handle Input
-            // 2. Update
-            // 3. Draw
-            doodleGame.handleInput();
+            // 1. Update
+            // 2. Draw
             doodleGame.update();
 
             Canvas canvas = doodleSurfaceView.getHolder().lockCanvas();

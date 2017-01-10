@@ -13,8 +13,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.anthony.marco.doodlejump.App;
-import com.anthony.marco.doodlejump.listener.DoodleListener;
 import com.anthony.marco.doodlejump.R;
+import com.anthony.marco.doodlejump.listener.DoodleListener;
 
 public class MainActivity extends Activity implements DoodleListener {
     private final String TAG = "MainActivity";

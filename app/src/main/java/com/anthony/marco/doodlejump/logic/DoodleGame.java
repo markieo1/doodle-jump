@@ -8,11 +8,11 @@ import android.graphics.Rect;
 import android.util.Log;
 
 import com.anthony.marco.doodlejump.App;
-import com.anthony.marco.doodlejump.model.Doodle;
-import com.anthony.marco.doodlejump.listener.DoodleListener;
-import com.anthony.marco.doodlejump.model.Entity;
 import com.anthony.marco.doodlejump.R;
+import com.anthony.marco.doodlejump.listener.DoodleListener;
 import com.anthony.marco.doodlejump.listener.ScreenListener;
+import com.anthony.marco.doodlejump.model.Doodle;
+import com.anthony.marco.doodlejump.model.Entity;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -40,6 +40,30 @@ public class DoodleGame implements ScreenListener {
 
     private ScheduledExecutorService ses;
 
+    private float lastYGenerated;
+
+    /**
+     * The min difference from the previous Y generated
+     */
+    private final float MIN_DIFFERENCE = 100;
+
+    /**
+     * The maximum (exclusive) difference from the previous Y generated
+     */
+    private final float MAX_DIFFERENCE = 500;
+
+    /**
+     * The amount of entities to generate
+     */
+    private final float GENERATION_COUNT = 100;
+
+    /**
+     * The threshold when the generation should commence again.
+     * This is the lastYGenerated + the threshold, since we are negative on the Y Axis.
+     */
+    private final float GENERATION_START_THRESHOLD = 3000;
+
+
     public DoodleGame() {
         entities = new ArrayList<>();
         doodleSize = new Point(25, 25);
@@ -53,11 +77,14 @@ public class DoodleGame implements ScreenListener {
         camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
 
         entities.clear();
-        doodle = new Doodle(getScreenWidth() / 2 - 50, -100, doodleSize.x, doodleSize.y, null);
+        doodle = new Doodle(getScreenWidth() / 2 - 50, -100, 40, doodleSize.x, doodleSize.y, null);
         doodle.setVelocityX(0);
         entities.add(doodle);
+        lastYGenerated = 0;
 
-        //this.generatePlatforms();
+        // Add a platform right below the Doodle to stop it from failing the game when started
+        Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), 10, 100, bitmap);
+        entities.add(platform);
 
         ses = Executors.newSingleThreadScheduledExecutor();
 
@@ -88,49 +115,11 @@ public class DoodleGame implements ScreenListener {
         }
     }
 
-    public void generatePlatforms() {
-
-        Random rnd = new Random();
-
-        int x = rnd.nextInt(getScreenWidth() - 100) + 1;
-
-        ArrayList<Integer> entityIndexToRemove = new ArrayList<>();
-
-        for (Entity entity : entities) {
-            // Remove all entities under the screen border
-            if (entity.getY() > (doodle.getY() + getScreenWidth() / 2)) {
-                entityIndexToRemove.add(entities.indexOf(entity));
-            }
-        }
-
-        for (int i = 0; i < entityIndexToRemove.size(); i++) {
-            entities.remove(entityIndexToRemove.get(i));
-        }
-
-        if (camera.getTotalDrawnEntities() < 10) {
-            int maxY = ((int) doodle.getY() - getScreenHeight() / 2);
-
-            if (maxY < 0) {
-                maxY *= -1;
-            }
-
-            int y = rnd.nextInt(maxY) + getScreenHeight() / 2;
-
-            if (y + getScreenHeight() > doodle.getY()) {
-                entities.add(new Entity(x, -y, 10, 100, bitmap));
-            }
-
-            camera.setEntities(entities);
-        }
-
-        Log.i(TAG, "Total drawn entities " + camera.getTotalDrawnEntities());
-        Log.i(TAG, "Total entities" + entities.size());
-    }
-
     public void update() {
         if (isStarted) {
             camera.update(doodle);
             generatePlatforms();
+            cleanupOldEntities();
 
             if (!doodle.isInScreen(camera)) {
                 if (doodleListener != null) {
@@ -143,17 +132,63 @@ public class DoodleGame implements ScreenListener {
         }
     }
 
-    public void handleInput() {
-        if (isStarted) {
-            for (Entity entity : entities) {
-                entity.handleInput();
-            }
-        }
-    }
-
     public void draw(Canvas canvas) {
         if (isStarted)
             camera.draw(canvas);
+    }
+
+    private void generatePlatforms() {
+        if (lastYGenerated < 0 && doodle.getHighestY() > lastYGenerated + GENERATION_START_THRESHOLD)
+            return;
+
+        Log.i(TAG, "Generating new platforms");
+
+        Random rnd = new Random();
+
+        for (int i = 0; i < GENERATION_COUNT; i++) {
+            int x = rnd.nextInt(getScreenWidth() - 100) + 1;
+
+            float randomY = rnd.nextFloat() * (MAX_DIFFERENCE - MIN_DIFFERENCE) + MIN_DIFFERENCE;
+            if (randomY > 0) {
+                // Make it negative since we are going up
+                randomY *= -1;
+            }
+
+            float platformY = lastYGenerated + randomY;
+
+            lastYGenerated = platformY;
+
+            Entity entity = new Entity(x, platformY, 10, 100, bitmap);
+            entities.add(entity);
+        }
+
+        camera.setEntities(entities);
+
+        Log.i(TAG, "New platforms generated!");
+    }
+
+    private void cleanupOldEntities() {
+        float screenBorder = (doodle.getY() + getScreenHeight() / 2);
+
+        ArrayList<Integer> entityIndicesToRemove = new ArrayList<>();
+        for (Entity entity : entities) {
+            if (entity instanceof Doodle)
+                continue;
+
+            // Remove all entities under the screen border
+            if (entity.getY() > screenBorder) {
+                entityIndicesToRemove.add(entities.indexOf(entity));
+            }
+        }
+
+        for (int index : entityIndicesToRemove) {
+            entities.remove(index);
+        }
+
+        if (entityIndicesToRemove.size() > 0) {
+            camera.setEntities(entities);
+            Log.i(TAG, "Cleaning up, total cleaned up = " + entityIndicesToRemove.size());
+        }
     }
 
     public int getScreenWidth() {
@@ -164,16 +199,10 @@ public class DoodleGame implements ScreenListener {
         return screenHeight;
     }
 
-    public void setJumpSize(int jumpSize) {
-        if (doodle != null) {
-            this.doodle.setJumpSize(jumpSize);
-        }
-    }
-
     @Override
     public void screenTouched(float xPosition, float yPosition) {
         Log.i(TAG, "Screen touched, xPosition = " + xPosition + ", yPosition = " + yPosition);
-        setJumpSize(40);
+        doodle.jump();
     }
 
     @Override

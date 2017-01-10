@@ -7,13 +7,12 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.anthony.marco.doodlejump.listener.DoodleListener;
 import com.anthony.marco.doodlejump.logic.GameThread;
+import com.anthony.marco.doodlejump.listener.DoodleListener;
 
 /**
  * Created by marco on 3-1-2017.
@@ -98,7 +97,7 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
         float roll = orientation[2] * FROM_RADS_TO_DEGS;
 
         if (roll >= -90 && roll <= 90) {
-            Log.i("DoodleSurfaceView", "Rotation = " + roll);
+            //Log.i("DoodleSurfaceView", "Rotation = " + roll);
             this.gameThread.screenRotated(roll);
         }
     }
