@@ -42,5 +42,12 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/play_again_top_margin"
             android:text="@string/play_again" />
+
+        <Button
+            android:id="@+id/main_menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/main_menu" />
     </LinearLayout>
 </RelativeLayout>

@@ -4,4 +4,6 @@
     <string name="created_by">Ontwikkeld door</string>
     <string name="start_game">Start spel</string>
     <string name="stop">Stoppen</string>
+    <string name="play_again">Opnieuw spelen</string>
+    <string name="main_menu">Hoofdmenu</string>
 </resources>

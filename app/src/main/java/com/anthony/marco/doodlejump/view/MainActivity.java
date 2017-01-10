@@ -53,6 +53,7 @@ public class MainActivity extends Activity implements DoodleListener {
         Button aboutUsButton = (Button) mainMenuButtonsView.findViewById(R.id.about_us_button);
         Button playAgainButton = (Button) gameOverView.findViewById(R.id.play_again_button);
         Button stopGameButton = (Button) gameButtonsView.findViewById(R.id.stop_game_button);
+        Button mainMenuButton = (Button) gameOverView.findViewById(R.id.main_menu_button);
 
         hideSystemUI();
 
@@ -85,6 +86,14 @@ public class MainActivity extends Activity implements DoodleListener {
 
                 // Start the intent
                 startActivity(intent);
+            }
+        });
+
+        mainMenuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setUiState(UiState.MAIN_MENU);
+                switchViews();
             }
         });
 
