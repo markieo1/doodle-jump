@@ -35,7 +35,7 @@ public class Doodle extends Entity {
         this.shouldFall = true;
     }
 
-    public void checkCollision(ArrayList<Entity> entities) {
+    public Boolean checkCollision(ArrayList<Entity> entities) {
         boolean colliding = collidingWithPlatforms(entities);
         if (colliding) {
             this.shouldFall = false;
@@ -44,6 +44,7 @@ public class Doodle extends Entity {
             // we are not colliding so we should fall
             this.shouldFall = true;
         }
+        return colliding;
     }
 
     private boolean collidingWithPlatforms(ArrayList<Entity> entities) {
