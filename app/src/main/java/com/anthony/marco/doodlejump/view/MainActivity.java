@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.anthony.marco.doodlejump.App;
@@ -24,9 +26,11 @@ public class MainActivity extends Activity implements DoodleListener {
     private View gameButtonsView;
     private View mainMenuButtonsView;
     private View gameOverView;
+    private View newGameView;
 
     private TextView scoreTextView;
     private TextView finalScoreTextView;
+    private EditText playerNameEditText;
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -45,15 +49,18 @@ public class MainActivity extends Activity implements DoodleListener {
         gameButtonsView = findViewById(R.id.game_buttons);
         mainMenuButtonsView = findViewById(R.id.main_menu_buttons);
         gameOverView = findViewById(R.id.game_over_layout);
+        newGameView = findViewById(R.id.new_game_layout);
 
         scoreTextView = (TextView) gameButtonsView.findViewById(R.id.score_text_view);
         finalScoreTextView = (TextView) gameOverView.findViewById(R.id.final_score_text_view);
+        playerNameEditText = (EditText) newGameView.findViewById(R.id.player_name_edit_text);
 
-        Button startGameButton = (Button) mainMenuButtonsView.findViewById(R.id.start_game_button);
+        Button newGameButton = (Button) mainMenuButtonsView.findViewById(R.id.new_game_button);
         Button aboutUsButton = (Button) mainMenuButtonsView.findViewById(R.id.about_us_button);
         Button playAgainButton = (Button) gameOverView.findViewById(R.id.play_again_button);
         Button stopGameButton = (Button) gameButtonsView.findViewById(R.id.stop_game_button);
         Button mainMenuButton = (Button) gameOverView.findViewById(R.id.main_menu_button);
+        Button startGameButton = (Button) newGameView.findViewById(R.id.start_game_button);
 
         hideSystemUI();
 
@@ -72,10 +79,10 @@ public class MainActivity extends Activity implements DoodleListener {
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
         // Register all the button listeners.
-        startGameButton.setOnClickListener(new View.OnClickListener() {
+        newGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startGame();
+                newGame();
             }
         });
 
@@ -100,7 +107,7 @@ public class MainActivity extends Activity implements DoodleListener {
         playAgainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startGame();
+                newGame();
             }
         });
 
@@ -108,6 +115,13 @@ public class MainActivity extends Activity implements DoodleListener {
             @Override
             public void onClick(View view) {
                 stopGame();
+            }
+        });
+
+        startGameButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startGame();
             }
         });
     }
@@ -131,9 +145,27 @@ public class MainActivity extends Activity implements DoodleListener {
     }
 
     /**
+     * Switches to the new game layout
+     */
+    private void newGame() {
+        setUiState(UiState.NEW_GAME);
+        switchViews();
+
+        // Clear the textview
+        playerNameEditText.getText().clear();
+    }
+
+    /**
      * Starts the game
      */
     private void startGame() {
+        // TODO: Check if the player name is not already used
+        // TODO: Check if a name has been filled in!
+
+        // Hide the soft input
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+
         setUiState(UiState.GAME);
 
         registerListeners();
@@ -188,18 +220,28 @@ public class MainActivity extends Activity implements DoodleListener {
                 mainMenuButtonsView.setVisibility(View.GONE);
                 gameButtonsView.setVisibility(View.VISIBLE);
                 gameOverView.setVisibility(View.GONE);
+                newGameView.setVisibility(View.GONE);
                 break;
             }
             case MAIN_MENU: {
                 mainMenuButtonsView.setVisibility(View.VISIBLE);
                 gameButtonsView.setVisibility(View.GONE);
                 gameOverView.setVisibility(View.GONE);
+                newGameView.setVisibility(View.GONE);
                 break;
             }
             case GAME_OVER: {
                 mainMenuButtonsView.setVisibility(View.GONE);
                 gameButtonsView.setVisibility(View.GONE);
                 gameOverView.setVisibility(View.VISIBLE);
+                newGameView.setVisibility(View.GONE);
+                break;
+            }
+            case NEW_GAME: {
+                mainMenuButtonsView.setVisibility(View.GONE);
+                gameButtonsView.setVisibility(View.GONE);
+                gameOverView.setVisibility(View.GONE);
+                newGameView.setVisibility(View.VISIBLE);
                 break;
             }
         }

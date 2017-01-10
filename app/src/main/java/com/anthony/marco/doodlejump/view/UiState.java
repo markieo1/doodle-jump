@@ -7,5 +7,6 @@ package com.anthony.marco.doodlejump.view;
 enum UiState {
     MAIN_MENU,
     GAME,
-    GAME_OVER
+    GAME_OVER,
+    NEW_GAME
 }
