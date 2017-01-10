@@ -13,12 +13,19 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.anthony.marco.doodlejump.App;
 import com.anthony.marco.doodlejump.R;
+import com.anthony.marco.doodlejump.database.task.NameInUseTask;
+import com.anthony.marco.doodlejump.database.task.SaveScoreTask;
+import com.anthony.marco.doodlejump.listener.DatabaseListener;
 import com.anthony.marco.doodlejump.listener.DoodleListener;
+import com.anthony.marco.doodlejump.model.Score;
 
-public class MainActivity extends Activity implements DoodleListener {
+import java.util.ArrayList;
+
+public class MainActivity extends Activity implements DoodleListener, DatabaseListener {
     private final String TAG = "MainActivity";
 
     private DoodleSurfaceView doodleSurfaceView;
@@ -36,6 +43,8 @@ public class MainActivity extends Activity implements DoodleListener {
     private Sensor mSensor;
 
     private UiState currentUiState;
+
+    private Score currentScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +130,7 @@ public class MainActivity extends Activity implements DoodleListener {
         startGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startGame();
+                checkFields();
             }
         });
     }
@@ -159,9 +168,6 @@ public class MainActivity extends Activity implements DoodleListener {
      * Starts the game
      */
     private void startGame() {
-        // TODO: Check if the player name is not already used
-        // TODO: Check if a name has been filled in!
-
         // Hide the soft input
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
@@ -195,6 +201,24 @@ public class MainActivity extends Activity implements DoodleListener {
      */
     private void unregisterListeners() {
         mSensorManager.unregisterListener(doodleSurfaceView);
+    }
+
+    private void checkFields() {
+        // Check if a name has been filled in!
+        String playerName = playerNameEditText.getText().toString();
+
+        if (playerName.isEmpty()) {
+            Log.i(TAG, "Player name not filled in!");
+
+            Toast.makeText(this, "Please enter a name...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.i(TAG, "Checking if name in use, name = " + playerName);
+
+        // Check if the player name is not already used
+        NameInUseTask nameInUseTask = new NameInUseTask(this, this);
+        nameInUseTask.execute(playerName);
     }
 
     /**
@@ -247,11 +271,33 @@ public class MainActivity extends Activity implements DoodleListener {
         }
     }
 
+    /**
+     * Changes the UiState
+     *
+     * @param uiState the new ui state
+     */
+    private void setUiState(UiState uiState) {
+        this.currentUiState = uiState;
+        Log.i(TAG, "UI State changed, new = " + uiState);
+    }
+
+    private void saveScore(Score score) {
+        // TODO: Add to the scores list
+        // Save the score in the database
+        SaveScoreTask saveScoreTask = new SaveScoreTask(this);
+        saveScoreTask.execute(score);
+    }
+
     @Override
     public void gameOver(final int score) {
+        // Run On UI Thread since this callback is called from another thread
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                currentScore.setScore(score);
+
+                saveScore(currentScore);
+
                 unregisterListeners();
                 setUiState(UiState.GAME_OVER);
                 switchViews();
@@ -263,22 +309,35 @@ public class MainActivity extends Activity implements DoodleListener {
 
     @Override
     public void scoreChanged(final int newScore) {
+        // Run On UI Thread since this callback is called from another thread
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                currentScore.setScore(newScore);
                 // Update the score label
                 scoreTextView.setText(String.valueOf(newScore));
             }
         });
     }
 
-    /**
-     * Changes the UiState
-     *
-     * @param uiState the new ui state
-     */
-    private void setUiState(UiState uiState) {
-        this.currentUiState = uiState;
-        Log.i(TAG, "UI State changed, new = " + uiState);
+    @Override
+    public void scoresLoaded(ArrayList<Score> scores) {
+
+    }
+
+    @Override
+    public void nameInUseChecked(String name, boolean inUse) {
+        if (currentUiState != UiState.NEW_GAME)
+            return;
+
+        if (inUse) {
+            Toast.makeText(this, "Name already in use...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        currentScore = new Score(name, 0);
+
+        // Start game since the name is not already in use
+        startGame();
     }
 }
