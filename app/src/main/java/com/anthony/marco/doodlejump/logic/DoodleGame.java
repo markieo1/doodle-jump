@@ -128,10 +128,6 @@ public class DoodleGame implements ScreenListener {
             cleanupOldPlatforms();
 
             if (!doodle.isInScreen(camera)) {
-                if (doodleListener != null) {
-                    float resultScore = doodle.getHighestY() * -1;
-                    doodleListener.gameOver(Math.round(resultScore));
-                }
                 Log.i(TAG, "Doodle left screen");
                 stopGame();
             }
