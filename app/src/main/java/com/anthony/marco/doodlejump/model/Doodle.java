@@ -83,7 +83,7 @@ public class Doodle extends Entity {
         float entityWidth = entity.getWidth();
         float entityXEnd = entityXPosition + entityWidth;
 
-        if (myXPosition >= entityXPosition && myXEnd <= entityXEnd) {
+        if (myXPosition <= entityXEnd && entityXPosition <= myXEnd) {
             // Doodle is between the platform
             float myYPosition = getY();
             float myHeight = getHeight();
