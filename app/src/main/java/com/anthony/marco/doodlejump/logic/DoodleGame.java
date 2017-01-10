@@ -202,7 +202,9 @@ public class DoodleGame implements ScreenListener {
     @Override
     public void screenTouched(float xPosition, float yPosition) {
         Log.i(TAG, "Screen touched, xPosition = " + xPosition + ", yPosition = " + yPosition);
-        doodle.jump();
+
+        if (doodle != null)
+            doodle.jump();
     }
 
     @Override
