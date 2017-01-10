@@ -67,6 +67,7 @@ public class Entity {
 
     public void draw(ScrollingCamera camera, Canvas canvas) {
         float relativeYPos = camera.getRelativeYPosition(getY());
+        float t =  getX() + getWidth();
         canvas.drawBitmap(getImage(), null, new RectF(getX(), relativeYPos, getX() + getWidth(), relativeYPos + getHeight()), null);
     }
 

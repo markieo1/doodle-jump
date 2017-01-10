@@ -118,15 +118,6 @@ public class Doodle extends Entity {
     }
 
     @Override
-    public void draw(ScrollingCamera camera, Canvas canvas) {
-        Paint paint = new Paint();
-        paint.setColor(Color.YELLOW);
-        paint.setStyle(Paint.Style.FILL);
-
-        canvas.drawCircle(getX(), camera.getRelativeYPosition(getY()), getWidth(), paint);
-    }
-
-    @Override
     public void setY(float y) {
         super.setY(y);
 

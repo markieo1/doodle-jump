@@ -34,7 +34,8 @@ public class DoodleGame implements ScreenListener {
     private Doodle doodle;
     private Point doodleSize;
     private boolean isStarted;
-    private Bitmap bitmap;
+    private Bitmap platformBitmap;
+    private Bitmap doodleBitmap;
 
     private DoodleListener doodleListener;
 
@@ -66,9 +67,10 @@ public class DoodleGame implements ScreenListener {
 
     public DoodleGame() {
         entities = new ArrayList<>();
-        doodleSize = new Point(25, 25);
+        doodleSize = new Point(50, 50);
         isStarted = false;
-        bitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
+        platformBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
+        doodleBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.circle);
     }
 
     public void startGame(final DoodleListener doodleListener) {
@@ -77,13 +79,13 @@ public class DoodleGame implements ScreenListener {
         camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
 
         entities.clear();
-        doodle = new Doodle(getScreenWidth() / 2 - 50, -100, 40, doodleSize.x, doodleSize.y, null);
+        doodle = new Doodle(getScreenWidth() / 2 - 50, -100, 40, doodleSize.x, doodleSize.y, doodleBitmap);
         doodle.setVelocityX(0);
         entities.add(doodle);
         lastYGenerated = 0;
 
         // Add a platform right below the Doodle to stop it from failing the game when started
-        Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), 10, 100, bitmap);
+        Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), 10, 100, platformBitmap);
         entities.add(platform);
 
         ses = Executors.newSingleThreadScheduledExecutor();
@@ -158,7 +160,7 @@ public class DoodleGame implements ScreenListener {
 
             lastYGenerated = platformY;
 
-            Entity entity = new Entity(x, platformY, 10, 100, bitmap);
+            Entity entity = new Entity(x, platformY, 10, 100, platformBitmap);
             entities.add(entity);
         }
 
