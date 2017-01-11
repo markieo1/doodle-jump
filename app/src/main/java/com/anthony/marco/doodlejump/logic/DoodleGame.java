@@ -40,9 +40,9 @@ public class DoodleGame implements ScreenListener {
     private ScheduledFuture timerCountDown;
     private ScheduledFuture timerLoop;
     private int timerTimeToCountDownInS;
-    private boolean isTimerinitialized;
     private boolean isTimerStarted;
     private DoodleListener doodleListener;
+    private Boolean timerNeedReset;
 
     private ScheduledExecutorService ses;
 
@@ -77,8 +77,8 @@ public class DoodleGame implements ScreenListener {
         platformBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
         doodleBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.circle);
         timerTimeToCountDownInS = 10;
-        isTimerinitialized = false;
         isTimerStarted = false;
+        timerNeedReset = false;
     }
 
     public void startGame(final DoodleListener doodleListener) {
@@ -109,8 +109,9 @@ public class DoodleGame implements ScreenListener {
             }
         }, 0, 100, TimeUnit.MILLISECONDS);
 
-        setTimerReady();
+        resetTimer();
         startTimer();
+        timerNeedReset = true;
 
         isStarted = true;
     }
@@ -118,7 +119,7 @@ public class DoodleGame implements ScreenListener {
     public void stopGame() {
         Log.i(TAG, "Game stopped!");
 
-        ses.shutdown();
+        ses.shutdownNow();
 
         isStarted = false;
 
@@ -131,9 +132,11 @@ public class DoodleGame implements ScreenListener {
     public void update() {
         if (isStarted) {
             if (doodle.checkCollision(entities)) {
-                if (!isTimerinitialized) {
+                if (isTimerStarted && timerNeedReset) {
                     //TODO: update timer..
-                    this.setTimerReady();
+                    timerNeedReset =false;
+                    setTimerReady();
+                    startTimer();
                 }
             }
 
@@ -218,10 +221,15 @@ public class DoodleGame implements ScreenListener {
 
     @Override
     public void screenTouched(float xPosition, float yPosition) {
+        if (!isStarted)
+            return;
+
         Log.i(TAG, "Screen touched, xPosition = " + xPosition + ", yPosition = " + yPosition);
 
         if (doodle != null)
             doodle.jump();
+
+        timerNeedReset = true;
 
         if (!isTimerStarted) {
             startTimer();
@@ -247,23 +255,25 @@ public class DoodleGame implements ScreenListener {
     }
 
     public void setTimerReady() {
-        isTimerinitialized = true;
+        Log.i(TAG, "Timer set ready");
         isTimerStarted = false;
         resetTimer();
-        timerCountDown = ses.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                doodleListener.updateTimer(timerTimeToCountDownInS);
-                timerTimeToCountDownInS -= 1;
-            }
-        }, 0, 1, TimeUnit.SECONDS);
     }
 
 
     public void startTimer() {
-        isTimerinitialized = false;
-        isTimerStarted = true;
         if (timerLoop == null){
+            //timerNeedReset = false;
+            isTimerStarted = true;
+            Log.i(TAG, "Timer started");
+            timerCountDown = ses.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    doodleListener.updateTimer(timerTimeToCountDownInS);
+                    timerTimeToCountDownInS -= 1;
+                }
+            }, 0, 1, TimeUnit.SECONDS);
+
             timerLoop = ses.schedule(new Runnable() {
                 @Override
                 public void run() {
@@ -272,13 +282,15 @@ public class DoodleGame implements ScreenListener {
                 }
             }, timerTimeToCountDownInS + 1, TimeUnit.SECONDS);
         }
-
     }
 
     public void resetTimer() {
         if (timerLoop != null) {
+            Log.i(TAG, "Timer reseted");
             timerTimeToCountDownInS = 10;
+            doodleListener.updateTimer( timerTimeToCountDownInS);
             timerCountDown.cancel(true);
+
             isTimerStarted = false;
             timerLoop.cancel(true);
             timerLoop = null;
