@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.anthony.marco.doodlejump.model.Score;
@@ -30,10 +31,10 @@ public class ScoreDatabaseHelper extends SQLiteOpenHelper {
     private final String SCORES_COL_DATE = "date";
 
     private final String DB_CREATE_SCORE = "CREATE TABLE `" + TBL_SCORES + "`" +
-            "(`" + SCORES_COL_NAME + "` TEXT NOT NULL UNIQUE," +
+            "(`" + BaseColumns._ID + "` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+            " `" + SCORES_COL_NAME + "` TEXT NOT NULL UNIQUE," +
             " `" + SCORES_COL_SCORE + "` INTEGER NOT NULL," +
-            " `" + SCORES_COL_DATE + "` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
-            " PRIMARY KEY(`" + SCORES_COL_NAME + "`));";
+            " `" + SCORES_COL_DATE + "` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP);";
 
     public ScoreDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DB_VERSION);
@@ -124,7 +125,7 @@ public class ScoreDatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, new String[]{name});
 
-        if (cursor.moveToFirst()) {
+        if (cursor.getCount() >= 1) {
             isInUse = true;
         }
 

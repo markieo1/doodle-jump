@@ -40,7 +40,8 @@ public class Score {
     }
 
     public void setName(String name) {
-        this.name = name;
+        // Trim the name to exclude all spaces that were added
+        this.name = name.trim();
     }
 
     public int getScore() {
