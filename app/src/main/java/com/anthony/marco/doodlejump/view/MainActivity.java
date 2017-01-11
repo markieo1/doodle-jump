@@ -201,8 +201,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     private void showScoreboard() {
         setUiState(UiState.SCOREBOARD);
         switchViews();
-
-        // TODO: Update the ListView
     }
 
     /**
