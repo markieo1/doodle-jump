@@ -1,14 +1,10 @@
 package com.anthony.marco.doodlejump.logic;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.os.CountDownTimer;
-import android.os.HandlerThread;
-import android.os.Looper;
 import android.util.Log;
 
 import com.anthony.marco.doodlejump.App;
@@ -22,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,8 +37,9 @@ public class DoodleGame implements ScreenListener {
     private boolean isStarted;
     private Bitmap platformBitmap;
     private Bitmap doodleBitmap;
-    private CountDownTimer platformHitTimeRecorder;
-    private int timerTimeToCountDownInMS;
+    private ScheduledFuture timerCountDown;
+    private ScheduledFuture timerLoop;
+    private int timerTimeToCountDownInS;
     private boolean isTimerinitialized;
     private boolean isTimerStarted;
     private DoodleListener doodleListener;
@@ -78,9 +76,9 @@ public class DoodleGame implements ScreenListener {
         isStarted = false;
         platformBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
         doodleBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.circle);
-        timerTimeToCountDownInMS = 10000;
+        timerTimeToCountDownInS = 10;
         isTimerinitialized = false;
-        isTimerStarted=false;
+        isTimerStarted = false;
     }
 
     public void startGame(final DoodleListener doodleListener) {
@@ -98,7 +96,7 @@ public class DoodleGame implements ScreenListener {
         Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), 10, 100, platformBitmap);
         entities.add(platform);
 
-        ses = Executors.newSingleThreadScheduledExecutor();
+        ses = Executors.newScheduledThreadPool(2);
 
         ses.scheduleAtFixedRate(new Runnable() {
             @Override
@@ -110,6 +108,9 @@ public class DoodleGame implements ScreenListener {
                 }
             }
         }, 0, 100, TimeUnit.MILLISECONDS);
+
+        setTimerReady();
+        startTimer();
 
         isStarted = true;
     }
@@ -129,13 +130,10 @@ public class DoodleGame implements ScreenListener {
 
     public void update() {
         if (isStarted) {
-            if(doodle.checkCollision(entities)) {
+            if (doodle.checkCollision(entities)) {
                 if (!isTimerinitialized) {
                     //TODO: update timer..
                     this.setTimerReady();
-                }
-                else {
-                    platformHitTimeRecorder.cancel();
                 }
             }
 
@@ -225,7 +223,9 @@ public class DoodleGame implements ScreenListener {
         if (doodle != null)
             doodle.jump();
 
-        startTimer();
+        if (!isTimerStarted) {
+            startTimer();
+        }
     }
 
     @Override
@@ -248,36 +248,40 @@ public class DoodleGame implements ScreenListener {
 
     public void setTimerReady() {
         isTimerinitialized = true;
-
-        //Looper.prepare();
-        new Thread(){
-            public void run()
-            {
-                platformHitTimeRecorder = new CountDownTimer(timerTimeToCountDownInMS, 1000) {
-
-                    @Override
-                    public void onTick(long l) {
-                        isTimerStarted = true;
-                        doodleListener.updateTimer(l);
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        isTimerStarted = false;
-                        isTimerinitialized =false;
-                        float resultScore = doodle.getHighestY() * -1;
-                        doodleListener.gameOver(Math.round(resultScore));
-                    }
-                };
+        isTimerStarted = false;
+        resetTimer();
+        timerCountDown = ses.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                doodleListener.updateTimer(timerTimeToCountDownInS);
+                timerTimeToCountDownInS -= 1;
             }
-        }.run();
-        //Looper.loop();
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
-    public void startTimer(){
-        if (platformHitTimeRecorder != null && !isTimerStarted){
-            isTimerStarted = true;
-            platformHitTimeRecorder.start();
+
+    public void startTimer() {
+        isTimerinitialized = false;
+        isTimerStarted = true;
+        if (timerLoop == null){
+            timerLoop = ses.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    timerCountDown.cancel(true);
+                    stopGame();
+                }
+            }, timerTimeToCountDownInS + 1, TimeUnit.SECONDS);
+        }
+
+    }
+
+    public void resetTimer() {
+        if (timerLoop != null) {
+            timerTimeToCountDownInS = 10;
+            timerCountDown.cancel(true);
+            isTimerStarted = false;
+            timerLoop.cancel(true);
+            timerLoop = null;
         }
     }
 }
