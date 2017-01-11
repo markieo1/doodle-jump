@@ -98,8 +98,7 @@ public class Doodle extends Entity {
             float entityYEnd = entityYPosition + entityHeight;
 
             if (myYEnd >= entityYPosition && myYEnd <= entityYEnd) {
-                if (shouldFall)
-                    isColliding = true;
+                isColliding = true;
             }
         }
 
