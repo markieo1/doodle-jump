@@ -119,15 +119,15 @@ public class DoodleGame implements ScreenListener {
 
     public void update() {
         if (isStarted) {
+            if( doodle.checkCollision(entities)){
+                //TODO: update timer..
+            }
             camera.update(doodle);
+
             generatePlatforms();
-            cleanupOldEntities();
+            cleanupOldPlatforms();
 
             if (!doodle.isInScreen(camera)) {
-                if (doodleListener != null) {
-                    float resultScore = doodle.getHighestY() * -1;
-                    doodleListener.gameOver(Math.round(resultScore));
-                }
                 Log.i(TAG, "Doodle left screen");
                 stopGame();
             }
@@ -169,7 +169,7 @@ public class DoodleGame implements ScreenListener {
         Log.i(TAG, "New platforms generated!");
     }
 
-    private void cleanupOldEntities() {
+    private void cleanupOldPlatforms() {
         float screenBorder = (doodle.getY() + getScreenHeight() / 2);
 
         ArrayList<Integer> entityIndicesToRemove = new ArrayList<>();
