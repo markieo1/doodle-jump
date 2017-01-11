@@ -17,7 +17,7 @@ public class Entity {
     private float width;
     private Bitmap image;
 
-    public Entity(float x, float y, float height, float width, Bitmap image) {
+    public Entity(float x, float y, float width, float height, Bitmap image) {
         this.x = x;
         this.y = y;
         this.height = height;
@@ -67,13 +67,9 @@ public class Entity {
 
     public void draw(ScrollingCamera camera, Canvas canvas) {
         float relativeYPos = camera.getRelativeYPosition(getY());
-        float t =  getX() + getWidth();
         canvas.drawBitmap(getImage(), null, new RectF(getX(), relativeYPos, getX() + getWidth(), relativeYPos + getHeight()), null);
     }
 
     public void update() {
-    }
-
-    public void handleInput() {
     }
 }

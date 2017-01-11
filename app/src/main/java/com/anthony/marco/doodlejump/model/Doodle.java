@@ -27,8 +27,8 @@ public class Doodle extends Entity {
 
     private float jumpSize;
 
-    public Doodle(float x, float y, float jumpSize, float height, float width, Bitmap image) {
-        super(x, y, height, width, image);
+    public Doodle(float x, float y, float width, float height, float jumpSize, Bitmap image) {
+        super(x, y, width, height, image);
         this.velocityX = 0;
         this.velocityY = 0;
         this.jumpSize = jumpSize;

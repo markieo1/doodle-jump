@@ -3,7 +3,6 @@ package com.anthony.marco.doodlejump.logic;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -27,101 +26,187 @@ import java.util.concurrent.TimeUnit;
 public class DoodleGame implements ScreenListener {
     private final String TAG = "DoodleGame";
 
-    private ArrayList<Entity> entities;
-    private int screenWidth;
-    private int screenHeight;
-    private ScrollingCamera camera;
-    private Doodle doodle;
-    private Point doodleSize;
-    private boolean isStarted;
-    private Bitmap platformBitmap;
-    private Bitmap doodleBitmap;
+    /**
+     * The start y position for the doodle
+     */
+    private static final float DOODLE_START_Y = -100;
 
-    private DoodleListener doodleListener;
+    /**
+     * The doodle width
+     */
+    private static final float DOODLE_WIDTH = 50;
 
-    private ScheduledExecutorService ses;
+    /**
+     * The doodle height
+     */
+    private static final float DOODLE_HEIGHT = 50;
 
-    private float lastYGenerated;
+    /**
+     * The jump size for the doodle
+     */
+    private static final float DOODLE_JUMPSIZE = 40;
+
+    /**
+     * The platform width
+     */
+    private static final float PLATFORM_WIDTH = 100;
+
+    /**
+     * The platform height
+     */
+    private static final float PLATFORM_HEIGHT = 10;
 
     /**
      * The min difference from the previous Y generated
      */
-    private final float MIN_DIFFERENCE = 100;
+    private static final float MIN_DIFFERENCE = 100;
 
     /**
      * The maximum (exclusive) difference from the previous Y generated
      */
-    private final float MAX_DIFFERENCE = 500;
+    private static final float MAX_DIFFERENCE = 500;
 
     /**
      * The amount of entities to generate
      */
-    private final float GENERATION_COUNT = 100;
+    private static final float GENERATION_COUNT = 100;
 
     /**
      * The threshold when the generation should commence again.
      * This is the lastYGenerated + the threshold, since we are negative on the Y Axis.
      */
-    private final float GENERATION_START_THRESHOLD = 3000;
+    private static final float GENERATION_START_THRESHOLD = 3000;
 
+    /**
+     * The interval (MILLISECONDS) in which the score label should be updated
+     */
+    private static final int SCORE_UPDATE_INTERVAL = 100;
+
+    /**
+     * Determines if the Game is started
+     */
+    private boolean isStarted;
+
+    /**
+     * The screen width used for the game
+     */
+    private int screenWidth;
+
+    /**
+     * The screen height used for the game
+     */
+    private int screenHeight;
+
+    /**
+     * The camera used for drawing purposes
+     */
+    private ScrollingCamera camera;
+
+    /**
+     * The Doodle eq. Player
+     */
+    private Doodle doodle;
+
+    /**
+     * All the entities currently in the game
+     */
+    private ArrayList<Entity> entities;
+
+    /**
+     * The y position of the last generated platform
+     */
+    private float lastYGenerated;
+
+    /**
+     * The listener that handles game changes
+     */
+    private DoodleListener doodleListener;
+
+    /**
+     * Bitmap used for the platform
+     */
+    private Bitmap platformBitmap;
+
+    /**
+     * Bitmap used for the doodle
+     */
+    private Bitmap doodleBitmap;
+
+    private ScheduledExecutorService ses;
 
     public DoodleGame() {
         entities = new ArrayList<>();
-        doodleSize = new Point(50, 50);
         isStarted = false;
-        platformBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
-        doodleBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.circle);
     }
 
+    /**
+     * Starts the game
+     *
+     * @param doodleListener The listener to make callbacks to
+     */
     public void startGame(final DoodleListener doodleListener) {
         this.doodleListener = doodleListener;
-        Log.i(TAG, "Game started!");
-        camera = new ScrollingCamera(new Rect(0, 0, screenWidth, screenHeight));
+
+        ses = Executors.newSingleThreadScheduledExecutor();
+
+        loadResources();
 
         entities.clear();
-        doodle = new Doodle(getScreenWidth() / 2 - 50, -100, 40, doodleSize.x, doodleSize.y, doodleBitmap);
-        doodle.setVelocityX(0);
+
+        // Setup the camera and entities
+        camera = new ScrollingCamera(new Rect(0, 0, getScreenWidth(), getScreenHeight()));
+        doodle = new Doodle(getScreenWidth() / 2 - DOODLE_WIDTH, DOODLE_START_Y, DOODLE_WIDTH, DOODLE_HEIGHT, DOODLE_JUMPSIZE, doodleBitmap);
         entities.add(doodle);
+
+        // Reset the last y generated
         lastYGenerated = 0;
 
         // Add a platform right below the Doodle to stop it from failing the game when started
-        Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), 10, 100, platformBitmap);
+        Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), PLATFORM_WIDTH, PLATFORM_HEIGHT, platformBitmap);
         entities.add(platform);
-
-        ses = Executors.newSingleThreadScheduledExecutor();
 
         ses.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                // code to run
+                // If not running no need to update the score
+                if(!isStarted)
+                    return;
+
+                // Update the score label
                 if (doodleListener != null && doodle != null) {
                     float resultScore = doodle.getHighestY() * -1;
                     doodleListener.scoreChanged(Math.round(resultScore));
                 }
             }
-        }, 0, 100, TimeUnit.MILLISECONDS);
+        }, 0, SCORE_UPDATE_INTERVAL, TimeUnit.MILLISECONDS);
 
         isStarted = true;
+        Log.i(TAG, "Game started!");
     }
 
+    /**
+     * Stops the game
+     */
     public void stopGame() {
         Log.i(TAG, "Game stopped!");
-
-        ses.shutdown();
-
         isStarted = false;
 
+        if (ses != null)
+            ses.shutdownNow();
+
         if (doodleListener != null) {
+            // Make callback saying the game is over
             float resultScore = doodle.getHighestY() * -1;
             doodleListener.gameOver(Math.round(resultScore));
         }
     }
 
+    /**
+     * Updates all entities
+     */
     public void update() {
         if (isStarted) {
-            if( doodle.checkCollision(entities)){
-                //TODO: update timer..
-            }
+            doodle.checkCollision(entities);
             camera.update(doodle);
 
             generatePlatforms();
@@ -134,11 +219,19 @@ public class DoodleGame implements ScreenListener {
         }
     }
 
+    /**
+     * Draws the camera using the specified canvas
+     *
+     * @param canvas The canvas to draw onto
+     */
     public void draw(Canvas canvas) {
         if (isStarted)
             camera.draw(canvas);
     }
 
+    /**
+     * Generates platforms for the player to jump onto.
+     */
     private void generatePlatforms() {
         if (lastYGenerated < 0 && doodle.getHighestY() > lastYGenerated + GENERATION_START_THRESHOLD)
             return;
@@ -169,6 +262,9 @@ public class DoodleGame implements ScreenListener {
         Log.i(TAG, "New platforms generated!");
     }
 
+    /**
+     * Cleans up the platforms that are not in screen anymore
+     */
     private void cleanupOldPlatforms() {
         float screenBorder = (doodle.getY() + getScreenHeight() / 2);
 
@@ -178,7 +274,7 @@ public class DoodleGame implements ScreenListener {
                 continue;
 
             // Remove all entities under the screen border
-            if (entity.getY() > screenBorder) {
+            if (entity.getY() >= screenBorder) {
                 entityIndicesToRemove.add(entities.indexOf(entity));
             }
         }
@@ -193,18 +289,27 @@ public class DoodleGame implements ScreenListener {
         }
     }
 
-    public int getScreenWidth() {
-        return screenWidth;
-    }
+    /**
+     * Loads all the resources that are needed
+     */
+    private void loadResources() {
+        Log.i(TAG, "Starting load resources.");
+        if (platformBitmap == null)
+            platformBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
 
-    public int getScreenHeight() {
-        return screenHeight;
+        if (doodleBitmap == null)
+            doodleBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.circle);
+
+        Log.i(TAG, "Done loading resources.");
     }
 
     @Override
     public void screenTouched(float xPosition, float yPosition) {
-        Log.i(TAG, "Screen touched, xPosition = " + xPosition + ", yPosition = " + yPosition);
+        // Check if the game has already started
+        if (!isStarted)
+            return;
 
+        Log.i(TAG, "Screen touched, xPosition = " + xPosition + ", yPosition = " + yPosition);
         if (doodle != null)
             doodle.jump();
     }
@@ -225,5 +330,23 @@ public class DoodleGame implements ScreenListener {
 
         if (doodle != null)
             doodle.setVelocityX(velocityX);
+    }
+
+    /**
+     * Gets the current screenWidth
+     *
+     * @return The current screenWidth
+     */
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    /**
+     * Gets the current screenHeight
+     *
+     * @return The current screenHeight
+     */
+    public int getScreenHeight() {
+        return screenHeight;
     }
 }

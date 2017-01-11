@@ -13,16 +13,15 @@ import java.util.ArrayList;
  */
 
 public class ScrollingCamera {
+    /**
+     * The entities that can be updated/drawn
+     */
     private ArrayList<Entity> entities;
-
-    private int totalDrawnEntities;
 
     /**
      * The current y position of the camera
      */
     private float cameraY;
-
-    private float lastY;
 
     /**
      * The bounds of the screen
@@ -35,29 +34,36 @@ public class ScrollingCamera {
         this.cameraY = bounds.top - bounds.height();
     }
 
+    /**
+     * Updates all entities and updates the cameraY to center the Doodle.
+     * @param doodle The doodle to follow
+     */
     public void update(Doodle doodle) {
         for (Entity entity : entities) {
             entity.update();
         }
 
-        lastY = cameraY;
-
+        float lastY = cameraY;
 
         // make the camera follow the player
-        cameraY = doodle.getY() - bounds.height() / 2;
+        cameraY = doodle.getY() - getScreenHeight() / 2;
 
         // Check if we are not moving downwards, eq. moving positive on the Y axis.
         if (cameraY >= lastY)
             cameraY = lastY;
 
         // Check if the doodle is not leaving the screen
-        if (doodle.getX() >= bounds.width()) {
+        if (doodle.getX() >= getScreenWidth()) {
             doodle.setX(0 - doodle.getWidth());
         } else if (doodle.getX() < 0 - doodle.getWidth()) {
-            doodle.setX(bounds.width());
+            doodle.setX(getScreenWidth());
         }
     }
 
+    /**
+     * Draw all the entities on the specified canvas
+     * @param canvas The canvas to draw onto
+     */
     public void draw(Canvas canvas) {
         int totalDrawn = 0;
         for (Entity entity : entities) {
@@ -66,7 +72,6 @@ public class ScrollingCamera {
                 entity.draw(this, canvas);
             }
         }
-        totalDrawnEntities = totalDrawn;
         //Log.i("ScrollingCamera", "Total drawn: " + totalDrawn);
     }
 
@@ -79,9 +84,13 @@ public class ScrollingCamera {
     private boolean isEntityInScreen(Entity entity) {
         float screenCoordinateY = getRelativeYPosition(entity.getY());
 
-        return (entity.getX() >= bounds.left && entity.getX() + entity.getWidth() <= bounds.right) && (screenCoordinateY >= bounds.top && screenCoordinateY + entity.getHeight() <= bounds.bottom);
+        return (entity.getX() >= bounds.left && entity.getX() + entity.getWidth() <= getScreenWidth()) && (screenCoordinateY >= bounds.top && screenCoordinateY + entity.getHeight() <= getScreenHeight());
     }
 
+    /**
+     * Sets the entities for this camera instance
+     * @param entities The entities to set
+     */
     public void setEntities(ArrayList<Entity> entities) {
         this.entities = entities;
     }
@@ -96,14 +105,18 @@ public class ScrollingCamera {
         return yPos - this.cameraY;
     }
 
-    public int getTotalDrawnEntities() {
-        return totalDrawnEntities;
-    }
-
+    /**
+     * Gets the screen bounds width
+     * @return The screen width
+     */
     public int getScreenWidth() {
         return bounds.width();
     }
 
+    /**
+     * Gets the screen bounds height
+     * @return The screen height
+     */
     public int getScreenHeight() {
         return bounds.height();
     }
