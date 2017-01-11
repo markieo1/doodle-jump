@@ -44,7 +44,12 @@ public class DoodleGame implements ScreenListener {
     /**
      * The jump size for the doodle
      */
-    private static final float DOODLE_JUMPSIZE = 40;
+    private static final float DOODLE_JUMP_SIZE = 40;
+
+    /**
+     * The delay (MILLISECONDS) before the doodle begins falling
+     */
+    private static final long DOODLE_FALL_DELAY = 100;
 
     /**
      * The platform width
@@ -145,6 +150,7 @@ public class DoodleGame implements ScreenListener {
      * @param doodleListener The listener to make callbacks to
      */
     public void startGame(final DoodleListener doodleListener) {
+        Log.i(TAG, "Start game called!");
         this.doodleListener = doodleListener;
 
         ses = Executors.newSingleThreadScheduledExecutor();
@@ -153,23 +159,25 @@ public class DoodleGame implements ScreenListener {
 
         entities.clear();
 
+        Log.i(TAG, "Setting up camera, doodle and platform");
         // Setup the camera and entities
         camera = new ScrollingCamera(new Rect(0, 0, getScreenWidth(), getScreenHeight()));
-        doodle = new Doodle(getScreenWidth() / 2 - DOODLE_WIDTH, DOODLE_START_Y, DOODLE_WIDTH, DOODLE_HEIGHT, DOODLE_JUMPSIZE, doodleBitmap);
+        doodle = new Doodle(getScreenWidth() / 2 - DOODLE_WIDTH, DOODLE_START_Y, DOODLE_WIDTH, DOODLE_HEIGHT, DOODLE_JUMP_SIZE, DOODLE_FALL_DELAY, doodleBitmap);
         entities.add(doodle);
-
-        // Reset the last y generated
-        lastYGenerated = 0;
 
         // Add a platform right below the Doodle to stop it from failing the game when started
         Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), PLATFORM_WIDTH, PLATFORM_HEIGHT, platformBitmap);
         entities.add(platform);
 
+        // Reset the last y generated
+        lastYGenerated = platform.getY();
+
+        Log.i(TAG, "Setting up score changed runnable");
         ses.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 // If not running no need to update the score
-                if(!isStarted)
+                if (!isStarted)
                     return;
 
                 // Update the score label
@@ -191,10 +199,13 @@ public class DoodleGame implements ScreenListener {
         Log.i(TAG, "Game stopped!");
         isStarted = false;
 
-        if (ses != null)
+        if (ses != null) {
+            Log.i(TAG, "Shutting down ScheduledExecutorService");
             ses.shutdownNow();
+        }
 
         if (doodleListener != null) {
+            Log.i(TAG, "Callback to gameOver");
             // Make callback saying the game is over
             float resultScore = doodle.getHighestY() * -1;
             doodleListener.gameOver(Math.round(resultScore));
@@ -253,13 +264,13 @@ public class DoodleGame implements ScreenListener {
 
             lastYGenerated = platformY;
 
-            Entity entity = new Entity(x, platformY, 10, 100, platformBitmap);
+            Entity entity = new Entity(x, platformY, PLATFORM_WIDTH, PLATFORM_HEIGHT, platformBitmap);
             entities.add(entity);
         }
 
         camera.setEntities(entities);
 
-        Log.i(TAG, "New platforms generated!");
+        Log.i(TAG, "New platforms generated, count = " + GENERATION_COUNT);
     }
 
     /**

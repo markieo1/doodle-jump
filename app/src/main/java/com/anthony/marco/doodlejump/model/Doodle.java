@@ -19,23 +19,42 @@ import java.util.TimerTask;
 public class Doodle extends Entity {
     private final String TAG = "Doodle";
 
-    private float velocityX;
-    private float velocityY;
+    /**
+     * Determines if the doodle should be falling
+     */
     private boolean shouldFall;
 
+    /**
+     * The highest y achieved by the doodle
+     */
     private float highestY;
 
+    /**
+     * The jump size
+     */
     private float jumpSize;
 
-    public Doodle(float x, float y, float width, float height, float jumpSize, Bitmap image) {
+    /**
+     * The delay before falling commences
+     */
+    private long fallDelay;
+
+    public Doodle(float x, float y, float width, float height, float jumpSize, long fallDelay, Bitmap image) {
         super(x, y, width, height, image);
-        this.velocityX = 0;
-        this.velocityY = 0;
         this.jumpSize = jumpSize;
+        this.fallDelay = fallDelay;
         this.shouldFall = true;
+
+        Log.i(TAG, "New Doodle created, jumpSize = " + jumpSize + ", fallDelay = " + fallDelay);
     }
 
-    public Boolean checkCollision(ArrayList<Entity> entities) {
+    /**
+     * Checks the collision with the Doodle in comparison to all the other entities
+     *
+     * @param entities The entities to check
+     * @return True if the Doodle is colliding, else false
+     */
+    public boolean checkCollision(ArrayList<Entity> entities) {
         boolean colliding = collidingWithPlatforms(entities);
         if (colliding) {
             this.shouldFall = false;
@@ -47,6 +66,12 @@ public class Doodle extends Entity {
         return colliding;
     }
 
+    /**
+     * Checks if the doodle is colliding with platforms.
+     *
+     * @param entities The platforms to check
+     * @return True if Doodle is colliding, else false
+     */
     private boolean collidingWithPlatforms(ArrayList<Entity> entities) {
         boolean isCollidingWithPlatform = false;
         for (Entity platform : entities) {
@@ -71,7 +96,7 @@ public class Doodle extends Entity {
      *
      * @param entity    The entity to check if we are colliding with it
      * @param velocityY The velocity to take into account.
-     * @return
+     * @return True if there is collision, else false
      */
     private boolean isColliding(Entity entity, float velocityY) {
         boolean isColliding = false;
@@ -107,17 +132,11 @@ public class Doodle extends Entity {
 
     @Override
     public void update() {
-        super.update();
-
         if (shouldFall) {
-            velocityY += 1;
+            setVelocityY(getVelocityY() + 1);
         }
 
-        float newX = this.getX() + velocityX;
-        float newY = this.getY() + velocityY;
-
-        setX(newX);
-        setY(newY);
+        super.update();
     }
 
     @Override
@@ -130,7 +149,7 @@ public class Doodle extends Entity {
     }
 
     public void jump() {
-        Log.i(TAG, "Doodle jump occured!");
+        Log.i(TAG, "Doodle jump occurred!");
 
         this.velocityY = -jumpSize;
 
@@ -144,17 +163,9 @@ public class Doodle extends Entity {
         };
 
         Timer timer = new Timer();
-        timer.schedule(fallingTask, 100);
-    }
+        timer.schedule(fallingTask, fallDelay);
 
-    public void setVelocityX(float velocityX) {
-        this.velocityX = velocityX;
-    }
-
-    public boolean isInScreen(ScrollingCamera camera) {
-        float relativeYPosition = camera.getRelativeYPosition(getY());
-
-        return camera.getScreenHeight() > relativeYPosition;
+        Log.i(TAG, "Falling task scheduled, delay = " + fallDelay);
     }
 
     public float getHighestY() {

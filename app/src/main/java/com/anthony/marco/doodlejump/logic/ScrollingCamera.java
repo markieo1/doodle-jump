@@ -65,14 +65,11 @@ public class ScrollingCamera {
      * @param canvas The canvas to draw onto
      */
     public void draw(Canvas canvas) {
-        int totalDrawn = 0;
         for (Entity entity : entities) {
             if (this.isEntityInScreen(entity)) {
-                totalDrawn++;
                 entity.draw(this, canvas);
             }
         }
-        //Log.i("ScrollingCamera", "Total drawn: " + totalDrawn);
     }
 
     /**
