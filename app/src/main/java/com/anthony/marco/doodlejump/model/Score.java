@@ -9,6 +9,11 @@ import java.util.Date;
 
 public class Score {
     /**
+     * The ID of the score
+     */
+    private long id;
+
+    /**
      * The name of the player
      */
     private String name;
@@ -24,15 +29,30 @@ public class Score {
     private Date date;
 
     public Score(String name, int score) {
-        this.name = name;
-        this.score = score;
-        this.date = new Date();
+        this(0, name, score);
     }
 
     public Score(String name, int score, Date date) {
+        this(0, name, score, date);
+    }
+
+    public Score(long id, String name, int score) {
+        this(id, name, score, new Date());
+    }
+
+    public Score(long id, String name, int score, Date date) {
+        this.id = id;
         this.name = name;
         this.score = score;
         this.date = date;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {

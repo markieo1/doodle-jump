@@ -66,19 +66,20 @@ public class ScoreDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Score> scores = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TBL_SCORES, new String[]{SCORES_COL_NAME, SCORES_COL_SCORE, SCORES_COL_DATE}, null, null, null, null, SCORES_COL_DATE + " DESC", onlyLatestTen ? "10" : null);
+        Cursor cursor = db.query(TBL_SCORES, new String[]{BaseColumns._ID, SCORES_COL_NAME, SCORES_COL_SCORE, SCORES_COL_DATE}, null, null, null, null, SCORES_COL_DATE + " DESC", onlyLatestTen ? "10" : null);
         while (cursor.moveToNext()) {
+            long id = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
             String name = cursor.getString(cursor.getColumnIndex(SCORES_COL_NAME));
             int score = cursor.getInt(cursor.getColumnIndex(SCORES_COL_SCORE));
 
-            Score scoreObj = new Score(name, score);
+            Score scoreObj = new Score(id, name, score);
 
             String dateString = cursor.getString(cursor.getColumnIndex(SCORES_COL_DATE));
             try {
                 Date date = dateFormat.parse(dateString);
                 scoreObj.setDate(date);
             } catch (ParseException e) {
-                Log.e(TAG, "Error parsing date = " + dateString, e);
+                Log.e(TAG, "Error parsing id = " + id + " ,date = " + dateString, e);
             }
 
             scores.add(scoreObj);
@@ -95,7 +96,7 @@ public class ScoreDatabaseHelper extends SQLiteOpenHelper {
      *
      * @param score The score to save
      */
-    public void saveScore(Score score) {
+    public long saveScore(Score score) {
         Log.i(TAG, "Starting save score, name = " + score.getName() + ", score = " + score.getScore());
         ContentValues contentValues = new ContentValues();
         contentValues.put(SCORES_COL_NAME, score.getName());
@@ -107,6 +108,8 @@ public class ScoreDatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         Log.i(TAG, "Score saved, rowId = " + id);
+
+        return id;
     }
 
     /**
