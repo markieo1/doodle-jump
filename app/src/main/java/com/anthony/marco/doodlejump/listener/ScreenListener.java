@@ -6,15 +6,24 @@ package com.anthony.marco.doodlejump.listener;
 
 public interface ScreenListener {
     /**
-     * The screen touched callback
+     * Occurs when the screen is touched
+     *
      * @param xPosition The x position of the touch
      * @param yPosition The y position of the touch
      */
     void screenTouched(float xPosition, float yPosition);
+
+    /**
+     * Occurs when the screen size is changed
+     *
+     * @param width  The new width
+     * @param height The new height
+     */
     void screenSizeChanged(int width, int height);
 
     /**
      * Occurs when the rotation is changed
+     *
      * @param newRotation the new value of rotation in degrees
      */
     void rotationChanged(float newRotation);
