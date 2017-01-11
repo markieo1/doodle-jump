@@ -139,6 +139,9 @@ public class DoodleGame implements ScreenListener {
                     startTimer();
                 }
             }
+            else {
+                timerNeedReset = true;
+            }
 
             camera.update(doodle);
 
