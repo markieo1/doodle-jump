@@ -70,6 +70,7 @@ public class ScoreDatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TBL_SCORES, new String[]{BaseColumns._ID, SCORES_COL_NAME, SCORES_COL_SCORE, SCORES_COL_DATE}, null, null, null, null, SCORES_COL_DATE + " DESC", onlyLatestTen ? "10" : null);
         while (cursor.moveToNext()) {
+            // Load all the query results in an Score Object.
             long id = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
             String name = cursor.getString(cursor.getColumnIndex(SCORES_COL_NAME));
             int score = cursor.getInt(cursor.getColumnIndex(SCORES_COL_SCORE));

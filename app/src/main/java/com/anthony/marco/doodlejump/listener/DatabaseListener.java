@@ -12,7 +12,7 @@ public interface DatabaseListener {
     /**
      * Callback used when the scores are loaded from the database
      *
-     * @param scores
+     * @param scores The scores loaded from the database
      */
     void scoresLoaded(ArrayList<Score> scores);
 
