@@ -12,11 +12,14 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anthony.marco.doodlejump.App;
 import com.anthony.marco.doodlejump.R;
+import com.anthony.marco.doodlejump.adapter.ScoresAdapter;
+import com.anthony.marco.doodlejump.database.task.LoadScoresTask;
 import com.anthony.marco.doodlejump.database.task.NameInUseTask;
 import com.anthony.marco.doodlejump.database.task.SaveScoreTask;
 import com.anthony.marco.doodlejump.listener.DatabaseListener;
@@ -24,6 +27,8 @@ import com.anthony.marco.doodlejump.listener.DoodleListener;
 import com.anthony.marco.doodlejump.model.Score;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MainActivity extends Activity implements DoodleListener, DatabaseListener {
     private final String TAG = "MainActivity";
@@ -34,6 +39,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     private View mainMenuButtonsView;
     private View gameOverView;
     private View newGameView;
+    private View scoreBoardView;
 
     private TextView scoreTextView;
     private TextView finalScoreTextView;
@@ -46,6 +52,9 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
 
     private Score currentScore;
 
+    private ArrayList<Score> scores;
+    private ScoresAdapter scoresAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,23 +62,36 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
 
         setUiState(UiState.MAIN_MENU);
 
+        scores = new ArrayList<>();
+        scoresAdapter = new ScoresAdapter(getLayoutInflater(), scores);
+
         doodleSurfaceView = (DoodleSurfaceView) findViewById(R.id.doodle_surface_view);
 
         gameButtonsView = findViewById(R.id.game_buttons);
         mainMenuButtonsView = findViewById(R.id.main_menu_buttons);
         gameOverView = findViewById(R.id.game_over_layout);
         newGameView = findViewById(R.id.new_game_layout);
+        scoreBoardView = findViewById(R.id.score_board_layout);
 
         scoreTextView = (TextView) gameButtonsView.findViewById(R.id.score_text_view);
         finalScoreTextView = (TextView) gameOverView.findViewById(R.id.final_score_text_view);
         playerNameEditText = (EditText) newGameView.findViewById(R.id.player_name_edit_text);
 
+        ListView scoreboardListView = (ListView) scoreBoardView.findViewById(R.id.score_board_listview);
+        scoreboardListView.setAdapter(scoresAdapter);
+
         Button newGameButton = (Button) mainMenuButtonsView.findViewById(R.id.new_game_button);
         Button aboutUsButton = (Button) mainMenuButtonsView.findViewById(R.id.about_us_button);
-        Button playAgainButton = (Button) gameOverView.findViewById(R.id.play_again_button);
+        Button scoresButton = (Button) mainMenuButtonsView.findViewById(R.id.scores_button);
+
         Button stopGameButton = (Button) gameButtonsView.findViewById(R.id.stop_game_button);
+
+        Button playAgainButton = (Button) gameOverView.findViewById(R.id.play_again_button);
         Button mainMenuButton = (Button) gameOverView.findViewById(R.id.main_menu_button);
+
         Button startGameButton = (Button) newGameView.findViewById(R.id.start_game_button);
+
+        Button backButton = (Button) scoreBoardView.findViewById(R.id.score_board_back_button);
 
         hideSystemUI();
 
@@ -105,6 +127,13 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
             }
         });
 
+        scoresButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showScoreboard();
+            }
+        });
+
         mainMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,6 +162,17 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 checkFields();
             }
         });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                scoreboardBack();
+            }
+        });
+
+        // Load the scores
+        LoadScoresTask loadScoresTask = new LoadScoresTask(this, this);
+        loadScoresTask.execute(true);
     }
 
     @Override
@@ -151,6 +191,18 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
             registerListeners();
 
         switchViews();
+    }
+
+    private void scoreboardBack() {
+        setUiState(UiState.MAIN_MENU);
+        switchViews();
+    }
+
+    private void showScoreboard() {
+        setUiState(UiState.SCOREBOARD);
+        switchViews();
+
+        // TODO: Update the ListView
     }
 
     /**
@@ -245,6 +297,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 gameButtonsView.setVisibility(View.VISIBLE);
                 gameOverView.setVisibility(View.GONE);
                 newGameView.setVisibility(View.GONE);
+                scoreBoardView.setVisibility(View.GONE);
                 break;
             }
             case MAIN_MENU: {
@@ -252,6 +305,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 gameButtonsView.setVisibility(View.GONE);
                 gameOverView.setVisibility(View.GONE);
                 newGameView.setVisibility(View.GONE);
+                scoreBoardView.setVisibility(View.GONE);
                 break;
             }
             case GAME_OVER: {
@@ -259,6 +313,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 gameButtonsView.setVisibility(View.GONE);
                 gameOverView.setVisibility(View.VISIBLE);
                 newGameView.setVisibility(View.GONE);
+                scoreBoardView.setVisibility(View.GONE);
                 break;
             }
             case NEW_GAME: {
@@ -266,6 +321,15 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 gameButtonsView.setVisibility(View.GONE);
                 gameOverView.setVisibility(View.GONE);
                 newGameView.setVisibility(View.VISIBLE);
+                scoreBoardView.setVisibility(View.GONE);
+                break;
+            }
+            case SCOREBOARD: {
+                mainMenuButtonsView.setVisibility(View.GONE);
+                gameButtonsView.setVisibility(View.GONE);
+                gameOverView.setVisibility(View.GONE);
+                newGameView.setVisibility(View.GONE);
+                scoreBoardView.setVisibility(View.VISIBLE);
                 break;
             }
         }
@@ -282,9 +346,8 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     }
 
     private void saveScore(Score score) {
-        // TODO: Add to the scores list
         // Save the score in the database
-        SaveScoreTask saveScoreTask = new SaveScoreTask(this);
+        SaveScoreTask saveScoreTask = new SaveScoreTask(this, this);
         saveScoreTask.execute(score);
     }
 
@@ -322,7 +385,9 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
 
     @Override
     public void scoresLoaded(ArrayList<Score> scores) {
-
+        this.scores.clear();
+        this.scores.addAll(scores);
+        scoresAdapter.notifyDataSetChanged();
     }
 
     @Override

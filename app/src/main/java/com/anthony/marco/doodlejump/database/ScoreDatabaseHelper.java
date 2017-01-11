@@ -13,6 +13,8 @@ import com.anthony.marco.doodlejump.model.Score;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 
@@ -88,7 +90,16 @@ public class ScoreDatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         Log.i(TAG, "Scores loaded, size = " + scores.size());
-        return null;
+
+        // Sort all the scores on the score variable
+        Collections.sort(scores, new Comparator<Score>() {
+            @Override
+            public int compare(Score score, Score t1) {
+                return score.getScore() > t1.getScore() ? -1 : (score.getScore() < t1.getScore()) ? 1 : 0;
+            }
+        });
+
+        return scores;
     }
 
     /**

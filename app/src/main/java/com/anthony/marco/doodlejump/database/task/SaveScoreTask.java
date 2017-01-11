@@ -14,10 +14,14 @@ import java.util.ArrayList;
  */
 
 public class SaveScoreTask extends AsyncTask<Score, Void, Void> {
+    private Context mContext;
     private ScoreDatabaseHelper mScoreDatabaseHelper;
+    private DatabaseListener mDatabaseListener;
 
-    public SaveScoreTask(Context context) {
+    public SaveScoreTask(Context context, DatabaseListener databaseListener) {
+        this.mContext = context;
         this.mScoreDatabaseHelper = new ScoreDatabaseHelper(context);
+        this.mDatabaseListener = databaseListener;
     }
 
     @Override
@@ -30,5 +34,12 @@ public class SaveScoreTask extends AsyncTask<Score, Void, Void> {
         }
 
         return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        // We load the newly saved scores.
+        LoadScoresTask loadScoresTask = new LoadScoresTask(mContext, mDatabaseListener);
+        loadScoresTask.execute(true);
     }
 }

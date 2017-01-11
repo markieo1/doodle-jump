@@ -13,6 +13,7 @@
             android:id="@+id/new_game_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/start_game" />
 
         <Button
@@ -21,6 +22,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/about_us" />
+
+        <Button
+            android:id="@+id/scores_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/scoreboard" />
     </LinearLayout>
 
 

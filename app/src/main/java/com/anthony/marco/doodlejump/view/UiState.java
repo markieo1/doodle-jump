@@ -8,5 +8,6 @@ enum UiState {
     MAIN_MENU,
     GAME,
     GAME_OVER,
-    NEW_GAME
+    NEW_GAME,
+    SCOREBOARD
 }
