@@ -1,10 +1,14 @@
 package com.anthony.marco.doodlejump.logic;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.CountDownTimer;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.util.Log;
 
 import com.anthony.marco.doodlejump.App;
@@ -36,7 +40,10 @@ public class DoodleGame implements ScreenListener {
     private boolean isStarted;
     private Bitmap platformBitmap;
     private Bitmap doodleBitmap;
-
+    private CountDownTimer platformHitTimeRecorder;
+    private int timerTimeToCountDownInMS;
+    private boolean isTimerinitialized;
+    private boolean isTimerStarted;
     private DoodleListener doodleListener;
 
     private ScheduledExecutorService ses;
@@ -71,6 +78,9 @@ public class DoodleGame implements ScreenListener {
         isStarted = false;
         platformBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
         doodleBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.circle);
+        timerTimeToCountDownInMS = 10000;
+        isTimerinitialized = false;
+        isTimerStarted=false;
     }
 
     public void startGame(final DoodleListener doodleListener) {
@@ -119,9 +129,16 @@ public class DoodleGame implements ScreenListener {
 
     public void update() {
         if (isStarted) {
-            if( doodle.checkCollision(entities)){
-                //TODO: update timer..
+            if(doodle.checkCollision(entities)) {
+                if (!isTimerinitialized) {
+                    //TODO: update timer..
+                    this.setTimerReady();
+                }
+                else {
+                    platformHitTimeRecorder.cancel();
+                }
             }
+
             camera.update(doodle);
 
             generatePlatforms();
@@ -211,6 +228,8 @@ public class DoodleGame implements ScreenListener {
 
         if (doodle != null)
             doodle.jump();
+
+        startTimer();
     }
 
     @Override
@@ -229,5 +248,40 @@ public class DoodleGame implements ScreenListener {
 
         if (doodle != null)
             doodle.setVelocityX(velocityX);
+    }
+
+    public void setTimerReady() {
+        isTimerinitialized = true;
+
+        //Looper.prepare();
+        new Thread(){
+            public void run()
+            {
+                platformHitTimeRecorder = new CountDownTimer(timerTimeToCountDownInMS, 1000) {
+
+                    @Override
+                    public void onTick(long l) {
+                        isTimerStarted = true;
+                        doodleListener.updateTimer(l);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        isTimerStarted = false;
+                        isTimerinitialized =false;
+                        float resultScore = doodle.getHighestY() * -1;
+                        doodleListener.gameOver(Math.round(resultScore));
+                    }
+                };
+            }
+        }.run();
+        //Looper.loop();
+    }
+
+    public void startTimer(){
+        if (platformHitTimeRecorder != null && !isTimerStarted){
+            isTimerStarted = true;
+            platformHitTimeRecorder.start();
+        }
     }
 }
