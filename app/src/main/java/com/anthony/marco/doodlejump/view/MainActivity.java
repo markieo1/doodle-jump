@@ -336,16 +336,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         }
     }
 
-    /**
-     * Changes the UiState
-     *
-     * @param uiState the new ui state
-     */
-    private void setUiState(UiState uiState) {
-        this.currentUiState = uiState;
-        Log.i(TAG, "UI State changed, new = " + uiState);
-    }
-
     private void saveScore(Score score) {
         // Save the score in the database
         SaveScoreTask saveScoreTask = new SaveScoreTask(this, this);
