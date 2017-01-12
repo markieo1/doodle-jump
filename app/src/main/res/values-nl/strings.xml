@@ -6,4 +6,6 @@
     <string name="stop">Stoppen</string>
     <string name="play_again">Opnieuw spelen</string>
     <string name="main_menu">Hoofdmenu</string>
+    <string name="enter_your_name_label">Voer je naam in...</string>
+    <string name="player_name_hint">Naam</string>
 </resources>

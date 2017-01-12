@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="scoreColor">#FF0000</color>
     <color name="labelColor">#FFF</color>
+    <color name="hintColor">#640000</color>
 </resources>
