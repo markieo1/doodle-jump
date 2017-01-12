@@ -18,4 +18,5 @@ public interface DoodleListener {
      * @param newScore The new score
      */
     void scoreChanged(int newScore);
+    void updateTimer(long timeLeft);
 }

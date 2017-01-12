@@ -48,6 +48,8 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     private SensorManager mSensorManager;
     private Sensor mSensor;
 
+    private TextView timer;
+
     private UiState currentUiState;
 
     private Score currentScore;
@@ -75,6 +77,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
 
         scoreTextView = (TextView) gameButtonsView.findViewById(R.id.score_text_view);
         finalScoreTextView = (TextView) gameOverView.findViewById(R.id.final_score_text_view);
+        timer = (TextView)findViewById(R.id.player_timer);
         playerNameEditText = (EditText) newGameView.findViewById(R.id.player_name_edit_text);
 
         ListView scoreboardListView = (ListView) scoreBoardView.findViewById(R.id.score_board_listview);
@@ -381,6 +384,28 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         });
     }
 
+    @Override
+    public void updateTimer(final long timeLeft) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String timerLeftInSeconds = String.valueOf((float)timeLeft / 1000 );
+
+                timer.setText(timerLeftInSeconds);
+            }
+        });
+    }
+
+    /**
+     * Changes the UiState
+     *
+     * @param uiState the new ui state
+     */
+    private void setUiState(UiState uiState) {
+        this.currentUiState = uiState;
+        Log.i(TAG, "UI State changed, new = " + uiState);
+    }
+    
     @Override
     public void scoresLoaded(ArrayList<Score> scores) {
         this.scores.clear();
