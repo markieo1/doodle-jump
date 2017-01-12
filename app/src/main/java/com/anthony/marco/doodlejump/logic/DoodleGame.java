@@ -36,11 +36,6 @@ public class DoodleGame implements ScreenListener {
      * The doodle width
      */
     private static final float DOODLE_WIDTH = 50;
-    private Boolean timerNeedReset;
-    private boolean isTimerStarted;
-    private int timerTimeToCountDownInS;
-    private ScheduledFuture timerLoop;
-    private ScheduledFuture timerCountDown;
 
     /**
      * The doodle height
@@ -143,7 +138,41 @@ public class DoodleGame implements ScreenListener {
      */
     private Bitmap doodleBitmap;
 
+    /**
+     * The thread pool
+     */
     private ScheduledExecutorService ses;
+
+
+    /**
+     * Determines if the timer needs a reset
+     */
+    private boolean timerNeedReset;
+
+    /**
+     * Check wether the timer is started or not
+     */
+    private boolean isTimerStarted;
+
+    /**
+     * The time needed to count down in seconds
+     */
+    private int timerTimeToCountDownInS;
+
+    /**
+     * The time needed to count down in milliseconds
+     */
+    private int timerTimeToCountDownInMS;
+
+    /**
+     * The loop in which the countdown occurs
+     */
+    private ScheduledFuture timerLoop;
+
+    /**
+     * The timer that updates the label and the count down time
+     */
+    private ScheduledFuture timerCountDown;
 
     public DoodleGame() {
         entities = new ArrayList<>();
@@ -151,6 +180,7 @@ public class DoodleGame implements ScreenListener {
         timerNeedReset = false;
         isTimerStarted = false;
         timerTimeToCountDownInS = 10;
+        timerTimeToCountDownInMS = 10000;
     }
 
     /**
@@ -386,10 +416,10 @@ public class DoodleGame implements ScreenListener {
             timerCountDown = ses.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    doodleListener.updateTimer(timerTimeToCountDownInS);
-                    timerTimeToCountDownInS -= 1;
+                    doodleListener.updateTimer(timerTimeToCountDownInMS);
+                    timerTimeToCountDownInMS -= 100;
                 }
-            }, 0, 1, TimeUnit.SECONDS);
+            }, 0, 100, TimeUnit.MILLISECONDS);
 
             timerLoop = ses.schedule(new Runnable() {
                 @Override
@@ -397,7 +427,7 @@ public class DoodleGame implements ScreenListener {
                     timerCountDown.cancel(true);
                     stopGame();
                 }
-            }, timerTimeToCountDownInS + 1, TimeUnit.SECONDS);
+            }, timerTimeToCountDownInS, TimeUnit.SECONDS);
         }
     }
 
@@ -408,7 +438,8 @@ public class DoodleGame implements ScreenListener {
         if (timerLoop != null) {
             Log.i(TAG, "Timer reseted");
             timerTimeToCountDownInS = 10;
-            doodleListener.updateTimer( timerTimeToCountDownInS);
+            timerTimeToCountDownInMS = 10000;
+            doodleListener.updateTimer(timerTimeToCountDownInS);
             timerCountDown.cancel(true);
 
             isTimerStarted = false;

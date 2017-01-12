@@ -238,7 +238,8 @@ public class MainActivity extends Activity implements DoodleListener {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String timerLeftInSeconds = String.valueOf(timeLeft );
+                String timerLeftInSeconds = String.valueOf((float)timeLeft / 1000 );
+
                 timer.setText(timerLeftInSeconds);
             }
         });
