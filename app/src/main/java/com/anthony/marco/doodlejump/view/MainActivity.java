@@ -31,6 +31,8 @@ public class MainActivity extends Activity implements DoodleListener {
     private SensorManager mSensorManager;
     private Sensor mSensor;
 
+    private TextView timer;
+
     private UiState currentUiState;
 
     @Override
@@ -48,6 +50,7 @@ public class MainActivity extends Activity implements DoodleListener {
 
         scoreTextView = (TextView) gameButtonsView.findViewById(R.id.score_text_view);
         finalScoreTextView = (TextView) gameOverView.findViewById(R.id.final_score_text_view);
+        timer = (TextView)findViewById(R.id.player_timer);
 
         Button startGameButton = (Button) mainMenuButtonsView.findViewById(R.id.start_game_button);
         Button aboutUsButton = (Button) mainMenuButtonsView.findViewById(R.id.about_us_button);
@@ -226,6 +229,18 @@ public class MainActivity extends Activity implements DoodleListener {
             public void run() {
                 // Update the score label
                 scoreTextView.setText(String.valueOf(newScore));
+            }
+        });
+    }
+
+    @Override
+    public void updateTimer(final long timeLeft) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String timerLeftInSeconds = String.valueOf((float)timeLeft / 1000 );
+
+                timer.setText(timerLeftInSeconds);
             }
         });
     }
