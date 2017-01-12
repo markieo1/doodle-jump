@@ -1,28 +1,35 @@
 package com.anthony.marco.doodlejump.view;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.anthony.marco.doodlejump.logic.GameThread;
+import com.anthony.marco.doodlejump.logic.DoodleGame;
 import com.anthony.marco.doodlejump.listener.DoodleListener;
 
 /**
  * Created by marco on 3-1-2017.
  */
 
-public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
+public class DoodleSurfaceView extends SurfaceView implements Runnable, SurfaceHolder.Callback, SensorEventListener {
     private static final String TAG = "DoodleSurfaceView";
     private SurfaceHolder surfaceHolder;
-    private GameThread gameThread;
     private static final int FROM_RADS_TO_DEGS = -57;
+
+    private volatile boolean isRunning;
+    private DoodleGame doodleGame;
+    private Thread gameThread;
+
 
     public DoodleSurfaceView(Context context) {
         super(context);
@@ -41,17 +48,16 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 
     private void initialize() {
-        this.gameThread = new GameThread(this);
-        this.gameThread.setRunning(true);
+        gameThread = null;
         this.surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
+        this.doodleGame = new DoodleGame();
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         Rect surfaceFrame = surfaceHolder.getSurfaceFrame();
-        this.gameThread.setScreenSize(surfaceFrame.width(), surfaceFrame.height());
-        gameThread.start();
+        this.doodleGame.screenSizeChanged(surfaceFrame.width(), surfaceFrame.height());
     }
 
     @Override
@@ -60,26 +66,20 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        // Stop Thread
-        this.gameThread.setRunning(false);
-        try {
-            this.gameThread.join();
-        } catch (InterruptedException e) {
-
-        }
+        pause();
     }
 
     public void startGame(DoodleListener doodleListener) {
-        this.gameThread.startGame(doodleListener);
+        this.doodleGame.startGame(doodleListener);
     }
 
     public void stopGame() {
-        this.gameThread.stopGame();
+        this.doodleGame.stopGame();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        this.gameThread.screenTouched(event.getX(), event.getY());
+        this.doodleGame.screenTouched(event.getX(), event.getY());
         return super.onTouchEvent(event);
     }
 
@@ -98,12 +98,54 @@ public class DoodleSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
         if (roll >= -90 && roll <= 90) {
             //Log.i("DoodleSurfaceView", "Rotation = " + roll);
-            this.gameThread.screenRotated(roll);
+            this.doodleGame.rotationChanged(roll);
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
+    }
+
+    @Override
+    public void run() {
+        while (isRunning) {
+            // 1. Update
+            // 2. Draw
+            doodleGame.update();
+
+            if (surfaceHolder.getSurface().isValid()) {
+                Canvas canvas = surfaceHolder.lockCanvas();
+                canvas.drawColor(Color.BLACK);
+                doodleGame.draw(canvas);
+
+                surfaceHolder.unlockCanvasAndPost(canvas);
+            }
+
+            // Sleep
+            try {
+                Thread.sleep(1000 / 60);
+            } catch (InterruptedException ex) {
+                Log.e(TAG, ex.getLocalizedMessage());
+            }
+        }
+    }
+
+    public void pause() {
+        Log.i(TAG, "Pause is called.");
+        isRunning = false;
+        try {
+            // Join lets current thread wait
+            gameThread.join();
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Error: joining thread");
+        }
+    }
+
+    public void resume() {
+        Log.i(TAG, "Resume is called.");
+        isRunning = true;
+        gameThread = new Thread(this);
+        gameThread.start();
     }
 }
