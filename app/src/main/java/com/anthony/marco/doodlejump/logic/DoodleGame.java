@@ -374,14 +374,12 @@ public class DoodleGame implements ScreenListener {
         if (doodle != null)
             doodle.setVelocityX(velocityX);
     }
-<<<<<<<
 
     public void setTimerReady() {
         Log.i(TAG, "Timer set ready");
         isTimerStarted = false;
         resetTimer();
     }
-
 
     public void startTimer() {
         if (timerLoop == null){
@@ -418,7 +416,6 @@ public class DoodleGame implements ScreenListener {
             timerLoop = null;
         }
     }
-=======
 
     /**
      * Gets the current screenWidth
@@ -437,5 +434,4 @@ public class DoodleGame implements ScreenListener {
     public int getScreenHeight() {
         return screenHeight;
     }
->>>>>>>
 }
