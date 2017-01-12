@@ -236,7 +236,7 @@ public class DoodleGame implements ScreenListener {
                 if (isTimerStarted && timerNeedReset) {
                     //TODO: update timer..
                     timerNeedReset =false;
-                    setTimerReady();
+                    resetTimer();
                     startTimer();
                 }
             }
@@ -374,15 +374,10 @@ public class DoodleGame implements ScreenListener {
         if (doodle != null)
             doodle.setVelocityX(velocityX);
     }
-<<<<<<<
 
-    public void setTimerReady() {
-        Log.i(TAG, "Timer set ready");
-        isTimerStarted = false;
-        resetTimer();
-    }
-
-
+    /**
+     * Starts the current timer if not initialized
+     */
     public void startTimer() {
         if (timerLoop == null){
             //timerNeedReset = false;
@@ -406,6 +401,9 @@ public class DoodleGame implements ScreenListener {
         }
     }
 
+    /**
+     * Resets the timer and the timer count down
+     */
     public void resetTimer() {
         if (timerLoop != null) {
             Log.i(TAG, "Timer reseted");
@@ -418,7 +416,6 @@ public class DoodleGame implements ScreenListener {
             timerLoop = null;
         }
     }
-=======
 
     /**
      * Gets the current screenWidth
@@ -437,5 +434,4 @@ public class DoodleGame implements ScreenListener {
     public int getScreenHeight() {
         return screenHeight;
     }
->>>>>>>
 }
