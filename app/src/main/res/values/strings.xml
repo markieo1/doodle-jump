@@ -8,4 +8,8 @@
     <string name="play_again">Play again</string>
     <string name="score" translatable="false">Score:</string>
     <string name="main_menu">Main Menu</string>
+    <string name="player_name_hint">Name</string>
+    <string name="enter_your_name_label">Enter your name...</string>
+    <string name="back">Back</string>
+    <string name="scoreboard">Scoreboard</string>
 </resources>
