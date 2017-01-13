@@ -182,6 +182,8 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     protected void onPause() {
         super.onPause();
 
+        doodleSurfaceView.pause();
+
         if (currentUiState == UiState.GAME)
             unregisterListeners();
     }
@@ -189,6 +191,8 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     @Override
     protected void onResume() {
         super.onResume();
+
+        doodleSurfaceView.resume();
 
         if (currentUiState == UiState.GAME)
             registerListeners();
