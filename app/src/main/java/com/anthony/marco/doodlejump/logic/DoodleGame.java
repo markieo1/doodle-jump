@@ -174,13 +174,13 @@ public class DoodleGame implements ScreenListener {
      */
     private ScheduledFuture timerCountDown;
 
+    private DifficultyHandler difficultyHandler;
+
     public DoodleGame() {
         entities = new ArrayList<>();
         isStarted = false;
         timerNeedReset = false;
         isTimerStarted = false;
-        timerTimeToCountDownInS = 10;
-        timerTimeToCountDownInMS = 10000;
     }
 
     /**
@@ -194,6 +194,9 @@ public class DoodleGame implements ScreenListener {
 
         ses = Executors.newScheduledThreadPool(2);
 
+        timerTimeToCountDownInS = 8;
+        timerTimeToCountDownInMS = timerTimeToCountDownInS * 1000;
+        difficultyHandler = new DifficultyHandler(PLATFORM_WIDTH,MIN_DIFFERENCE,MAX_DIFFERENCE,timerTimeToCountDownInS );
 
         loadResources();
 
@@ -283,6 +286,11 @@ public class DoodleGame implements ScreenListener {
                 Log.i(TAG, "Doodle left screen");
                 stopGame();
             }
+
+            if (difficultyHandler.needNewValues(doodle.getHighestY())){
+                difficultyHandler.setNewValues(doodle.getHighestY());
+            }
+
         }
     }
 
@@ -310,7 +318,7 @@ public class DoodleGame implements ScreenListener {
         for (int i = 0; i < GENERATION_COUNT; i++) {
             int x = rnd.nextInt(getScreenWidth() - 100) + 1;
 
-            float randomY = rnd.nextFloat() * (MAX_DIFFERENCE - MIN_DIFFERENCE) + MIN_DIFFERENCE;
+            float randomY = rnd.nextFloat() * (difficultyHandler.getMaxDifference() - difficultyHandler.getMinDifference()) + difficultyHandler.getMinDifference();
             if (randomY > 0) {
                 // Make it negative since we are going up
                 randomY *= -1;
@@ -320,7 +328,7 @@ public class DoodleGame implements ScreenListener {
 
             lastYGenerated = platformY;
 
-            Entity entity = new Entity(x, platformY, PLATFORM_WIDTH, PLATFORM_HEIGHT, platformBitmap);
+            Entity entity = new Entity(x, platformY, difficultyHandler.getPlatformWidth(), PLATFORM_HEIGHT, platformBitmap);
             entities.add(entity);
         }
 
@@ -437,11 +445,10 @@ public class DoodleGame implements ScreenListener {
     public void resetTimer() {
         if (timerLoop != null) {
             Log.i(TAG, "Timer reseted");
-            timerTimeToCountDownInS = 10;
-            timerTimeToCountDownInMS = 10000;
+            timerTimeToCountDownInS = difficultyHandler.getInitialCountDownTimerInS();
+            timerTimeToCountDownInMS = timerTimeToCountDownInS * 1000;
             doodleListener.updateTimer(timerTimeToCountDownInS);
             timerCountDown.cancel(true);
-
             isTimerStarted = false;
             timerLoop.cancel(true);
             timerLoop = null;
