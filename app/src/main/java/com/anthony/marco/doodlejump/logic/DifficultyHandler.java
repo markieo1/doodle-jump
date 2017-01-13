@@ -14,57 +14,57 @@ public class DifficultyHandler {
     /**
      * The maximal difference between platforms for easy
      */
-    public static final int MAX_DIFFERENCE_EASY = 20;
+    private static final int MAX_DIFFERENCE_EASY = 20;
 
     /**
      * The width to reduce the platform on easy
      */
-    public static final int PLATFORM_WIDTH_EASY = 10;
+    private static final int PLATFORM_WIDTH_EASY = 10;
 
     /**
      * The minimal difference between platforms for normal
      */
-    public static final int MIN_DIFFERENCE_NORMAL = 30;
+    private static final int MIN_DIFFERENCE_NORMAL = 30;
 
     /**
      * The maximal difference between platforms for normal
      */
-    public static final int MAX_DIFFERENCE_NORMAL = 15;
+    private static final int MAX_DIFFERENCE_NORMAL = 15;
 
     /**
      * The width to reduce the platform on normal
      */
-    public static final int PLATFORM_WIDTH_NORMAL = 5;
+    private static final int PLATFORM_WIDTH_NORMAL = 5;
 
     /**
      * The minimal difference between platforms for hard
      */
-    public static final int MIN_DIFFERENCE_HARD = 15;
+    private static final int MIN_DIFFERENCE_HARD = 15;
 
     /**
      * The maximal difference between platforms for hard
      */
-    public static final int MAX_DIFFERENCE_HARD = 30;
+    private static final int MAX_DIFFERENCE_HARD = 30;
 
     /**
      * The width to reduce the platform on hard
      */
-    public static final int PLATFORM_WIDTH_HARD = 10;
+    private static final int PLATFORM_WIDTH_HARD = 10;
 
     /**
      * The minimal difference between platforms for very hard
      */
-    public static final int MIN_DIFFERENCE_VERY_HARD = 20;
+    private static final int MIN_DIFFERENCE_VERY_HARD = 20;
 
     /**
      * The maximal difference between platforms for very hard
      */
-    public static final int MAX_DIFFERENCE_VERY_HARD = 15;
+    private static final int MAX_DIFFERENCE_VERY_HARD = 15;
 
     /**
      * The width to reduce the platform on very hard
      */
-    public static final int PLATFORM_DIFFERENCE_VERY_HARD = 5;
+    private static final int PLATFORM_DIFFERENCE_VERY_HARD = 5;
 
     /**
      * The minimum amount of seconds that is allowed to countdown too
