@@ -324,7 +324,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         if (playerName.isEmpty()) {
             Log.i(TAG, "Player name not filled in!");
 
-            Toast.makeText(this, "Please enter a name...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.enter_name, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -501,7 +501,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
             return;
 
         if (inUse) {
-            Toast.makeText(this, "Name already in use...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.name_in_use, Toast.LENGTH_SHORT).show();
             return;
         }
 

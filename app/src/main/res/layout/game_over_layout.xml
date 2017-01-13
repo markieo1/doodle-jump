@@ -19,7 +19,7 @@
                 android:id="@+id/label_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/score"
+                android:text="@string/score_label"
                 android:textAppearance="@android:style/TextAppearance.Large"
                 android:textColor="@color/labelColor"
                 android:textSize="@dimen/final_score_text" />

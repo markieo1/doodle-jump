@@ -6,6 +6,11 @@
     <string name="stop">Stoppen</string>
     <string name="play_again">Opnieuw spelen</string>
     <string name="main_menu">Hoofdmenu</string>
-    <string name="enter_your_name_label">Voer je naam in...</string>
+    <string name="enter_your_name_label">Voer je naam in…</string>
     <string name="player_name_hint">Naam</string>
+    <string name="scoreboard">Scoreboard</string>
+    <string name="name_in_use">Naam al in gebruik</string>
+    <string name="enter_name">Voer je naam in…</string>
+    <string name="back">Terug</string>
+    <string name="score_label">Score:</string>
 </resources>
