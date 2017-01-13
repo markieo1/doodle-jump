@@ -9,5 +9,6 @@ enum UiState {
     GAME,
     GAME_OVER,
     NEW_GAME,
-    SCOREBOARD
+    SCOREBOARD,
+    ATTRACT
 }

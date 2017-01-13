@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,11 +29,14 @@ import com.anthony.marco.doodlejump.listener.DoodleListener;
 import com.anthony.marco.doodlejump.model.Score;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class MainActivity extends Activity implements DoodleListener, DatabaseListener {
     private final String TAG = "MainActivity";
+
+    /**
+     * The time (MILLISECONDS) before the game goes into attract mode
+     */
+    private static final long IDLE_TIME = 10000;
 
     private DoodleSurfaceView doodleSurfaceView;
 
@@ -40,6 +45,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     private View gameOverView;
     private View newGameView;
     private View scoreBoardView;
+    private View attractView;
 
     private TextView scoreTextView;
     private TextView finalScoreTextView;
@@ -57,6 +63,9 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     private ArrayList<Score> scores;
     private ScoresAdapter scoresAdapter;
 
+    private Handler idleHandler;
+    private Runnable idleRunnable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +76,15 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         scores = new ArrayList<>();
         scoresAdapter = new ScoresAdapter(getLayoutInflater(), scores);
 
+        idleHandler = new Handler(Looper.getMainLooper());
+        idleRunnable = new Runnable() {
+            @Override
+            public void run() {
+                //handle your IDLE state
+                goAttractMode();
+            }
+        };
+
         doodleSurfaceView = (DoodleSurfaceView) findViewById(R.id.doodle_surface_view);
 
         gameButtonsView = findViewById(R.id.game_buttons);
@@ -74,10 +92,11 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         gameOverView = findViewById(R.id.game_over_layout);
         newGameView = findViewById(R.id.new_game_layout);
         scoreBoardView = findViewById(R.id.score_board_layout);
+        attractView = findViewById(R.id.attract_layout);
 
         scoreTextView = (TextView) gameButtonsView.findViewById(R.id.score_text_view);
         finalScoreTextView = (TextView) gameOverView.findViewById(R.id.final_score_text_view);
-        timer = (TextView)findViewById(R.id.player_timer);
+        timer = (TextView) findViewById(R.id.player_timer);
         playerNameEditText = (EditText) newGameView.findViewById(R.id.player_name_edit_text);
 
         ListView scoreboardListView = (ListView) scoreBoardView.findViewById(R.id.score_board_listview);
@@ -140,8 +159,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         mainMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setUiState(UiState.MAIN_MENU);
-                switchViews();
+                mainMenu();
             }
         });
 
@@ -173,6 +191,13 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
             }
         });
 
+        attractView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mainMenu();
+            }
+        });
+
         // Load the scores
         LoadScoresTask loadScoresTask = new LoadScoresTask(this, this);
         loadScoresTask.execute(true);
@@ -183,6 +208,8 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         super.onPause();
 
         doodleSurfaceView.pause();
+
+        idleHandler.removeCallbacks(idleRunnable);
 
         if (currentUiState == UiState.GAME)
             unregisterListeners();
@@ -197,12 +224,30 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         if (currentUiState == UiState.GAME)
             registerListeners();
 
+        if (currentUiState == UiState.MAIN_MENU) {
+            scheduleIdleCallback();
+        }
+
         switchViews();
     }
 
+    @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+
+        if (currentUiState == UiState.MAIN_MENU) {
+            scheduleIdleCallback();
+        }
+    }
+
+    private void scheduleIdleCallback() {
+        Log.i(TAG, "Starting delayed idle runnable.");
+        idleHandler.removeCallbacks(idleRunnable);
+        idleHandler.postDelayed(idleRunnable, IDLE_TIME);
+    }
+
     private void scoreboardBack() {
-        setUiState(UiState.MAIN_MENU);
-        switchViews();
+        mainMenu();
     }
 
     private void showScoreboard() {
@@ -247,6 +292,16 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     }
 
     /**
+     * Goes to the main menu
+     */
+    private void mainMenu() {
+        setUiState(UiState.MAIN_MENU);
+        switchViews();
+
+        scheduleIdleCallback();
+    }
+
+    /**
      * Registers the listeners for the sensors
      */
     private void registerListeners() {
@@ -260,6 +315,9 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         mSensorManager.unregisterListener(doodleSurfaceView);
     }
 
+    /**
+     * Checks if the player name field has been filled in and is in use.
+     */
     private void checkFields() {
         // Check if a name has been filled in!
         String playerName = playerNameEditText.getText().toString();
@@ -279,6 +337,15 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     }
 
     /**
+     * Switches to attract mode
+     */
+    private void goAttractMode() {
+        Log.i(TAG, "Switching to attract mode!");
+        setUiState(UiState.ATTRACT);
+        switchViews();
+    }
+
+    /**
      * Hides the SystemUI
      */
     private void hideSystemUI() {
@@ -293,9 +360,22 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     }
 
     /**
+     * Changes the UiState
+     *
+     * @param uiState the new ui state
+     */
+    private void setUiState(UiState uiState) {
+        this.currentUiState = uiState;
+        Log.i(TAG, "UI State changed, new = " + uiState);
+    }
+
+    /**
      * Switches the visibility off the views according to the Ui State
      */
     private void switchViews() {
+        if (currentUiState != UiState.MAIN_MENU)
+            idleHandler.removeCallbacks(idleRunnable);
+
         switch (currentUiState) {
             case GAME: {
                 mainMenuButtonsView.setVisibility(View.GONE);
@@ -303,6 +383,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 gameOverView.setVisibility(View.GONE);
                 newGameView.setVisibility(View.GONE);
                 scoreBoardView.setVisibility(View.GONE);
+                attractView.setVisibility(View.GONE);
                 break;
             }
             case MAIN_MENU: {
@@ -311,6 +392,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 gameOverView.setVisibility(View.GONE);
                 newGameView.setVisibility(View.GONE);
                 scoreBoardView.setVisibility(View.GONE);
+                attractView.setVisibility(View.GONE);
                 break;
             }
             case GAME_OVER: {
@@ -319,6 +401,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 gameOverView.setVisibility(View.VISIBLE);
                 newGameView.setVisibility(View.GONE);
                 scoreBoardView.setVisibility(View.GONE);
+                attractView.setVisibility(View.GONE);
                 break;
             }
             case NEW_GAME: {
@@ -327,6 +410,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 gameOverView.setVisibility(View.GONE);
                 newGameView.setVisibility(View.VISIBLE);
                 scoreBoardView.setVisibility(View.GONE);
+                attractView.setVisibility(View.GONE);
                 break;
             }
             case SCOREBOARD: {
@@ -335,11 +419,25 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 gameOverView.setVisibility(View.GONE);
                 newGameView.setVisibility(View.GONE);
                 scoreBoardView.setVisibility(View.VISIBLE);
+                attractView.setVisibility(View.GONE);
+                break;
+            }
+            case ATTRACT: {
+                mainMenuButtonsView.setVisibility(View.GONE);
+                gameButtonsView.setVisibility(View.GONE);
+                gameOverView.setVisibility(View.GONE);
+                newGameView.setVisibility(View.GONE);
+                scoreBoardView.setVisibility(View.GONE);
+                attractView.setVisibility(View.VISIBLE);
                 break;
             }
         }
     }
 
+    /**
+     * Saves the score in the database
+     * @param score The score to save
+     */
     private void saveScore(Score score) {
         // Save the score in the database
         SaveScoreTask saveScoreTask = new SaveScoreTask(this, this);
@@ -383,23 +481,13 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String timerLeftInSeconds = String.valueOf((float)timeLeft / 1000 );
+                String timerLeftInSeconds = String.valueOf((float) timeLeft / 1000);
 
                 timer.setText(timerLeftInSeconds);
             }
         });
     }
 
-    /**
-     * Changes the UiState
-     *
-     * @param uiState the new ui state
-     */
-    private void setUiState(UiState uiState) {
-        this.currentUiState = uiState;
-        Log.i(TAG, "UI State changed, new = " + uiState);
-    }
-    
     @Override
     public void scoresLoaded(ArrayList<Score> scores) {
         this.scores.clear();
