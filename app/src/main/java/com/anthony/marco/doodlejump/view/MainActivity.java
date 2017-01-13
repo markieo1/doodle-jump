@@ -112,8 +112,9 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         Button mainMenuButton = (Button) gameOverView.findViewById(R.id.main_menu_button);
 
         Button startGameButton = (Button) newGameView.findViewById(R.id.start_game_button);
+        Button backNewGameButton = (Button) newGameView.findViewById(R.id.new_game_back_button);
 
-        Button backButton = (Button) scoreBoardView.findViewById(R.id.score_board_back_button);
+        Button backScoreBoardButton = (Button) scoreBoardView.findViewById(R.id.score_board_back_button);
 
         hideSystemUI();
 
@@ -184,7 +185,14 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
             }
         });
 
-        backButton.setOnClickListener(new View.OnClickListener() {
+        backScoreBoardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mainMenu();
+            }
+        });
+
+        backNewGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mainMenu();
