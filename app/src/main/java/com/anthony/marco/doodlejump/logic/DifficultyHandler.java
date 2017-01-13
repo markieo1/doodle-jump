@@ -5,6 +5,72 @@ package com.anthony.marco.doodlejump.logic;
  */
 
 public class DifficultyHandler {
+
+    /**
+     * The minimal difference between platforms for easy
+     */
+    private static final int MIN_DIFFERENCE_EASY = 20;
+
+    /**
+     * The maximal difference between platforms for easy
+     */
+    public static final int MAX_DIFFERENCE_EASY = 20;
+
+    /**
+     * The width to reduce the platform on easy
+     */
+    public static final int PLATFORM_WIDTH_EASY = 10;
+
+    /**
+     * The minimal difference between platforms for normal
+     */
+    public static final int MIN_DIFFERENCE_NORMAL = 30;
+
+    /**
+     * The maximal difference between platforms for normal
+     */
+    public static final int MAX_DIFFERENCE_NORMAL = 15;
+
+    /**
+     * The width to reduce the platform on normal
+     */
+    public static final int PLATFORM_WIDTH_NORMAL = 5;
+
+    /**
+     * The minimal difference between platforms for hard
+     */
+    public static final int MIN_DIFFERENCE_HARD = 15;
+
+    /**
+     * The maximal difference between platforms for hard
+     */
+    public static final int MAX_DIFFERENCE_HARD = 30;
+
+    /**
+     * The width to reduce the platform on hard
+     */
+    public static final int PLATFORM_WIDTH_HARD = 10;
+
+    /**
+     * The minimal difference between platforms for very hard
+     */
+    public static final int MIN_DIFFERENCE_VERY_HARD = 20;
+
+    /**
+     * The maximal difference between platforms for very hard
+     */
+    public static final int MAX_DIFFERENCE_VERY_HARD = 15;
+
+    /**
+     * The width to reduce the platform on very hard
+     */
+    public static final int PLATFORM_DIFFERENCE_VERY_HARD = 5;
+
+    /**
+     * The minimum amount of seconds that is allowed to countdown too
+     */
+    private static final int LOWEST_COUNT_DOWN_IN_SECONDS = 4;
+
     /**
      * The platform width to begin with
      */
@@ -29,11 +95,6 @@ public class DifficultyHandler {
      * The last set difficulty
      */
     private Difficulties lastDifficulty;
-
-    /**
-     * The minimum amount of seconds that is allowed to countdown too
-     */
-    private static final int LOWEST_COUNT_DOWN_IN_SECONDS = 3;
 
     public void setInitialCountDownTimerInS(int initialCountDownTimerInS) {
         this.initialCountDownTimerInS = initialCountDownTimerInS;
@@ -60,29 +121,29 @@ public class DifficultyHandler {
 
         switch (lastDifficulty){
             case EASY:
-                initialMinDifference += 20;
-                initialMaxDifference += 20;
-                initialPlatformWidth -= 10;
+                initialMinDifference += MIN_DIFFERENCE_EASY;
+                initialMaxDifference += MAX_DIFFERENCE_EASY;
+                initialPlatformWidth -= PLATFORM_WIDTH_EASY;
                 break;
             case NORMAL:
-                initialMinDifference += 30;
-                initialMaxDifference += 15;
-                initialPlatformWidth -= 5;
+                initialMinDifference += MIN_DIFFERENCE_NORMAL;
+                initialMaxDifference += MAX_DIFFERENCE_NORMAL;
+                initialPlatformWidth -= PLATFORM_WIDTH_NORMAL;
                 break;
             case HARD:
-                initialMinDifference += 15;
-                initialMaxDifference += 30;
-                initialPlatformWidth -= 10;
+                initialMinDifference += MIN_DIFFERENCE_HARD;
+                initialMaxDifference += MAX_DIFFERENCE_HARD;
+                initialPlatformWidth -= PLATFORM_WIDTH_HARD;
                 break;
             // When y is larger than VERY_HARD it stays that way
             default:
             case VERY_HARD:
-                initialMinDifference += 20;
-                initialMaxDifference += 15;
-                initialPlatformWidth -= 5;
+                initialMinDifference += MIN_DIFFERENCE_VERY_HARD;
+                initialMaxDifference += MAX_DIFFERENCE_VERY_HARD;
+                initialPlatformWidth -= PLATFORM_DIFFERENCE_VERY_HARD;
                 break;
         }
-        // We always want to decrease the timer by 1 but not when the difficulty is VERY_EASY. Also we don't want a lower timer than 3.
+        // We always want to decrease the timer by 1 but not when the difficulty is VERY_EASY. Also we don't want a lower timer than 4.
         if (!lastDifficulty.equals(Difficulties.VERY_EASY) && getInitialCountDownTimerInS() >= LOWEST_COUNT_DOWN_IN_SECONDS){
             setCountDownTimer(getInitialCountDownTimerInS() -1);
         }
