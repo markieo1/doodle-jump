@@ -187,7 +187,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                scoreboardBack();
+                mainMenu();
             }
         });
 
@@ -246,10 +246,9 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         idleHandler.postDelayed(idleRunnable, IDLE_TIME);
     }
 
-    private void scoreboardBack() {
-        mainMenu();
-    }
-
+    /**
+     * Switches to the scoreboard state
+     */
     private void showScoreboard() {
         setUiState(UiState.SCOREBOARD);
         switchViews();
@@ -436,6 +435,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
 
     /**
      * Saves the score in the database
+     *
      * @param score The score to save
      */
     private void saveScore(Score score) {
