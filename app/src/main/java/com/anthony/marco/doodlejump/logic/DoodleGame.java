@@ -1,12 +1,12 @@
 package com.anthony.marco.doodlejump.logic;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
 
-import com.anthony.marco.doodlejump.App;
 import com.anthony.marco.doodlejump.R;
 import com.anthony.marco.doodlejump.listener.DoodleListener;
 import com.anthony.marco.doodlejump.listener.ScreenListener;
@@ -179,11 +179,17 @@ public class DoodleGame implements ScreenListener {
      */
     private DifficultyHandler difficultyHandler;
 
-    public DoodleGame() {
+    /**
+     * The Android context
+     */
+    private Context context;
+
+    public DoodleGame(Context context) {
         entities = new ArrayList<>();
         isStarted = false;
         timerNeedReset = false;
         isTimerStarted = false;
+        this.context = context;
     }
 
     /**
@@ -199,7 +205,7 @@ public class DoodleGame implements ScreenListener {
 
         timerTimeToCountDownInS = 8;
         timerTimeToCountDownInMS = timerTimeToCountDownInS * 1000;
-        difficultyHandler = new DifficultyHandler(PLATFORM_WIDTH,MIN_DIFFERENCE,MAX_DIFFERENCE,timerTimeToCountDownInS );
+        difficultyHandler = new DifficultyHandler(PLATFORM_WIDTH, MIN_DIFFERENCE, MAX_DIFFERENCE, timerTimeToCountDownInS);
 
         loadResources();
 
@@ -271,12 +277,11 @@ public class DoodleGame implements ScreenListener {
             if (doodle.checkCollision(entities)) {
                 if (isTimerStarted && timerNeedReset) {
                     //TODO: update timer..
-                    timerNeedReset =false;
+                    timerNeedReset = false;
                     resetTimer();
                     startTimer();
                 }
-            }
-            else {
+            } else {
                 timerNeedReset = true;
             }
 
@@ -290,7 +295,7 @@ public class DoodleGame implements ScreenListener {
                 stopGame();
             }
 
-            if (difficultyHandler.needNewValues(doodle.getHighestY())){
+            if (difficultyHandler.needNewValues(doodle.getHighestY())) {
                 difficultyHandler.setNewValues(doodle.getHighestY());
             }
 
@@ -373,10 +378,10 @@ public class DoodleGame implements ScreenListener {
     private void loadResources() {
         Log.i(TAG, "Starting load resources.");
         if (platformBitmap == null)
-            platformBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.platform);
+            platformBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.platform);
 
         if (doodleBitmap == null)
-            doodleBitmap = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.circle);
+            doodleBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle);
 
         Log.i(TAG, "Done loading resources.");
     }
@@ -420,7 +425,7 @@ public class DoodleGame implements ScreenListener {
      * Starts the current timer if not initialized
      */
     public void startTimer() {
-        if (timerLoop == null){
+        if (timerLoop == null) {
             //timerNeedReset = false;
             isTimerStarted = true;
             Log.i(TAG, "Timer started");

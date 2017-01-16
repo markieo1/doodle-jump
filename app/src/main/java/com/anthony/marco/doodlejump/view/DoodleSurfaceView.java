@@ -51,7 +51,7 @@ public class DoodleSurfaceView extends SurfaceView implements Runnable, SurfaceH
         gameThread = null;
         this.surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
-        this.doodleGame = new DoodleGame();
+        this.doodleGame = new DoodleGame(getContext());
     }
 
     @Override

@@ -18,7 +18,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.anthony.marco.doodlejump.App;
 import com.anthony.marco.doodlejump.R;
 import com.anthony.marco.doodlejump.adapter.ScoresAdapter;
 import com.anthony.marco.doodlejump.database.task.LoadScoresTask;
@@ -129,7 +128,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // Load the sensors
-        mSensorManager = (SensorManager) App.getContext().getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
         // Register all the button listeners.
