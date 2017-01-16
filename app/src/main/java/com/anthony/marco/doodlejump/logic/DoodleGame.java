@@ -174,6 +174,9 @@ public class DoodleGame implements ScreenListener {
      */
     private ScheduledFuture timerCountDown;
 
+    /**
+     *  The difficulty handler
+     */
     private DifficultyHandler difficultyHandler;
 
     public DoodleGame() {
