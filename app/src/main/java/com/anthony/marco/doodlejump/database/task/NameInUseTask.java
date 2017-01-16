@@ -5,9 +5,7 @@ import android.os.AsyncTask;
 
 import com.anthony.marco.doodlejump.database.ScoreDatabaseHelper;
 import com.anthony.marco.doodlejump.listener.DatabaseListener;
-import com.anthony.marco.doodlejump.model.Score;
-
-import java.util.ArrayList;
+import com.anthony.marco.doodlelibrary.model.Score;
 
 /**
  * Created by marco on 10-1-2017.

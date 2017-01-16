@@ -20,7 +20,7 @@
         android:gravity="center_horizontal"
         tools:text="10:00" />
 
-    <Button xmlns:android="http://schemas.android.com/apk/res/android"
+    <Button
         android:id="@+id/stop_game_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

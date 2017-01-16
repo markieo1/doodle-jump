@@ -24,8 +24,9 @@ import com.anthony.marco.doodlejump.database.task.LoadScoresTask;
 import com.anthony.marco.doodlejump.database.task.NameInUseTask;
 import com.anthony.marco.doodlejump.database.task.SaveScoreTask;
 import com.anthony.marco.doodlejump.listener.DatabaseListener;
-import com.anthony.marco.doodlejump.listener.DoodleListener;
-import com.anthony.marco.doodlejump.model.Score;
+import com.anthony.marco.doodlelibrary.listener.DoodleListener;
+import com.anthony.marco.doodlelibrary.model.Score;
+import com.anthony.marco.doodlelibrary.view.DoodleSurfaceView;
 
 import java.util.ArrayList;
 
