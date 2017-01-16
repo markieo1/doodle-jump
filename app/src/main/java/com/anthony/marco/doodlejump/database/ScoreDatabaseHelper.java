@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import com.anthony.marco.doodlejump.model.Score;
+import com.anthony.marco.doodlelibrary.model.Score;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

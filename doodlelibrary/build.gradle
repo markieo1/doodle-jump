@@ -1,11 +1,11 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
     defaultConfig {
-        applicationId "com.anthony.marco.doodlejump"
-        minSdkVersion 21
+        minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -20,6 +20,4 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.4'
-    compile project(path: ':doodlelibrary')
 }

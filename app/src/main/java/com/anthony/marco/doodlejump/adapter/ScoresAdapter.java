@@ -7,7 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.anthony.marco.doodlejump.R;
-import com.anthony.marco.doodlejump.model.Score;
+import com.anthony.marco.doodlelibrary.model.Score;
 
 import java.util.ArrayList;
 
