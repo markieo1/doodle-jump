@@ -1,13 +1,14 @@
 package com.anthony.marco.doodlelibrary.model;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by marco on 10-1-2017.
  */
 
-public class Score {
+public class Score implements Serializable {
     /**
      * The ID of the score
      */
