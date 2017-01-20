@@ -89,6 +89,11 @@ public class DoodleGame implements ScreenListener {
     private static final int SCORE_UPDATE_INTERVAL = 100;
 
     /**
+     * Determines if the timer is enabled!
+     */
+    private static final boolean TIMER_ENABLED = false;
+
+    /**
      * Determines if the Game is started
      */
     private boolean isStarted;
@@ -425,6 +430,9 @@ public class DoodleGame implements ScreenListener {
      * Starts the current timer if not initialized
      */
     public void startTimer() {
+        if (!TIMER_ENABLED)
+            return;
+
         if (timerLoop == null) {
             //timerNeedReset = false;
             isTimerStarted = true;
@@ -451,6 +459,9 @@ public class DoodleGame implements ScreenListener {
      * Resets the timer and the timer count down
      */
     public void resetTimer() {
+        if (!TIMER_ENABLED)
+            return;
+
         if (timerLoop != null) {
             Log.i(TAG, "Timer reseted");
             timerTimeToCountDownInS = difficultyHandler.getInitialCountDownTimerInS();
