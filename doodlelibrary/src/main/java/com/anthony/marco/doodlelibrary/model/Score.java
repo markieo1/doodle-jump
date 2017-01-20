@@ -28,6 +28,10 @@ public class Score {
      */
     private Date date;
 
+    public Score() {
+        this("", 0);
+    }
+
     public Score(String name, int score) {
         this(0, name, score);
     }

@@ -16,21 +16,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.anthony.marco.doodlejump.R;
 import com.anthony.marco.doodlejump.adapter.ScoresAdapter;
-import com.anthony.marco.doodlejump.database.task.LoadScoresTask;
-import com.anthony.marco.doodlejump.database.task.NameInUseTask;
-import com.anthony.marco.doodlejump.database.task.SaveScoreTask;
-import com.anthony.marco.doodlejump.listener.DatabaseListener;
 import com.anthony.marco.doodlelibrary.listener.DoodleListener;
 import com.anthony.marco.doodlelibrary.model.Score;
 import com.anthony.marco.doodlelibrary.view.DoodleSurfaceView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends Activity implements DoodleListener, DatabaseListener {
+public class MainActivity extends Activity implements DoodleListener {
     private final String TAG = "MainActivity";
 
     /**
@@ -43,7 +38,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     private View gameButtonsView;
     private View mainMenuButtonsView;
     private View gameOverView;
-    private View newGameView;
     private View scoreBoardView;
     private View attractView;
 
@@ -73,6 +67,8 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
 
         setUiState(UiState.MAIN_MENU);
 
+        currentScore = new Score();
+
         scores = new ArrayList<>();
         scoresAdapter = new ScoresAdapter(getLayoutInflater(), scores);
 
@@ -90,14 +86,12 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         gameButtonsView = findViewById(R.id.game_buttons);
         mainMenuButtonsView = findViewById(R.id.main_menu_buttons);
         gameOverView = findViewById(R.id.game_over_layout);
-        newGameView = findViewById(R.id.new_game_layout);
         scoreBoardView = findViewById(R.id.score_board_layout);
         attractView = findViewById(R.id.attract_layout);
 
         scoreTextView = (TextView) gameButtonsView.findViewById(R.id.score_text_view);
         finalScoreTextView = (TextView) gameOverView.findViewById(R.id.final_score_text_view);
         timer = (TextView) findViewById(R.id.player_timer);
-        playerNameEditText = (EditText) newGameView.findViewById(R.id.player_name_edit_text);
 
         ListView scoreboardListView = (ListView) scoreBoardView.findViewById(R.id.score_board_listview);
         scoreboardListView.setAdapter(scoresAdapter);
@@ -110,9 +104,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
 
         Button playAgainButton = (Button) gameOverView.findViewById(R.id.play_again_button);
         Button mainMenuButton = (Button) gameOverView.findViewById(R.id.main_menu_button);
-
-        Button startGameButton = (Button) newGameView.findViewById(R.id.start_game_button);
-        Button backNewGameButton = (Button) newGameView.findViewById(R.id.new_game_back_button);
 
         Button backScoreBoardButton = (Button) scoreBoardView.findViewById(R.id.score_board_back_button);
 
@@ -136,7 +127,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         newGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                newGame();
+                startGame();
             }
         });
 
@@ -167,7 +158,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         playAgainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                newGame();
+                startGame();
             }
         });
 
@@ -178,21 +169,7 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
             }
         });
 
-        startGameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkFields();
-            }
-        });
-
         backScoreBoardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainMenu();
-            }
-        });
-
-        backNewGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mainMenu();
@@ -205,10 +182,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 mainMenu();
             }
         });
-
-        // Load the scores
-        LoadScoresTask loadScoresTask = new LoadScoresTask(this, this);
-        loadScoresTask.execute(true);
     }
 
     @Override
@@ -263,24 +236,9 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     }
 
     /**
-     * Switches to the new game layout
-     */
-    private void newGame() {
-        setUiState(UiState.NEW_GAME);
-        switchViews();
-
-        // Clear the textview
-        playerNameEditText.getText().clear();
-    }
-
-    /**
      * Starts the game
      */
     private void startGame() {
-        // Hide the soft input
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-
         setUiState(UiState.GAME);
 
         registerListeners();
@@ -320,27 +278,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
      */
     private void unregisterListeners() {
         mSensorManager.unregisterListener(doodleSurfaceView);
-    }
-
-    /**
-     * Checks if the player name field has been filled in and is in use.
-     */
-    private void checkFields() {
-        // Check if a name has been filled in!
-        String playerName = playerNameEditText.getText().toString();
-
-        if (playerName.isEmpty()) {
-            Log.i(TAG, "Player name not filled in!");
-
-            Toast.makeText(this, R.string.enter_name, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Log.i(TAG, "Checking if name in use, name = " + playerName);
-
-        // Check if the player name is not already used
-        NameInUseTask nameInUseTask = new NameInUseTask(this, this);
-        nameInUseTask.execute(playerName);
     }
 
     /**
@@ -388,7 +325,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 mainMenuButtonsView.setVisibility(View.GONE);
                 gameButtonsView.setVisibility(View.VISIBLE);
                 gameOverView.setVisibility(View.GONE);
-                newGameView.setVisibility(View.GONE);
                 scoreBoardView.setVisibility(View.GONE);
                 attractView.setVisibility(View.GONE);
                 break;
@@ -397,7 +333,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 mainMenuButtonsView.setVisibility(View.VISIBLE);
                 gameButtonsView.setVisibility(View.GONE);
                 gameOverView.setVisibility(View.GONE);
-                newGameView.setVisibility(View.GONE);
                 scoreBoardView.setVisibility(View.GONE);
                 attractView.setVisibility(View.GONE);
                 break;
@@ -406,16 +341,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 mainMenuButtonsView.setVisibility(View.GONE);
                 gameButtonsView.setVisibility(View.GONE);
                 gameOverView.setVisibility(View.VISIBLE);
-                newGameView.setVisibility(View.GONE);
-                scoreBoardView.setVisibility(View.GONE);
-                attractView.setVisibility(View.GONE);
-                break;
-            }
-            case NEW_GAME: {
-                mainMenuButtonsView.setVisibility(View.GONE);
-                gameButtonsView.setVisibility(View.GONE);
-                gameOverView.setVisibility(View.GONE);
-                newGameView.setVisibility(View.VISIBLE);
                 scoreBoardView.setVisibility(View.GONE);
                 attractView.setVisibility(View.GONE);
                 break;
@@ -424,7 +349,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 mainMenuButtonsView.setVisibility(View.GONE);
                 gameButtonsView.setVisibility(View.GONE);
                 gameOverView.setVisibility(View.GONE);
-                newGameView.setVisibility(View.GONE);
                 scoreBoardView.setVisibility(View.VISIBLE);
                 attractView.setVisibility(View.GONE);
                 break;
@@ -433,23 +357,11 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 mainMenuButtonsView.setVisibility(View.GONE);
                 gameButtonsView.setVisibility(View.GONE);
                 gameOverView.setVisibility(View.GONE);
-                newGameView.setVisibility(View.GONE);
                 scoreBoardView.setVisibility(View.GONE);
                 attractView.setVisibility(View.VISIBLE);
                 break;
             }
         }
-    }
-
-    /**
-     * Saves the score in the database
-     *
-     * @param score The score to save
-     */
-    private void saveScore(Score score) {
-        // Save the score in the database
-        SaveScoreTask saveScoreTask = new SaveScoreTask(this, this);
-        saveScoreTask.execute(score);
     }
 
     @Override
@@ -459,8 +371,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
             @Override
             public void run() {
                 currentScore.setScore(score);
-
-                saveScore(currentScore);
 
                 unregisterListeners();
                 setUiState(UiState.GAME_OVER);
@@ -494,28 +404,5 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 timer.setText(timerLeftInSeconds);
             }
         });
-    }
-
-    @Override
-    public void scoresLoaded(ArrayList<Score> scores) {
-        this.scores.clear();
-        this.scores.addAll(scores);
-        scoresAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void nameInUseChecked(String name, boolean inUse) {
-        if (currentUiState != UiState.NEW_GAME)
-            return;
-
-        if (inUse) {
-            Toast.makeText(this, R.string.name_in_use, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        currentScore = new Score(name, 0);
-
-        // Start game since the name is not already in use
-        startGame();
     }
 }
