@@ -27,8 +27,15 @@ import com.anthony.marco.doodlejump.listener.DatabaseListener;
 import com.anthony.marco.doodlelibrary.listener.DoodleListener;
 import com.anthony.marco.doodlelibrary.model.Score;
 import com.anthony.marco.doodlelibrary.view.DoodleSurfaceView;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MainActivity extends Activity implements DoodleListener, DatabaseListener {
     private final String TAG = "MainActivity";
@@ -66,15 +73,52 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     private Handler idleHandler;
     private Runnable idleRunnable;
 
+    private DatabaseReference mDatabase;
+    private FirebaseAnalytics mFirebaseAnalytics;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setUiState(UiState.MAIN_MENU);
-
         scores = new ArrayList<>();
         scoresAdapter = new ScoresAdapter(getLayoutInflater(), scores);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("scores").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> data = dataSnapshot.getChildren().iterator();
+
+                if (data.hasNext()) {
+                    scores.clear();
+                }
+
+                while (data.hasNext()) {
+                    DataSnapshot currentData = data.next();
+
+                    if (currentData == null)
+                        continue;
+
+                    Score score = currentData.getValue(Score.class);
+
+                    if (score != null) {
+                        scores.add(score);
+                        scoresAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        setUiState(UiState.MAIN_MENU);
 
         idleHandler = new Handler(Looper.getMainLooper());
         idleRunnable = new Runnable() {
@@ -205,10 +249,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 mainMenu();
             }
         });
-
-        // Load the scores
-        LoadScoresTask loadScoresTask = new LoadScoresTask(this, this);
-        loadScoresTask.execute(true);
     }
 
     @Override
@@ -277,6 +317,9 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
      * Starts the game
      */
     private void startGame() {
+        Bundle bundle = new Bundle();
+        mFirebaseAnalytics.logEvent("game_started", bundle);
+
         // Hide the soft input
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
@@ -373,6 +416,9 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
      */
     private void setUiState(UiState uiState) {
         this.currentUiState = uiState;
+        Bundle bundle = new Bundle();
+        bundle.putInt(FirebaseAnalytics.Param.VALUE, uiState.ordinal());
+        mFirebaseAnalytics.logEvent("set_ui_state", bundle);
         Log.i(TAG, "UI State changed, new = " + uiState);
     }
 
@@ -447,9 +493,12 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
      * @param score The score to save
      */
     private void saveScore(Score score) {
+        mDatabase.child("scores").push().setValue(score);
+
+
         // Save the score in the database
-        SaveScoreTask saveScoreTask = new SaveScoreTask(this, this);
-        saveScoreTask.execute(score);
+        /*SaveScoreTask saveScoreTask = new SaveScoreTask(this, this);
+        saveScoreTask.execute(score);*/
     }
 
     @Override
@@ -459,6 +508,10 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
             @Override
             public void run() {
                 currentScore.setScore(score);
+
+                Bundle bundle = new Bundle();
+                bundle.putInt(FirebaseAnalytics.Param.SCORE, score);
+                mFirebaseAnalytics.logEvent("game_over", bundle);
 
                 saveScore(currentScore);
 
@@ -510,6 +563,10 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
 
         if (inUse) {
             Toast.makeText(this, R.string.name_in_use, Toast.LENGTH_SHORT).show();
+
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.SEARCH_TERM, name);
+            mFirebaseAnalytics.logEvent("name_in_use", bundle);
             return;
         }
 

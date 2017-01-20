@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "622733557700",
+    "firebase_url": "https://doodlejumpclone.firebaseio.com",
+    "project_id": "doodlejumpclone",
+    "storage_bucket": "doodlejumpclone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:622733557700:android:a471dce9f4011447",
+        "android_client_info": {
+          "package_name": "com.anthony.marco.doodlejump"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "622733557700-cro6s5vudacrh2qnqc8ftu25iogtttcf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArjfihffo59yhXn-XFpXLRWXxHzpqfpcc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
