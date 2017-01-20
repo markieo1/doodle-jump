@@ -30,6 +30,11 @@ public class DoodleSurfaceView extends SurfaceView implements Runnable, SurfaceH
     private DoodleGame doodleGame;
     private Thread gameThread;
 
+    private static final long SECOND = 1000000;
+    private static final long TARGET_FPS = 60;
+    private static final long FRAME_PERIOD = SECOND / TARGET_FPS;
+
+    private long time;
 
     public DoodleSurfaceView(Context context) {
         super(context);
@@ -109,25 +114,24 @@ public class DoodleSurfaceView extends SurfaceView implements Runnable, SurfaceH
 
     @Override
     public void run() {
+        time = System.nanoTime();
         while (isRunning) {
+            if (!surfaceHolder.getSurface().isValid())
+                continue;
+
+            long startTime = System.nanoTime();
+
             // 1. Update
             // 2. Draw
             doodleGame.update();
 
-            if (surfaceHolder.getSurface().isValid()) {
-                Canvas canvas = surfaceHolder.lockCanvas();
-                canvas.drawColor(Color.BLACK);
-                doodleGame.draw(canvas);
+            Canvas canvas = surfaceHolder.lockCanvas();
+            canvas.drawColor(Color.BLACK);
+            doodleGame.draw(canvas);
 
-                surfaceHolder.unlockCanvasAndPost(canvas);
-            }
+            surfaceHolder.unlockCanvasAndPost(canvas);
 
-            // Sleep
-            try {
-                Thread.sleep(1000 / 60);
-            } catch (InterruptedException ex) {
-                Log.e(TAG, ex.getLocalizedMessage());
-            }
+            doFpsCheck(startTime);
         }
     }
 
@@ -147,5 +151,34 @@ public class DoodleSurfaceView extends SurfaceView implements Runnable, SurfaceH
         isRunning = true;
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    /**
+     * Checks the FPS
+     *
+     * @param startTime The start time
+     * @return <code>true</code> if the interval between startTime and the time
+     * when this method was called is smaller or equal to the given
+     * frame period.
+     * <p>
+     * Will return <code>false</code> if the interval was longer.
+     */
+    public boolean doFpsCheck(long startTime) {
+        if (System.nanoTime() - time >= SECOND) {
+            time = System.nanoTime();
+        }
+
+        long sleepTime = FRAME_PERIOD - (System.nanoTime() - startTime);
+
+        if (sleepTime >= 0) {
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 }
