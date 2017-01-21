@@ -10,45 +10,4 @@
         android:id="@+id/doodle_surface_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-    <include
-        android:id="@+id/game_buttons"
-        layout="@layout/game_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
-    <include
-        android:id="@+id/main_menu_buttons"
-        layout="@layout/main_menu_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <include
-        android:id="@+id/game_over_layout"
-        layout="@layout/game_over_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
-    <include
-        android:id="@+id/new_game_layout"
-        layout="@layout/new_game_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
-    <include
-        android:id="@+id/score_board_layout"
-        layout="@layout/score_board_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
-    <include
-        android:id="@+id/attract_layout"
-        layout="@layout/attract_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
 </FrameLayout>

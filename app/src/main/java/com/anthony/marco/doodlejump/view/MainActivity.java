@@ -1,8 +1,9 @@
 package com.anthony.marco.doodlejump.view;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -11,19 +12,14 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.anthony.marco.doodlejump.R;
-import com.anthony.marco.doodlejump.adapter.ScoresAdapter;
-import com.anthony.marco.doodlejump.database.task.LoadScoresTask;
-import com.anthony.marco.doodlejump.database.task.NameInUseTask;
-import com.anthony.marco.doodlejump.database.task.SaveScoreTask;
-import com.anthony.marco.doodlejump.listener.DatabaseListener;
+import com.anthony.marco.doodlejump.listener.UiListener;
+import com.anthony.marco.doodlejump.view.fragment.AttractFragment;
+import com.anthony.marco.doodlejump.view.fragment.GameOverFragment;
+import com.anthony.marco.doodlejump.view.fragment.GameOverlayFragment;
+import com.anthony.marco.doodlejump.view.fragment.MainMenuFragment;
+import com.anthony.marco.doodlejump.view.fragment.ScoreboardFragment;
 import com.anthony.marco.doodlelibrary.listener.DoodleListener;
 import com.anthony.marco.doodlelibrary.model.Score;
 import com.anthony.marco.doodlelibrary.view.DoodleSurfaceView;
@@ -37,7 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class MainActivity extends Activity implements DoodleListener, DatabaseListener {
+public class MainActivity extends Activity implements DoodleListener, UiListener {
     private final String TAG = "MainActivity";
 
     /**
@@ -47,31 +43,17 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
 
     private DoodleSurfaceView doodleSurfaceView;
 
-    private View gameButtonsView;
-    private View mainMenuButtonsView;
-    private View gameOverView;
-    private View newGameView;
-    private View scoreBoardView;
-    private View attractView;
-
-    private TextView scoreTextView;
-    private TextView finalScoreTextView;
-    private EditText playerNameEditText;
-
     private SensorManager mSensorManager;
     private Sensor mSensor;
-
-    private TextView timer;
 
     private UiState currentUiState;
 
     private Score currentScore;
 
-    private ArrayList<Score> scores;
-    private ScoresAdapter scoresAdapter;
-
     private Handler idleHandler;
     private Runnable idleRunnable;
+
+    private Fragment currentFragment;
 
     private DatabaseReference mDatabase;
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -82,6 +64,9 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setUiState(UiState.MAIN_MENU);
+
+        currentScore = new Score();
         scores = new ArrayList<>();
         scoresAdapter = new ScoresAdapter(getLayoutInflater(), scores);
 
@@ -131,35 +116,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
 
         doodleSurfaceView = (DoodleSurfaceView) findViewById(R.id.doodle_surface_view);
 
-        gameButtonsView = findViewById(R.id.game_buttons);
-        mainMenuButtonsView = findViewById(R.id.main_menu_buttons);
-        gameOverView = findViewById(R.id.game_over_layout);
-        newGameView = findViewById(R.id.new_game_layout);
-        scoreBoardView = findViewById(R.id.score_board_layout);
-        attractView = findViewById(R.id.attract_layout);
-
-        scoreTextView = (TextView) gameButtonsView.findViewById(R.id.score_text_view);
-        finalScoreTextView = (TextView) gameOverView.findViewById(R.id.final_score_text_view);
-        timer = (TextView) findViewById(R.id.player_timer);
-        playerNameEditText = (EditText) newGameView.findViewById(R.id.player_name_edit_text);
-
-        ListView scoreboardListView = (ListView) scoreBoardView.findViewById(R.id.score_board_listview);
-        scoreboardListView.setAdapter(scoresAdapter);
-
-        Button newGameButton = (Button) mainMenuButtonsView.findViewById(R.id.new_game_button);
-        Button aboutUsButton = (Button) mainMenuButtonsView.findViewById(R.id.about_us_button);
-        Button scoresButton = (Button) mainMenuButtonsView.findViewById(R.id.scores_button);
-
-        Button stopGameButton = (Button) gameButtonsView.findViewById(R.id.stop_game_button);
-
-        Button playAgainButton = (Button) gameOverView.findViewById(R.id.play_again_button);
-        Button mainMenuButton = (Button) gameOverView.findViewById(R.id.main_menu_button);
-
-        Button startGameButton = (Button) newGameView.findViewById(R.id.start_game_button);
-        Button backNewGameButton = (Button) newGameView.findViewById(R.id.new_game_back_button);
-
-        Button backScoreBoardButton = (Button) scoreBoardView.findViewById(R.id.score_board_back_button);
-
         hideSystemUI();
 
         getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
@@ -175,80 +131,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         // Load the sensors
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-
-        // Register all the button listeners.
-        newGameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                newGame();
-            }
-        });
-
-        aboutUsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), AboutUsActivity.class);
-
-                // Start the intent
-                startActivity(intent);
-            }
-        });
-
-        scoresButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showScoreboard();
-            }
-        });
-
-        mainMenuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainMenu();
-            }
-        });
-
-        playAgainButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                newGame();
-            }
-        });
-
-        stopGameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopGame();
-            }
-        });
-
-        startGameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkFields();
-            }
-        });
-
-        backScoreBoardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainMenu();
-            }
-        });
-
-        backNewGameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainMenu();
-            }
-        });
-
-        attractView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainMenu();
-            }
-        });
     }
 
     @Override
@@ -295,63 +177,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
     }
 
     /**
-     * Switches to the scoreboard state
-     */
-    private void showScoreboard() {
-        setUiState(UiState.SCOREBOARD);
-        switchViews();
-    }
-
-    /**
-     * Switches to the new game layout
-     */
-    private void newGame() {
-        setUiState(UiState.NEW_GAME);
-        switchViews();
-
-        // Clear the textview
-        playerNameEditText.getText().clear();
-    }
-
-    /**
-     * Starts the game
-     */
-    private void startGame() {
-        Bundle bundle = new Bundle();
-        mFirebaseAnalytics.logEvent("game_started", bundle);
-
-        // Hide the soft input
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-
-        setUiState(UiState.GAME);
-
-        registerListeners();
-
-        switchViews();
-
-        doodleSurfaceView.startGame(this);
-    }
-
-    /**
-     * Stops the entire game and goes into the game over callback.
-     */
-    private void stopGame() {
-        unregisterListeners();
-        doodleSurfaceView.stopGame();
-    }
-
-    /**
-     * Goes to the main menu
-     */
-    private void mainMenu() {
-        setUiState(UiState.MAIN_MENU);
-        switchViews();
-
-        scheduleIdleCallback();
-    }
-
-    /**
      * Registers the listeners for the sensors
      */
     private void registerListeners() {
@@ -363,27 +188,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
      */
     private void unregisterListeners() {
         mSensorManager.unregisterListener(doodleSurfaceView);
-    }
-
-    /**
-     * Checks if the player name field has been filled in and is in use.
-     */
-    private void checkFields() {
-        // Check if a name has been filled in!
-        String playerName = playerNameEditText.getText().toString();
-
-        if (playerName.isEmpty()) {
-            Log.i(TAG, "Player name not filled in!");
-
-            Toast.makeText(this, R.string.enter_name, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Log.i(TAG, "Checking if name in use, name = " + playerName);
-
-        // Check if the player name is not already used
-        NameInUseTask nameInUseTask = new NameInUseTask(this, this);
-        nameInUseTask.execute(playerName);
     }
 
     /**
@@ -429,64 +233,50 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         if (currentUiState != UiState.MAIN_MENU)
             idleHandler.removeCallbacks(idleRunnable);
 
+        String tag;
+
+        Bundle arguments = new Bundle();
+        Fragment newFragment;
+
         switch (currentUiState) {
             case GAME: {
-                mainMenuButtonsView.setVisibility(View.GONE);
-                gameButtonsView.setVisibility(View.VISIBLE);
-                gameOverView.setVisibility(View.GONE);
-                newGameView.setVisibility(View.GONE);
-                scoreBoardView.setVisibility(View.GONE);
-                attractView.setVisibility(View.GONE);
-                break;
-            }
-            case MAIN_MENU: {
-                mainMenuButtonsView.setVisibility(View.VISIBLE);
-                gameButtonsView.setVisibility(View.GONE);
-                gameOverView.setVisibility(View.GONE);
-                newGameView.setVisibility(View.GONE);
-                scoreBoardView.setVisibility(View.GONE);
-                attractView.setVisibility(View.GONE);
+                newFragment = new GameOverlayFragment();
+                tag = GameOverlayFragment.TAG;
                 break;
             }
             case GAME_OVER: {
-                mainMenuButtonsView.setVisibility(View.GONE);
-                gameButtonsView.setVisibility(View.GONE);
-                gameOverView.setVisibility(View.VISIBLE);
-                newGameView.setVisibility(View.GONE);
-                scoreBoardView.setVisibility(View.GONE);
-                attractView.setVisibility(View.GONE);
-                break;
-            }
-            case NEW_GAME: {
-                mainMenuButtonsView.setVisibility(View.GONE);
-                gameButtonsView.setVisibility(View.GONE);
-                gameOverView.setVisibility(View.GONE);
-                newGameView.setVisibility(View.VISIBLE);
-                scoreBoardView.setVisibility(View.GONE);
-                attractView.setVisibility(View.GONE);
+                newFragment = new GameOverFragment();
+                arguments.putSerializable(GameOverFragment.ARG_FINAL_SCORE, currentScore);
+                tag = GameOverFragment.TAG;
                 break;
             }
             case SCOREBOARD: {
-                mainMenuButtonsView.setVisibility(View.GONE);
-                gameButtonsView.setVisibility(View.GONE);
-                gameOverView.setVisibility(View.GONE);
-                newGameView.setVisibility(View.GONE);
-                scoreBoardView.setVisibility(View.VISIBLE);
-                attractView.setVisibility(View.GONE);
+                newFragment = new ScoreboardFragment();
+                tag = ScoreboardFragment.TAG;
                 break;
             }
             case ATTRACT: {
-                mainMenuButtonsView.setVisibility(View.GONE);
-                gameButtonsView.setVisibility(View.GONE);
-                gameOverView.setVisibility(View.GONE);
-                newGameView.setVisibility(View.GONE);
-                scoreBoardView.setVisibility(View.GONE);
-                attractView.setVisibility(View.VISIBLE);
+                newFragment = new AttractFragment();
+                tag = AttractFragment.TAG;
+                break;
+            }
+            default:
+            case MAIN_MENU: {
+                newFragment = new MainMenuFragment();
+                tag = MainMenuFragment.TAG;
                 break;
             }
         }
-    }
 
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        newFragment.setArguments(arguments);
+        transaction.replace(R.id.activity_main, newFragment, tag);
+        transaction.commit();
+
+        currentFragment = newFragment;
+    }    
+        
     /**
      * Saves the score in the database
      *
@@ -518,8 +308,6 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
                 unregisterListeners();
                 setUiState(UiState.GAME_OVER);
                 switchViews();
-
-                finalScoreTextView.setText(String.valueOf(score));
             }
         });
     }
@@ -532,7 +320,8 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
             public void run() {
                 currentScore.setScore(newScore);
                 // Update the score label
-                scoreTextView.setText(String.valueOf(newScore));
+                if (currentFragment instanceof GameOverlayFragment)
+                    ((GameOverlayFragment) currentFragment).setScore(newScore);
             }
         });
     }
@@ -542,37 +331,40 @@ public class MainActivity extends Activity implements DoodleListener, DatabaseLi
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String timerLeftInSeconds = String.valueOf((float) timeLeft / 1000);
-
-                timer.setText(timerLeftInSeconds);
+                if (currentFragment instanceof GameOverlayFragment)
+                    ((GameOverlayFragment) currentFragment).setRemainingTime(timeLeft);
             }
         });
     }
 
     @Override
-    public void scoresLoaded(ArrayList<Score> scores) {
-        this.scores.clear();
-        this.scores.addAll(scores);
-        scoresAdapter.notifyDataSetChanged();
+    public void onMainMenu() {
+        setUiState(UiState.MAIN_MENU);
+        switchViews();
+
+        scheduleIdleCallback();
     }
 
     @Override
-    public void nameInUseChecked(String name, boolean inUse) {
-        if (currentUiState != UiState.NEW_GAME)
-            return;
+    public void onStartGame() {
+        setUiState(UiState.GAME);
 
-        if (inUse) {
-            Toast.makeText(this, R.string.name_in_use, Toast.LENGTH_SHORT).show();
+        registerListeners();
 
-            Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.SEARCH_TERM, name);
-            mFirebaseAnalytics.logEvent("name_in_use", bundle);
-            return;
-        }
+        switchViews();
 
-        currentScore = new Score(name, 0);
+        doodleSurfaceView.startGame(this);
+    }
 
-        // Start game since the name is not already in use
-        startGame();
+    @Override
+    public void onStopGame() {
+        unregisterListeners();
+        doodleSurfaceView.stopGame();
+    }
+
+    @Override
+    public void onShowScoreboard() {
+        setUiState(UiState.SCOREBOARD);
+        switchViews();
     }
 }
