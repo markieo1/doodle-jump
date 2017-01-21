@@ -1,8 +1,9 @@
 package com.anthony.marco.doodlejump.view;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -11,21 +12,19 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.anthony.marco.doodlejump.R;
-import com.anthony.marco.doodlejump.adapter.ScoresAdapter;
+import com.anthony.marco.doodlejump.listener.UiListener;
+import com.anthony.marco.doodlejump.view.fragment.AttractFragment;
+import com.anthony.marco.doodlejump.view.fragment.GameOverFragment;
+import com.anthony.marco.doodlejump.view.fragment.GameOverlayFragment;
+import com.anthony.marco.doodlejump.view.fragment.MainMenuFragment;
+import com.anthony.marco.doodlejump.view.fragment.ScoreboardFragment;
 import com.anthony.marco.doodlelibrary.listener.DoodleListener;
 import com.anthony.marco.doodlelibrary.model.Score;
 import com.anthony.marco.doodlelibrary.view.DoodleSurfaceView;
 
-import java.util.ArrayList;
-
-public class MainActivity extends Activity implements DoodleListener {
+public class MainActivity extends Activity implements DoodleListener, UiListener {
     private final String TAG = "MainActivity";
 
     /**
@@ -35,30 +34,17 @@ public class MainActivity extends Activity implements DoodleListener {
 
     private DoodleSurfaceView doodleSurfaceView;
 
-    private View gameButtonsView;
-    private View mainMenuButtonsView;
-    private View gameOverView;
-    private View scoreBoardView;
-    private View attractView;
-
-    private TextView scoreTextView;
-    private TextView finalScoreTextView;
-    private EditText playerNameEditText;
-
     private SensorManager mSensorManager;
     private Sensor mSensor;
-
-    private TextView timer;
 
     private UiState currentUiState;
 
     private Score currentScore;
 
-    private ArrayList<Score> scores;
-    private ScoresAdapter scoresAdapter;
-
     private Handler idleHandler;
     private Runnable idleRunnable;
+
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +54,6 @@ public class MainActivity extends Activity implements DoodleListener {
         setUiState(UiState.MAIN_MENU);
 
         currentScore = new Score();
-
-        scores = new ArrayList<>();
-        scoresAdapter = new ScoresAdapter(getLayoutInflater(), scores);
 
         idleHandler = new Handler(Looper.getMainLooper());
         idleRunnable = new Runnable() {
@@ -82,30 +65,6 @@ public class MainActivity extends Activity implements DoodleListener {
         };
 
         doodleSurfaceView = (DoodleSurfaceView) findViewById(R.id.doodle_surface_view);
-
-        gameButtonsView = findViewById(R.id.game_buttons);
-        mainMenuButtonsView = findViewById(R.id.main_menu_buttons);
-        gameOverView = findViewById(R.id.game_over_layout);
-        scoreBoardView = findViewById(R.id.score_board_layout);
-        attractView = findViewById(R.id.attract_layout);
-
-        scoreTextView = (TextView) gameButtonsView.findViewById(R.id.score_text_view);
-        finalScoreTextView = (TextView) gameOverView.findViewById(R.id.final_score_text_view);
-        timer = (TextView) findViewById(R.id.player_timer);
-
-        ListView scoreboardListView = (ListView) scoreBoardView.findViewById(R.id.score_board_listview);
-        scoreboardListView.setAdapter(scoresAdapter);
-
-        Button newGameButton = (Button) mainMenuButtonsView.findViewById(R.id.new_game_button);
-        Button aboutUsButton = (Button) mainMenuButtonsView.findViewById(R.id.about_us_button);
-        Button scoresButton = (Button) mainMenuButtonsView.findViewById(R.id.scores_button);
-
-        Button stopGameButton = (Button) gameButtonsView.findViewById(R.id.stop_game_button);
-
-        Button playAgainButton = (Button) gameOverView.findViewById(R.id.play_again_button);
-        Button mainMenuButton = (Button) gameOverView.findViewById(R.id.main_menu_button);
-
-        Button backScoreBoardButton = (Button) scoreBoardView.findViewById(R.id.score_board_back_button);
 
         hideSystemUI();
 
@@ -122,66 +81,6 @@ public class MainActivity extends Activity implements DoodleListener {
         // Load the sensors
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-
-        // Register all the button listeners.
-        newGameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startGame();
-            }
-        });
-
-        aboutUsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), AboutUsActivity.class);
-
-                // Start the intent
-                startActivity(intent);
-            }
-        });
-
-        scoresButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showScoreboard();
-            }
-        });
-
-        mainMenuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainMenu();
-            }
-        });
-
-        playAgainButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startGame();
-            }
-        });
-
-        stopGameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopGame();
-            }
-        });
-
-        backScoreBoardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainMenu();
-            }
-        });
-
-        attractView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainMenu();
-            }
-        });
     }
 
     @Override
@@ -225,45 +124,6 @@ public class MainActivity extends Activity implements DoodleListener {
         Log.i(TAG, "Starting delayed idle runnable.");
         idleHandler.removeCallbacks(idleRunnable);
         idleHandler.postDelayed(idleRunnable, IDLE_TIME);
-    }
-
-    /**
-     * Switches to the scoreboard state
-     */
-    private void showScoreboard() {
-        setUiState(UiState.SCOREBOARD);
-        switchViews();
-    }
-
-    /**
-     * Starts the game
-     */
-    private void startGame() {
-        setUiState(UiState.GAME);
-
-        registerListeners();
-
-        switchViews();
-
-        doodleSurfaceView.startGame(this);
-    }
-
-    /**
-     * Stops the entire game and goes into the game over callback.
-     */
-    private void stopGame() {
-        unregisterListeners();
-        doodleSurfaceView.stopGame();
-    }
-
-    /**
-     * Goes to the main menu
-     */
-    private void mainMenu() {
-        setUiState(UiState.MAIN_MENU);
-        switchViews();
-
-        scheduleIdleCallback();
     }
 
     /**
@@ -320,48 +180,48 @@ public class MainActivity extends Activity implements DoodleListener {
         if (currentUiState != UiState.MAIN_MENU)
             idleHandler.removeCallbacks(idleRunnable);
 
+        String tag;
+
+        Bundle arguments = new Bundle();
+        Fragment newFragment;
+
         switch (currentUiState) {
             case GAME: {
-                mainMenuButtonsView.setVisibility(View.GONE);
-                gameButtonsView.setVisibility(View.VISIBLE);
-                gameOverView.setVisibility(View.GONE);
-                scoreBoardView.setVisibility(View.GONE);
-                attractView.setVisibility(View.GONE);
-                break;
-            }
-            case MAIN_MENU: {
-                mainMenuButtonsView.setVisibility(View.VISIBLE);
-                gameButtonsView.setVisibility(View.GONE);
-                gameOverView.setVisibility(View.GONE);
-                scoreBoardView.setVisibility(View.GONE);
-                attractView.setVisibility(View.GONE);
+                newFragment = new GameOverlayFragment();
+                tag = GameOverlayFragment.TAG;
                 break;
             }
             case GAME_OVER: {
-                mainMenuButtonsView.setVisibility(View.GONE);
-                gameButtonsView.setVisibility(View.GONE);
-                gameOverView.setVisibility(View.VISIBLE);
-                scoreBoardView.setVisibility(View.GONE);
-                attractView.setVisibility(View.GONE);
+                newFragment = new GameOverFragment();
+                arguments.putSerializable(GameOverFragment.ARG_FINAL_SCORE, currentScore);
+                tag = GameOverFragment.TAG;
                 break;
             }
             case SCOREBOARD: {
-                mainMenuButtonsView.setVisibility(View.GONE);
-                gameButtonsView.setVisibility(View.GONE);
-                gameOverView.setVisibility(View.GONE);
-                scoreBoardView.setVisibility(View.VISIBLE);
-                attractView.setVisibility(View.GONE);
+                newFragment = new ScoreboardFragment();
+                tag = ScoreboardFragment.TAG;
                 break;
             }
             case ATTRACT: {
-                mainMenuButtonsView.setVisibility(View.GONE);
-                gameButtonsView.setVisibility(View.GONE);
-                gameOverView.setVisibility(View.GONE);
-                scoreBoardView.setVisibility(View.GONE);
-                attractView.setVisibility(View.VISIBLE);
+                newFragment = new AttractFragment();
+                tag = AttractFragment.TAG;
+                break;
+            }
+            default:
+            case MAIN_MENU: {
+                newFragment = new MainMenuFragment();
+                tag = MainMenuFragment.TAG;
                 break;
             }
         }
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        newFragment.setArguments(arguments);
+        transaction.replace(R.id.activity_main, newFragment, tag);
+        transaction.commit();
+
+        currentFragment = newFragment;
     }
 
     @Override
@@ -375,8 +235,6 @@ public class MainActivity extends Activity implements DoodleListener {
                 unregisterListeners();
                 setUiState(UiState.GAME_OVER);
                 switchViews();
-
-                finalScoreTextView.setText(String.valueOf(score));
             }
         });
     }
@@ -389,7 +247,8 @@ public class MainActivity extends Activity implements DoodleListener {
             public void run() {
                 currentScore.setScore(newScore);
                 // Update the score label
-                scoreTextView.setText(String.valueOf(newScore));
+                if (currentFragment instanceof GameOverlayFragment)
+                    ((GameOverlayFragment) currentFragment).setScore(newScore);
             }
         });
     }
@@ -399,10 +258,40 @@ public class MainActivity extends Activity implements DoodleListener {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String timerLeftInSeconds = String.valueOf((float) timeLeft / 1000);
-
-                timer.setText(timerLeftInSeconds);
+                if (currentFragment instanceof GameOverlayFragment)
+                    ((GameOverlayFragment) currentFragment).setRemainingTime(timeLeft);
             }
         });
+    }
+
+    @Override
+    public void onMainMenu() {
+        setUiState(UiState.MAIN_MENU);
+        switchViews();
+
+        scheduleIdleCallback();
+    }
+
+    @Override
+    public void onStartGame() {
+        setUiState(UiState.GAME);
+
+        registerListeners();
+
+        switchViews();
+
+        doodleSurfaceView.startGame(this);
+    }
+
+    @Override
+    public void onStopGame() {
+        unregisterListeners();
+        doodleSurfaceView.stopGame();
+    }
+
+    @Override
+    public void onShowScoreboard() {
+        setUiState(UiState.SCOREBOARD);
+        switchViews();
     }
 }
