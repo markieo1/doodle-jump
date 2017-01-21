@@ -13,12 +13,6 @@ import java.util.TimerTask;
 
 public class Doodle extends Entity {
     private final String TAG = "Doodle";
-
-    /**
-     * Determines if the doodle should be falling
-     */
-    private boolean shouldFall;
-
     /**
      * The highest y achieved by the doodle
      */
@@ -30,17 +24,19 @@ public class Doodle extends Entity {
     private float jumpSize;
 
     /**
-     * The delay before falling commences
+     * The gravity of the doodle
      */
-    private long fallDelay;
+    private float gravity;
 
-    public Doodle(float x, float y, float width, float height, float jumpSize, long fallDelay, Bitmap image) {
+    private boolean grounded;
+
+    public Doodle(float x, float y, float width, float height, float jumpSize, float gravity, Bitmap image) {
         super(x, y, width, height, image);
         this.jumpSize = jumpSize;
-        this.fallDelay = fallDelay;
-        this.shouldFall = true;
+        this.gravity = gravity;
+        this.grounded = false;
 
-        Log.i(TAG, "New Doodle created, jumpSize = " + jumpSize + ", fallDelay = " + fallDelay);
+        Log.i(TAG, "New Doodle created, jumpSize = " + jumpSize + ", gravity = " + gravity);
     }
 
     /**
@@ -52,11 +48,11 @@ public class Doodle extends Entity {
     public boolean checkCollision(ArrayList<Entity> entities) {
         boolean colliding = collidingWithPlatforms(entities);
         if (colliding) {
-            this.shouldFall = false;
+            this.grounded = true;
             this.velocityY = 0;
         } else {
-            // we are not colliding so we should fall
-            this.shouldFall = true;
+            // we are not colliding so we aren't on any ground
+            this.grounded = false;
         }
         return colliding;
     }
@@ -127,8 +123,8 @@ public class Doodle extends Entity {
 
     @Override
     public void update() {
-        if (shouldFall) {
-            setVelocityY(getVelocityY() + 1);
+        if (!grounded) {
+            setVelocityY(getVelocityY() + gravity);
         }
 
         super.update();
@@ -147,20 +143,6 @@ public class Doodle extends Entity {
         Log.i(TAG, "Doodle jump occurred!");
 
         this.velocityY = -jumpSize;
-
-        TimerTask fallingTask = new TimerTask() {
-            @Override
-            public void run() {
-                shouldFall = true;
-
-                Log.i(TAG, "Ball falling commenced!");
-            }
-        };
-
-        Timer timer = new Timer();
-        timer.schedule(fallingTask, fallDelay);
-
-        Log.i(TAG, "Falling task scheduled, delay = " + fallDelay);
     }
 
     public float getHighestY() {
