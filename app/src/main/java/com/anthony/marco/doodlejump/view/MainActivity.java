@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.anthony.marco.doodlejump.R;
+import com.anthony.marco.doodlejump.adapter.ScoresAdapter;
 import com.anthony.marco.doodlejump.listener.UiListener;
 import com.anthony.marco.doodlejump.view.fragment.AttractFragment;
 import com.anthony.marco.doodlejump.view.fragment.GameOverFragment;
@@ -58,11 +59,16 @@ public class MainActivity extends Activity implements DoodleListener, UiListener
     private DatabaseReference mDatabase;
     private FirebaseAnalytics mFirebaseAnalytics;
 
+    private ArrayList<Score> scores;
+    private ScoresAdapter scoresAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         setUiState(UiState.MAIN_MENU);
 
@@ -70,9 +76,7 @@ public class MainActivity extends Activity implements DoodleListener, UiListener
         scores = new ArrayList<>();
         scoresAdapter = new ScoresAdapter(getLayoutInflater(), scores);
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("scores").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -275,8 +279,8 @@ public class MainActivity extends Activity implements DoodleListener, UiListener
         transaction.commit();
 
         currentFragment = newFragment;
-    }    
-        
+    }
+
     /**
      * Saves the score in the database
      *
