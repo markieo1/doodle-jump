@@ -48,9 +48,9 @@ public class DoodleGame implements ScreenListener {
     private static final float DOODLE_JUMP_SIZE = 40;
 
     /**
-     * The delay (MILLISECONDS) before the doodle begins falling
+     * The gravity of the doodle
      */
-    private static final long DOODLE_FALL_DELAY = 100;
+    private static final float DOODLE_GRAVITY = 0.8f;
 
     /**
      * The platform width
@@ -219,7 +219,7 @@ public class DoodleGame implements ScreenListener {
         Log.i(TAG, "Setting up camera, doodle and platform");
         // Setup the camera and entities
         camera = new ScrollingCamera(new Rect(0, 0, getScreenWidth(), getScreenHeight()));
-        doodle = new Doodle(getScreenWidth() / 2 - DOODLE_WIDTH, DOODLE_START_Y, DOODLE_WIDTH, DOODLE_HEIGHT, DOODLE_JUMP_SIZE, DOODLE_FALL_DELAY, doodleBitmap);
+        doodle = new Doodle(getScreenWidth() / 2 - DOODLE_WIDTH, DOODLE_START_Y, DOODLE_WIDTH, DOODLE_HEIGHT, DOODLE_JUMP_SIZE, DOODLE_GRAVITY, doodleBitmap);
         entities.add(doodle);
 
         // Add a platform right below the Doodle to stop it from failing the game when started
