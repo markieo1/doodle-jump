@@ -9,79 +9,79 @@ import java.util.Date;
  */
 
 public class Score implements Serializable {
-    /**
-     * The ID of the score
-     */
-    private long id;
+	/**
+	 * The ID of the score
+	 */
+	private long id;
 
-    /**
-     * The name of the player
-     */
-    private String name;
+	/**
+	 * The name of the player
+	 */
+	private String name;
 
-    /**
-     * The achieved score
-     */
-    private int score;
+	/**
+	 * The achieved score
+	 */
+	private int score;
 
-    /**
-     * The date of this result
-     */
-    private Date date;
+	/**
+	 * The date of this result
+	 */
+	private Date date;
 
-    public Score() {
-        this("", 0);
-    }
+	public Score() {
+		this("", 0);
+	}
 
-    public Score(String name, int score) {
-        this(0, name, score);
-    }
+	public Score(String name, int score) {
+		this(0, name, score);
+	}
 
-    public Score(String name, int score, Date date) {
-        this(0, name, score, date);
-    }
+	public Score(String name, int score, Date date) {
+		this(0, name, score, date);
+	}
 
-    public Score(long id, String name, int score) {
-        this(id, name, score, new Date());
-    }
+	public Score(long id, String name, int score) {
+		this(id, name, score, new Date());
+	}
 
-    public Score(long id, String name, int score, Date date) {
-        this.id = id;
-        this.name = name;
-        this.score = score;
-        this.date = date;
-    }
+	public Score(long id, String name, int score, Date date) {
+		this.id = id;
+		this.name = name;
+		this.score = score;
+		this.date = date;
+	}
 
-    public long getId() {
-        return id;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public void setId(long id) {
-        this.id = id;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        // Trim the name to exclude all spaces that were added
-        this.name = name.trim();
-    }
+	public void setName(String name) {
+		// Trim the name to exclude all spaces that were added
+		this.name = name.trim();
+	}
 
-    public int getScore() {
-        return score;
-    }
+	public int getScore() {
+		return score;
+	}
 
-    public void setScore(int score) {
-        this.score = score;
-    }
+	public void setScore(int score) {
+		this.score = score;
+	}
 
-    public Date getDate() {
-        return date;
-    }
+	public Date getDate() {
+		return date;
+	}
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
+	public void setDate(Date date) {
+		this.date = date;
+	}
 }
