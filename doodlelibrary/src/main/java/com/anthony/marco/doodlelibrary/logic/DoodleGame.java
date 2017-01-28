@@ -12,8 +12,9 @@ import com.anthony.marco.doodlelibrary.listener.DoodleListener;
 import com.anthony.marco.doodlelibrary.listener.ScreenListener;
 import com.anthony.marco.doodlelibrary.model.Doodle;
 import com.anthony.marco.doodlelibrary.model.Entity;
-import com.anthony.marco.doodlelibrary.model.JumpPlatform;
-import com.anthony.marco.doodlelibrary.model.Platform;
+import com.anthony.marco.doodlelibrary.model.platform.BreakablePlatform;
+import com.anthony.marco.doodlelibrary.model.platform.JumpPlatform;
+import com.anthony.marco.doodlelibrary.model.platform.Platform;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -140,7 +141,20 @@ public class DoodleGame implements ScreenListener {
 	 */
 	private Bitmap platformBitmap;
 
+	/**
+	 * Bitmap used for the jump platform
+	 */
 	private Bitmap jumpPlatformBitmap;
+
+	/**
+	 * Bitmap used for the breakable platform
+	 */
+	private Bitmap breakablePlatformBitmap;
+
+	/**
+	 * Bitmap used for the broken platforms
+	 */
+	private Bitmap brokenPlatformBitmap;
 
 	/**
 	 * Bitmap used for the doodle
@@ -151,7 +165,6 @@ public class DoodleGame implements ScreenListener {
 	 * The thread pool
 	 */
 	private ScheduledExecutorService ses;
-
 
 	/**
 	 * Determines if the timer needs a reset
@@ -345,14 +358,19 @@ public class DoodleGame implements ScreenListener {
 			lastYGenerated = platformY;
 
 			// Random the platform type
-			int platformType = rnd.nextInt(6);
-			Platform platform;
+			int platformType = rnd.nextInt(101);
+			Platform platform = null;
 
-			if (platformType <= 4) {
+			if (0 <= platformType && platformType <= 80) {
 				platform = new Platform(x, platformY, difficultyHandler.getPlatformWidth(), PLATFORM_HEIGHT, platformBitmap);
-			} else {
+			} else if (81 <= platformType && platformType <= 90) {
 				platform = new JumpPlatform(x, platformY, difficultyHandler.getPlatformWidth(), PLATFORM_HEIGHT, jumpPlatformBitmap);
+			} else if (91 <= platformType && platformType <= 100) {
+				platform = new BreakablePlatform(x, platformY, difficultyHandler.getPlatformWidth(), PLATFORM_HEIGHT, breakablePlatformBitmap, brokenPlatformBitmap);
 			}
+
+			if (platform == null)
+				continue;
 
 			entities.add(platform);
 		}
@@ -402,6 +420,12 @@ public class DoodleGame implements ScreenListener {
 
 		if (jumpPlatformBitmap == null)
 			jumpPlatformBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.jump_platform);
+
+		if (brokenPlatformBitmap == null)
+			brokenPlatformBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.broken_platform);
+
+		if (breakablePlatformBitmap == null)
+			breakablePlatformBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.breakable_platform);
 
 		Log.i(TAG, "Done loading resources.");
 	}

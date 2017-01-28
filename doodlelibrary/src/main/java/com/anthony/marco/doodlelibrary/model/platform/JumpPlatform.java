@@ -1,4 +1,4 @@
-package com.anthony.marco.doodlelibrary.model;
+package com.anthony.marco.doodlelibrary.model.platform;
 
 import android.graphics.Bitmap;
 

@@ -3,6 +3,9 @@ package com.anthony.marco.doodlelibrary.model;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.anthony.marco.doodlelibrary.model.platform.BreakablePlatform;
+import com.anthony.marco.doodlelibrary.model.platform.Platform;
+
 import java.util.ArrayList;
 
 /**
@@ -69,6 +72,9 @@ public class Doodle extends Entity {
 			Platform platform = (Platform) entity;
 
 			if (isColliding(platform, velocityY)) {
+				if (platform.isBroken())
+					continue;
+
 				isCollidingWithPlatform = true;
 
 				// Move because we might have passed the platform by a bit.
@@ -76,6 +82,10 @@ public class Doodle extends Entity {
 
 				// Get the jump boost for the platform
 				this.setVelocityY(-platform.getJumpBoost());
+
+				if (platform instanceof BreakablePlatform)
+					platform.setBroken(true);
+
 				break;
 			}
 
