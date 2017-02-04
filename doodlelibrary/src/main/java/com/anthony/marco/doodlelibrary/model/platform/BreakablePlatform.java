@@ -16,10 +16,10 @@ public class BreakablePlatform extends Platform {
 	}
 
 	@Override
-	public void update() {
+	public void update(double dt) {
 		if (this.isBroken())
 			setImage(brokenBitmap);
 
-		super.update();
+		super.update(dt);
 	}
 }
