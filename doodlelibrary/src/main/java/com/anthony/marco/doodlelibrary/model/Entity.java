@@ -6,6 +6,7 @@ import android.graphics.RectF;
 import android.util.Log;
 
 import com.anthony.marco.doodlelibrary.logic.ScrollingCamera;
+import com.anthony.marco.doodlelibrary.view.DoodleSurfaceView;
 
 /**
  * Created by anthony on 3-1-2017.
@@ -138,9 +139,12 @@ public class Entity {
 	/**
 	 * Updates this instance by adding the velocity
 	 */
-	public void update() {
-		setX(getX() + getVelocityX());
-		setY(getY() + getVelocityY());
+	public void update(double dt) {
+		float newX = getX() + (float) (getVelocityX() * dt * DoodleSurfaceView.TARGET_FPS / DoodleSurfaceView.SECOND);
+		float newY = getY() + (float) (getVelocityY() * dt * DoodleSurfaceView.TARGET_FPS / DoodleSurfaceView.SECOND);
+
+		setX(newX);
+		setY(newY);
 	}
 
 	/**

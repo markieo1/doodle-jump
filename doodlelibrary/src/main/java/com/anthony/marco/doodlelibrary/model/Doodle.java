@@ -134,12 +134,12 @@ public class Doodle extends Entity {
 	}
 
 	@Override
-	public void update() {
+    public void update(double dt) {
 		if (!grounded) {
 			setVelocityY(getVelocityY() + gravity);
 		}
 
-		super.update();
+        super.update(dt);
 	}
 
 	@Override

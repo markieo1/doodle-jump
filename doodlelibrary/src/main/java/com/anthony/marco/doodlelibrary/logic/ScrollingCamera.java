@@ -39,9 +39,9 @@ public class ScrollingCamera {
 	 *
 	 * @param doodle The doodle to follow
 	 */
-	public void update(Doodle doodle) {
+    public void update(double dt, Doodle doodle) {
 		for (Entity entity : entities) {
-			entity.update();
+            entity.update(dt);
 		}
 
 		float lastY = cameraY;
