@@ -277,7 +277,7 @@ public class DoodleGame implements ScreenListener {
     /**
      * Updates all entities
      */
-    public void update() {
+    public void update(double dt) {
         if (isStarted) {
             if (doodle.checkCollision(entities)) {
                 if (isTimerStarted && timerNeedReset) {
@@ -290,7 +290,7 @@ public class DoodleGame implements ScreenListener {
                 timerNeedReset = true;
             }
 
-            camera.update(doodle);
+            camera.update(dt, doodle);
 
             generatePlatforms();
             cleanupOldPlatforms();
