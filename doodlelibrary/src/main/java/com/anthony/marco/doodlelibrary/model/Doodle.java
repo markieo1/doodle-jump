@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by anthony on 3-1-2017.
@@ -122,12 +120,12 @@ public class Doodle extends Entity {
     }
 
     @Override
-    public void update() {
+    public void update(double dt) {
         if (!grounded) {
             setVelocityY(getVelocityY() + gravity);
         }
 
-        super.update();
+        super.update(dt);
     }
 
     @Override

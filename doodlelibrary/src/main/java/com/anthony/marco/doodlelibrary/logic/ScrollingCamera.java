@@ -38,9 +38,9 @@ public class ScrollingCamera {
      * Updates all entities and updates the cameraY to center the Doodle.
      * @param doodle The doodle to follow
      */
-    public void update(Doodle doodle) {
+    public void update(double dt, Doodle doodle) {
         for (Entity entity : entities) {
-            entity.update();
+            entity.update(dt);
         }
 
         float lastY = cameraY;
