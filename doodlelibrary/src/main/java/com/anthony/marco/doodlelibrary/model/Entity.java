@@ -50,18 +50,22 @@ public class Entity {
 	 */
 	protected Bitmap image;
 
-	public Entity(float x, float y, float width, float height, Bitmap image) {
-		this(x, y, width, height, 0, 0, image);
+	protected Animation currentAnimation;
+
+	private float animationTime;
+
+	public Entity(float x, float y, float width, float height) {
+		this(x, y, width, height, 0, 0);
 	}
 
-	public Entity(float x, float y, float width, float height, float velocityX, float velocityY, Bitmap image) {
+	public Entity(float x, float y, float width, float height, float velocityX, float velocityY) {
 		this.x = x;
 		this.y = y;
 		this.height = height;
 		this.width = width;
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
-		this.image = image;
+		this.currentAnimation = null;
 
 		Log.i(TAG, "New Entity created, pos = " + x + ", " + y + ", width = " + width + ", height = " + height + ", velocityX = " + velocityX + ", velocityY = " + velocityY);
 	}
@@ -129,6 +133,11 @@ public class Entity {
 	 * @param canvas The canvas to draw onto
 	 */
 	public void draw(ScrollingCamera camera, Canvas canvas) {
+		Bitmap image = getImage();
+
+		if(image == null)
+			return;
+
 		float relativeYPos = camera.getRelativeYPosition(getY());
 		canvas.drawBitmap(getImage(), null, new RectF(getX(), relativeYPos, getX() + getWidth(), relativeYPos + getHeight()), null);
 	}
@@ -137,6 +146,13 @@ public class Entity {
 	 * Updates this instance by adding the velocity
 	 */
 	public void update(double dt) {
+		animationTime += dt;
+
+		AnimationFrame currentFrame = currentAnimation.getFrame(animationTime);
+		if(currentFrame != null){
+			setImage(currentFrame.getTexture());
+		}
+
 		float newX = getX() + (float) (getVelocityX() * dt * DoodleSurfaceView.TARGET_FPS / DoodleSurfaceView.SECOND);
 		float newY = getY() + (float) (getVelocityY() * dt * DoodleSurfaceView.TARGET_FPS / DoodleSurfaceView.SECOND);
 
@@ -153,5 +169,9 @@ public class Entity {
 	public boolean isInScreen(ScrollingCamera camera) {
 		float relativeYPosition = camera.getRelativeYPosition(getY());
 		return camera.getScreenHeight() > relativeYPosition;
+	}
+
+	public void setAnimation(Animation animation){
+		this.currentAnimation = animation;
 	}
 }

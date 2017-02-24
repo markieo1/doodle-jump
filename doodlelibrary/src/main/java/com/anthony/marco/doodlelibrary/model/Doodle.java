@@ -1,6 +1,5 @@
 package com.anthony.marco.doodlelibrary.model;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -28,8 +27,8 @@ public class Doodle extends Entity {
 
     private boolean grounded;
 
-    public Doodle(float x, float y, float width, float height, float jumpSize, float gravity, Bitmap image) {
-        super(x, y, width, height, image);
+    public Doodle(float x, float y, float width, float height, float jumpSize, float gravity) {
+        super(x, y, width, height);
         this.jumpSize = jumpSize;
         this.gravity = gravity;
         this.grounded = false;

@@ -10,6 +10,8 @@ import android.util.Log;
 import com.anthony.marco.doodlelibrary.R;
 import com.anthony.marco.doodlelibrary.listener.DoodleListener;
 import com.anthony.marco.doodlelibrary.listener.ScreenListener;
+import com.anthony.marco.doodlelibrary.model.Animation;
+import com.anthony.marco.doodlelibrary.model.AnimationFrame;
 import com.anthony.marco.doodlelibrary.model.Doodle;
 import com.anthony.marco.doodlelibrary.model.Entity;
 
@@ -141,9 +143,13 @@ public class DoodleGame implements ScreenListener {
     /**
      * Bitmap used for the doodle
      */
-    private Bitmap doodleBitmap;
+    private Bitmap doodleBitmapPink;
 
-    /**
+	private Bitmap doodleBitmapBlue;
+
+	private Bitmap doodleBitmapGreen;
+
+	/**
      * The thread pool
      */
     private ScheduledExecutorService ses;
@@ -219,11 +225,28 @@ public class DoodleGame implements ScreenListener {
         Log.i(TAG, "Setting up camera, doodle and platform");
         // Setup the camera and entities
         camera = new ScrollingCamera(new Rect(0, 0, getScreenWidth(), getScreenHeight()));
-        doodle = new Doodle(getScreenWidth() / 2 - DOODLE_WIDTH, DOODLE_START_Y, DOODLE_WIDTH, DOODLE_HEIGHT, DOODLE_JUMP_SIZE, DOODLE_GRAVITY, doodleBitmap);
+        doodle = new Doodle(getScreenWidth() / 2 - DOODLE_WIDTH, DOODLE_START_Y, DOODLE_WIDTH, DOODLE_HEIGHT, DOODLE_JUMP_SIZE, DOODLE_GRAVITY);
+
+	    Animation doodleAnimation = new Animation(3);
+	    AnimationFrame doodleFramePink = new AnimationFrame(doodleBitmapPink, 1000);
+	    AnimationFrame doodleFrameBlue = new AnimationFrame(doodleBitmapBlue, 1000);
+	    AnimationFrame doodleFrameGreen = new AnimationFrame(doodleBitmapGreen, 5000);
+	    doodleAnimation.addFrame(doodleFramePink);
+	    doodleAnimation.addFrame(doodleFrameBlue);
+	    doodleAnimation.addFrame(doodleFrameGreen);
+		doodleAnimation.setLoop(true);
+	    doodle.setAnimation(doodleAnimation);
+
+
         entities.add(doodle);
 
         // Add a platform right below the Doodle to stop it from failing the game when started
-        Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), PLATFORM_WIDTH, PLATFORM_HEIGHT, platformBitmap);
+        Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), PLATFORM_WIDTH, PLATFORM_HEIGHT);
+
+	    Animation platformAnimation = new Animation(1);
+	    AnimationFrame platformFrame = new AnimationFrame(platformBitmap, 1);
+	    platformAnimation.addFrame(platformFrame);
+	    platform.setAnimation(platformAnimation);
         entities.add(platform);
 
         // Reset the last y generated
@@ -341,7 +364,11 @@ public class DoodleGame implements ScreenListener {
 
             lastYGenerated = platformY;
 
-            Entity entity = new Entity(x, platformY, difficultyHandler.getPlatformWidth(), PLATFORM_HEIGHT, platformBitmap);
+            Entity entity = new Entity(x, platformY, difficultyHandler.getPlatformWidth(), PLATFORM_HEIGHT);
+	        Animation platformAnimation = new Animation(1);
+	        AnimationFrame platformFrame = new AnimationFrame(platformBitmap, 1);
+	        platformAnimation.addFrame(platformFrame);
+	        entity.setAnimation(platformAnimation);
             entities.add(entity);
         }
 
@@ -385,8 +412,14 @@ public class DoodleGame implements ScreenListener {
         if (platformBitmap == null)
             platformBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.platform);
 
-        if (doodleBitmap == null)
-            doodleBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle);
+        if (doodleBitmapPink == null)
+            doodleBitmapPink = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle);
+
+	    if(doodleBitmapBlue == null)
+		    doodleBitmapBlue = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle_blue);
+
+	    if(doodleBitmapGreen == null)
+		    doodleBitmapGreen = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle_green);
 
         Log.i(TAG, "Done loading resources.");
     }
