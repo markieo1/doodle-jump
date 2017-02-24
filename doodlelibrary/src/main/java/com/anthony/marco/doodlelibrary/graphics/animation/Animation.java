@@ -1,5 +1,7 @@
 package com.anthony.marco.doodlelibrary.graphics.animation;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 
 /**
@@ -84,5 +86,39 @@ public class Animation {
 
 	public float getAnimationLength() {
 		return animationLength;
+	}
+
+	/**
+	 * Creates an animation from a bitmap sprite sheet
+	 * Incorrect bitmap width may be reported, this is because DPI scaling is applied when using the BitmapFactory.
+	 * Add the inScaled = false option when decoding the resource. This allows the bitmap factory to not change the size of the bitmap
+	 *
+	 * @param spriteSheet The bitmap containing all the sprites
+	 * @param row The row on the bitmap to get the animation for
+	 * @param tileSizeX The size/width per sprite
+	 * @param tileSizeY The size/height per sprite
+	 * @param frameDuration The duration per frame
+	 * @return An animation containing all the frames of the sprite sheet.
+	 */
+	public static Animation fromSpriteSheet(Bitmap spriteSheet, int row, int tileSizeX, int tileSizeY, float frameDuration){
+		Animation animation = new Animation();
+
+		// get the size
+		int bitmapWidth = spriteSheet.getWidth();
+
+		// Calculate the amount of images
+		int amountOfImages = bitmapWidth / tileSizeX;
+		for (int i = 0; i < amountOfImages; i++) {
+			// Now we loop through all of them to get the correct one
+			int startX = (i * tileSizeX);
+			int startY = (row * tileSizeY);
+
+			Bitmap sprite = Bitmap.createBitmap(spriteSheet, startX, startY, tileSizeX, tileSizeY);
+
+			AnimationFrame frame = new AnimationFrame(sprite, frameDuration);
+			animation.addFrames(frame);
+		}
+
+		return animation;
 	}
 }
