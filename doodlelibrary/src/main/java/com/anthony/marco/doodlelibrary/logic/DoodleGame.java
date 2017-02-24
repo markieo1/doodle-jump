@@ -227,7 +227,7 @@ public class DoodleGame implements ScreenListener {
         camera = new ScrollingCamera(new Rect(0, 0, getScreenWidth(), getScreenHeight()));
         doodle = new Doodle(getScreenWidth() / 2 - DOODLE_WIDTH, DOODLE_START_Y, DOODLE_WIDTH, DOODLE_HEIGHT, DOODLE_JUMP_SIZE, DOODLE_GRAVITY);
 
-	    Animation doodleAnimation = new Animation(3);
+	    Animation doodleAnimation = new Animation();
 	    AnimationFrame doodleFramePink = new AnimationFrame(doodleBitmapPink, 1000);
 	    AnimationFrame doodleFrameBlue = new AnimationFrame(doodleBitmapBlue, 1000);
 	    AnimationFrame doodleFrameGreen = new AnimationFrame(doodleBitmapGreen, 5000);
@@ -243,7 +243,7 @@ public class DoodleGame implements ScreenListener {
         // Add a platform right below the Doodle to stop it from failing the game when started
         Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), PLATFORM_WIDTH, PLATFORM_HEIGHT);
 
-	    Animation platformAnimation = new Animation(1);
+	    Animation platformAnimation = new Animation();
 	    AnimationFrame platformFrame = new AnimationFrame(platformBitmap, 1);
 	    platformAnimation.addFrame(platformFrame);
 	    platform.setAnimation(platformAnimation);
@@ -365,7 +365,7 @@ public class DoodleGame implements ScreenListener {
             lastYGenerated = platformY;
 
             Entity entity = new Entity(x, platformY, difficultyHandler.getPlatformWidth(), PLATFORM_HEIGHT);
-	        Animation platformAnimation = new Animation(1);
+	        Animation platformAnimation = new Animation();
 	        AnimationFrame platformFrame = new AnimationFrame(platformBitmap, 1);
 	        platformAnimation.addFrame(platformFrame);
 	        entity.setAnimation(platformAnimation);

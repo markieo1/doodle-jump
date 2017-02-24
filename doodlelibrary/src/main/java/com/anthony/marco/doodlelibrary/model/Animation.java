@@ -11,19 +11,19 @@ public class Animation {
 	private final static int LINEAR_SEARCH_CUTOFF = 16;
 
 	private ArrayList<AnimationFrame> mFrames;
-	private float[] mFrameStartTimes;
+	private ArrayList<Float> mFrameStartTimes;
 	private boolean mLoop;
 	private float mLength;
 
-	public Animation(int frameCount){
-		mFrames = new ArrayList<>(frameCount);
-		mFrameStartTimes = new float[frameCount];
+	public Animation(){
+		mFrames = new ArrayList<>();
+		mFrameStartTimes = new ArrayList<>();
 		mLoop = false;
 		mLength = 0.0f;
 	}
 
 	public void addFrame(AnimationFrame frame){
-		mFrameStartTimes[mFrames.size()] = mLength;
+		mFrameStartTimes.add(mLength);
 		mFrames.add(frame);
 		mLength += frame.getHoldTime();
 	}
@@ -60,8 +60,8 @@ public class Animation {
 					// When there are very few frames it's actually slower to do a binary search
 					// of the frame list.  So we'll use a linear search for small animations
 					// and only pull the binary search out when the frame count is large.
-					if (mFrameStartTimes.length > LINEAR_SEARCH_CUTOFF) {
-						int index = Arrays.binarySearch(mFrameStartTimes, cycleTime);
+					if (mFrameStartTimes.size() > LINEAR_SEARCH_CUTOFF) {
+						int index = mFrameStartTimes.indexOf(cycleTime);
 						if (index < 0) {
 							index = -(index + 1) - 1;
 						}
