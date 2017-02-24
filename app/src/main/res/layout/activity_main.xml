@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.anthony.marco.doodlejump.view.MainActivity">
 
-    <com.anthony.marco.doodlelibrary.view.DoodleSurfaceView
+    <com.anthony.marco.doodlelibrary.graphics.view.DoodleSurfaceView
         android:id="@+id/doodle_surface_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

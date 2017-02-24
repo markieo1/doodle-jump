@@ -5,8 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.Log;
 
+import com.anthony.marco.doodlelibrary.graphics.animation.Animation;
+import com.anthony.marco.doodlelibrary.graphics.animation.AnimationFrame;
 import com.anthony.marco.doodlelibrary.logic.ScrollingCamera;
-import com.anthony.marco.doodlelibrary.view.DoodleSurfaceView;
+import com.anthony.marco.doodlelibrary.graphics.view.DoodleSurfaceView;
 
 /**
  * Created by anthony on 3-1-2017.
@@ -45,11 +47,6 @@ public class Entity {
 	 */
 	protected float velocityY;
 
-	/**
-	 * The Entity bitmap image
-	 */
-	protected Bitmap image;
-
 	protected Animation currentAnimation;
 
 	private float animationTime;
@@ -59,13 +56,17 @@ public class Entity {
 	}
 
 	public Entity(float x, float y, float width, float height, float velocityX, float velocityY) {
+		this(x, y, width, height, velocityX, velocityY, null);
+	}
+
+	public Entity(float x, float y, float width, float height, float velocityX, float velocityY, Animation animation) {
 		this.x = x;
 		this.y = y;
 		this.height = height;
 		this.width = width;
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
-		this.currentAnimation = null;
+		this.currentAnimation = animation;
 
 		Log.i(TAG, "New Entity created, pos = " + x + ", " + y + ", width = " + width + ", height = " + height + ", velocityX = " + velocityX + ", velocityY = " + velocityY);
 	}
@@ -118,14 +119,6 @@ public class Entity {
 		this.velocityY = velocityY;
 	}
 
-	public Bitmap getImage() {
-		return image;
-	}
-
-	public void setImage(Bitmap image) {
-		this.image = image;
-	}
-
 	/**
 	 * Draws this instance
 	 *
@@ -133,13 +126,19 @@ public class Entity {
 	 * @param canvas The canvas to draw onto
 	 */
 	public void draw(ScrollingCamera camera, Canvas canvas) {
-		Bitmap image = getImage();
+		if (currentAnimation == null)
+			return;
 
-		if(image == null)
+		AnimationFrame currentFrame = currentAnimation.getFrame(animationTime);
+		if (currentFrame == null)
+			return;
+
+		Bitmap image = currentFrame.getBitmap();
+		if (image == null)
 			return;
 
 		float relativeYPos = camera.getRelativeYPosition(getY());
-		canvas.drawBitmap(getImage(), null, new RectF(getX(), relativeYPos, getX() + getWidth(), relativeYPos + getHeight()), null);
+		canvas.drawBitmap(image, null, new RectF(getX(), relativeYPos, getX() + getWidth(), relativeYPos + getHeight()), null);
 	}
 
 	/**
@@ -147,11 +146,6 @@ public class Entity {
 	 */
 	public void update(double dt) {
 		animationTime += dt;
-
-		AnimationFrame currentFrame = currentAnimation.getFrame(animationTime);
-		if(currentFrame != null){
-			setImage(currentFrame.getTexture());
-		}
 
 		float newX = getX() + (float) (getVelocityX() * dt * DoodleSurfaceView.TARGET_FPS / DoodleSurfaceView.SECOND);
 		float newY = getY() + (float) (getVelocityY() * dt * DoodleSurfaceView.TARGET_FPS / DoodleSurfaceView.SECOND);
@@ -171,7 +165,7 @@ public class Entity {
 		return camera.getScreenHeight() > relativeYPosition;
 	}
 
-	public void setAnimation(Animation animation){
+	public void setAnimation(Animation animation) {
 		this.currentAnimation = animation;
 	}
 }

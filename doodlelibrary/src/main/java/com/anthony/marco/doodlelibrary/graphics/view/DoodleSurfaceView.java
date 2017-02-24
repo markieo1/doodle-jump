@@ -1,4 +1,4 @@
-package com.anthony.marco.doodlelibrary.view;
+package com.anthony.marco.doodlelibrary.graphics.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
