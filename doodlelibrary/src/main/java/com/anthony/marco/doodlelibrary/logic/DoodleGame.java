@@ -2,12 +2,12 @@ package com.anthony.marco.doodlelibrary.logic;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
 
 import com.anthony.marco.doodlelibrary.R;
+import com.anthony.marco.doodlelibrary.graphics.AssetManager;
 import com.anthony.marco.doodlelibrary.graphics.animation.Animation;
 import com.anthony.marco.doodlelibrary.listener.DoodleListener;
 import com.anthony.marco.doodlelibrary.listener.ScreenListener;
@@ -31,22 +31,22 @@ public class DoodleGame implements ScreenListener {
 	/**
 	 * The start y position for the doodle
 	 */
-	private static final float DOODLE_START_Y = -100;
+	private static final int DOODLE_START_Y = -100;
 
 	/**
 	 * The doodle width
 	 */
-	private static final float DOODLE_WIDTH = 50;
+	private static final int DOODLE_WIDTH = 50;
 
 	/**
 	 * The doodle height
 	 */
-	private static final float DOODLE_HEIGHT = 50;
+	private static final int DOODLE_HEIGHT = 50;
 
 	/**
 	 * The jump size for the doodle
 	 */
-	private static final float DOODLE_JUMP_SIZE = 40;
+	private static final int DOODLE_JUMP_SIZE = 40;
 
 	/**
 	 * The gravity of the doodle
@@ -56,33 +56,33 @@ public class DoodleGame implements ScreenListener {
 	/**
 	 * The platform width
 	 */
-	private static final float PLATFORM_WIDTH = 100;
+	private static final int PLATFORM_WIDTH = 100;
 
 	/**
 	 * The platform height
 	 */
-	private static final float PLATFORM_HEIGHT = 10;
+	private static final int PLATFORM_HEIGHT = 10;
 
 	/**
 	 * The min difference from the previous Y generated
 	 */
-	private static final float MIN_DIFFERENCE = 100;
+	private static final int MIN_DIFFERENCE = 100;
 
 	/**
 	 * The maximum (exclusive) difference from the previous Y generated
 	 */
-	private static final float MAX_DIFFERENCE = 500;
+	private static final int MAX_DIFFERENCE = 500;
 
 	/**
 	 * The amount of entities to generate
 	 */
-	private static final float GENERATION_COUNT = 100;
+	private static final int GENERATION_COUNT = 100;
 
 	/**
 	 * The threshold when the generation should commence again.
 	 * This is the lastYGenerated + the threshold, since we are negative on the Y Axis.
 	 */
-	private static final float GENERATION_START_THRESHOLD = 3000;
+	private static final int GENERATION_START_THRESHOLD = 3000;
 
 	/**
 	 * The interval (MILLISECONDS) in which the score label should be updated
@@ -399,16 +399,16 @@ public class DoodleGame implements ScreenListener {
 	private void loadResources() {
 		Log.i(TAG, "Starting load resources.");
 		if (platformBitmap == null || platformBitmap.isRecycled())
-			platformBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.platform);
+			platformBitmap = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.platform, (int) PLATFORM_WIDTH, (int) PLATFORM_HEIGHT);
 
 		if (doodleBitmapPink == null || doodleBitmapPink.isRecycled())
-			doodleBitmapPink = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle);
+			doodleBitmapPink = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.circle, (int) DOODLE_WIDTH, (int) DOODLE_HEIGHT);
 
 		if (doodleBitmapBlue == null || doodleBitmapBlue.isRecycled())
-			doodleBitmapBlue = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle_blue);
+			doodleBitmapBlue = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.circle_blue, (int) DOODLE_WIDTH, (int) DOODLE_HEIGHT);
 
 		if (doodleBitmapGreen == null || doodleBitmapGreen.isRecycled())
-			doodleBitmapGreen = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle_green);
+			doodleBitmapGreen = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.circle_green, (int) DOODLE_WIDTH, (int) DOODLE_HEIGHT);
 
 		Log.i(TAG, "Done loading resources.");
 	}
