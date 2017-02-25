@@ -50,8 +50,8 @@ public class GameplayOverlay extends Overlay {
 	public void update(double dt) {
 		super.update(dt);
 
-		Object score = scene.getValues().get(GameplayScene.VAL_SCORE, null);
-		scoreText = score != null ? String.valueOf(score) : "";
+		int score = (int) scene.getValues().get(GameplayScene.VAL_SCORE, 0);
+		scoreText = String.valueOf(score);
 
 		int timeRemaining = (int) scene.getValues().get(GameplayScene.VAL_TIME_REMAINING, 0);
 		if (timeRemaining != 0)
