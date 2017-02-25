@@ -8,10 +8,9 @@ import android.graphics.Rect;
 import android.util.Log;
 
 import com.anthony.marco.doodlelibrary.R;
+import com.anthony.marco.doodlelibrary.graphics.animation.Animation;
 import com.anthony.marco.doodlelibrary.listener.DoodleListener;
 import com.anthony.marco.doodlelibrary.listener.ScreenListener;
-import com.anthony.marco.doodlelibrary.graphics.animation.Animation;
-import com.anthony.marco.doodlelibrary.graphics.animation.AnimationFrame;
 import com.anthony.marco.doodlelibrary.model.Doodle;
 import com.anthony.marco.doodlelibrary.model.Entity;
 
@@ -227,24 +226,14 @@ public class DoodleGame implements ScreenListener {
 		camera = new ScrollingCamera(new Rect(0, 0, getScreenWidth(), getScreenHeight()));
 		doodle = new Doodle(getScreenWidth() / 2 - DOODLE_WIDTH, DOODLE_START_Y, DOODLE_WIDTH, DOODLE_HEIGHT, DOODLE_JUMP_SIZE, DOODLE_GRAVITY);
 
-		Animation doodleAnimation = new Animation();
-		AnimationFrame doodleFramePink = new AnimationFrame(doodleBitmapPink, 1000);
-		AnimationFrame doodleFrameBlue = new AnimationFrame(doodleBitmapBlue, 1000);
-		AnimationFrame doodleFrameGreen = new AnimationFrame(doodleBitmapGreen, 5000);
-		doodleAnimation.addFrames(doodleFramePink, doodleFrameBlue, doodleFrameGreen);
-		doodleAnimation.setLooping(true);
+		Animation doodleAnimation = Animation.fromBitmaps(1000, doodleBitmapPink, doodleBitmapBlue, doodleBitmapGreen);
 		doodle.setAnimation(doodleAnimation);
 
 
 		entities.add(doodle);
 
 		// Add a platform right below the Doodle to stop it from failing the game when started
-		Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), PLATFORM_WIDTH, PLATFORM_HEIGHT);
-
-		Animation platformAnimation = new Animation();
-		AnimationFrame platformFrame = new AnimationFrame(platformBitmap, 1);
-		platformAnimation.addFrames(platformFrame);
-		platform.setAnimation(platformAnimation);
+		Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), PLATFORM_WIDTH, PLATFORM_HEIGHT, platformBitmap);
 		entities.add(platform);
 
 		// Reset the last y generated
@@ -293,6 +282,12 @@ public class DoodleGame implements ScreenListener {
 			float resultScore = doodle.getHighestY() * -1;
 			doodleListener.gameOver(Math.round(resultScore));
 		}
+
+		// Recycle the bitmaps, since no need for them anymore.
+		this.doodleBitmapBlue.recycle();
+		this.doodleBitmapGreen.recycle();
+		this.doodleBitmapPink.recycle();
+		this.platformBitmap.recycle();
 	}
 
 	/**
@@ -362,11 +357,7 @@ public class DoodleGame implements ScreenListener {
 
 			lastYGenerated = platformY;
 
-			Entity entity = new Entity(x, platformY, difficultyHandler.getPlatformWidth(), PLATFORM_HEIGHT);
-			Animation platformAnimation = new Animation();
-			AnimationFrame platformFrame = new AnimationFrame(platformBitmap, 1);
-			platformAnimation.addFrames(platformFrame);
-			entity.setAnimation(platformAnimation);
+			Entity entity = new Entity(x, platformY, difficultyHandler.getPlatformWidth(), PLATFORM_HEIGHT, platformBitmap);
 			entities.add(entity);
 		}
 
@@ -407,16 +398,16 @@ public class DoodleGame implements ScreenListener {
 	 */
 	private void loadResources() {
 		Log.i(TAG, "Starting load resources.");
-		if (platformBitmap == null)
+		if (platformBitmap == null || platformBitmap.isRecycled())
 			platformBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.platform);
 
-		if (doodleBitmapPink == null)
+		if (doodleBitmapPink == null || doodleBitmapPink.isRecycled())
 			doodleBitmapPink = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle);
 
-		if (doodleBitmapBlue == null)
+		if (doodleBitmapBlue == null || doodleBitmapBlue.isRecycled())
 			doodleBitmapBlue = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle_blue);
 
-		if (doodleBitmapGreen == null)
+		if (doodleBitmapGreen == null || doodleBitmapGreen.isRecycled())
 			doodleBitmapGreen = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle_green);
 
 		Log.i(TAG, "Done loading resources.");

@@ -15,23 +15,18 @@ public class Animation {
 	private ArrayList<AnimationFrame> mFrames;
 
 	/**
-	 * Determines if the animation is looping
-	 */
-	private boolean looping;
-
-	/**
 	 * The total length of the animation
 	 */
 	private float animationLength;
 
 	public Animation() {
 		mFrames = new ArrayList<>();
-		looping = false;
 		animationLength = 0.0f;
 	}
 
 	/**
 	 * Adds frames to the animation
+	 *
 	 * @param frames The frames to be added
 	 */
 	public void addFrames(AnimationFrame... frames) {
@@ -43,6 +38,7 @@ public class Animation {
 
 	/**
 	 * Gets the frame to display now
+	 *
 	 * @param animationTime The time running the animation
 	 * @return The frame to display
 	 */
@@ -56,10 +52,7 @@ public class Animation {
 
 			if (frameCount > 1) {
 				float currentTime = 0.0f;
-				float cycleTime = animationTime;
-				if (isLooping()) {
-					cycleTime = animationTime % length;
-				}
+				float cycleTime = animationTime % length;
 
 				if (cycleTime < length) {
 					for (int x = 0; x < frameCount; x++) {
@@ -76,14 +69,6 @@ public class Animation {
 		return result;
 	}
 
-	public boolean isLooping() {
-		return looping;
-	}
-
-	public void setLooping(boolean looping) {
-		this.looping = looping;
-	}
-
 	public float getAnimationLength() {
 		return animationLength;
 	}
@@ -93,14 +78,14 @@ public class Animation {
 	 * Incorrect bitmap width may be reported, this is because DPI scaling is applied when using the BitmapFactory.
 	 * Add the inScaled = false option when decoding the resource. This allows the bitmap factory to not change the size of the bitmap
 	 *
-	 * @param spriteSheet The bitmap containing all the sprites
-	 * @param row The row on the bitmap to get the animation for
-	 * @param tileSizeX The size/width per sprite
-	 * @param tileSizeY The size/height per sprite
+	 * @param spriteSheet   The bitmap containing all the sprites
+	 * @param row           The row on the bitmap to get the animation for
+	 * @param tileSizeX     The size/width per sprite
+	 * @param tileSizeY     The size/height per sprite
 	 * @param frameDuration The duration per frame
 	 * @return An animation containing all the frames of the sprite sheet.
 	 */
-	public static Animation fromSpriteSheet(Bitmap spriteSheet, int row, int tileSizeX, int tileSizeY, float frameDuration){
+	public static Animation fromSpriteSheet(Bitmap spriteSheet, int row, int tileSizeX, int tileSizeY, float frameDuration) {
 		Animation animation = new Animation();
 
 		// get the size
@@ -117,6 +102,24 @@ public class Animation {
 
 			AnimationFrame frame = new AnimationFrame(sprite, frameDuration);
 			animation.addFrames(frame);
+		}
+
+		return animation;
+	}
+
+	/**
+	 * Creates an animation from the specified bitmaps
+	 *
+	 * @param frameDuration The duration per bitmap
+	 * @param bitmaps       The bitmaps to use for the animation
+	 * @return An animation containing all the bitmaps as animation frames.
+	 */
+	public static Animation fromBitmaps(float frameDuration, Bitmap... bitmaps) {
+		Animation animation = new Animation();
+
+		for (Bitmap bitmap : bitmaps) {
+			AnimationFrame animationFrame = new AnimationFrame(bitmap, frameDuration);
+			animation.addFrames(animationFrame);
 		}
 
 		return animation;

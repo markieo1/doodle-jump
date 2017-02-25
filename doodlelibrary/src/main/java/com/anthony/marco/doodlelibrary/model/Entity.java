@@ -3,12 +3,11 @@ package com.anthony.marco.doodlelibrary.model;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.RectF;
-import android.util.Log;
 
 import com.anthony.marco.doodlelibrary.graphics.animation.Animation;
 import com.anthony.marco.doodlelibrary.graphics.animation.AnimationFrame;
-import com.anthony.marco.doodlelibrary.logic.ScrollingCamera;
 import com.anthony.marco.doodlelibrary.graphics.view.DoodleSurfaceView;
+import com.anthony.marco.doodlelibrary.logic.ScrollingCamera;
 
 /**
  * Created by anthony on 3-1-2017.
@@ -47,12 +46,18 @@ public class Entity {
 	 */
 	protected float velocityY;
 
+	protected RectF drawingRectangle;
+
 	protected Animation currentAnimation;
 
 	private float animationTime;
 
 	public Entity(float x, float y, float width, float height) {
 		this(x, y, width, height, 0, 0);
+	}
+
+	public Entity(float x, float y, float width, float height, Bitmap bitmap) {
+		this(x, y, width, height, 0, 0, Animation.fromBitmaps(1000f, bitmap));
 	}
 
 	public Entity(float x, float y, float width, float height, float velocityX, float velocityY) {
@@ -67,8 +72,7 @@ public class Entity {
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
 		this.currentAnimation = animation;
-
-		Log.i(TAG, "New Entity created, pos = " + x + ", " + y + ", width = " + width + ", height = " + height + ", velocityX = " + velocityX + ", velocityY = " + velocityY);
+		this.drawingRectangle = new RectF();
 	}
 
 	public float getX() {
@@ -138,7 +142,8 @@ public class Entity {
 			return;
 
 		float relativeYPos = camera.getRelativeYPosition(getY());
-		canvas.drawBitmap(image, null, new RectF(getX(), relativeYPos, getX() + getWidth(), relativeYPos + getHeight()), null);
+		drawingRectangle.set(getX(), relativeYPos, getX() + getWidth(), relativeYPos + getHeight());
+		canvas.drawBitmap(image, null, drawingRectangle, null);
 	}
 
 	/**
