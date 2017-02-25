@@ -77,7 +77,7 @@ public class DoodleSurfaceView extends SurfaceView implements Runnable, SurfaceH
 	}
 
 	public void stopGame() {
-		this.doodleGame.stopGame();
+		this.doodleGame.stopGame(0);
 	}
 
 	@Override
