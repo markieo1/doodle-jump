@@ -22,7 +22,7 @@ import com.anthony.marco.doodlejump.view.fragment.MainMenuFragment;
 import com.anthony.marco.doodlejump.view.fragment.ScoreboardFragment;
 import com.anthony.marco.doodlelibrary.listener.DoodleListener;
 import com.anthony.marco.doodlelibrary.model.Score;
-import com.anthony.marco.doodlelibrary.view.DoodleSurfaceView;
+import com.anthony.marco.doodlelibrary.graphics.view.DoodleSurfaceView;
 
 public class MainActivity extends Activity implements DoodleListener, UiListener {
     private final String TAG = "MainActivity";
