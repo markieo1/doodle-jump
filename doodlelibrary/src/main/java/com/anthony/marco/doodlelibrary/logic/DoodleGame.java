@@ -1,7 +1,6 @@
 package com.anthony.marco.doodlelibrary.logic;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
@@ -135,20 +134,6 @@ public class DoodleGame implements ScreenListener {
 	private DoodleListener doodleListener;
 
 	/**
-	 * Bitmap used for the platform
-	 */
-	private Bitmap platformBitmap;
-
-	/**
-	 * Bitmap used for the doodle
-	 */
-	private Bitmap doodleBitmapPink;
-
-	private Bitmap doodleBitmapBlue;
-
-	private Bitmap doodleBitmapGreen;
-
-	/**
 	 * The thread pool
 	 */
 	private ScheduledExecutorService ses;
@@ -226,14 +211,14 @@ public class DoodleGame implements ScreenListener {
 		camera = new ScrollingCamera(new Rect(0, 0, getScreenWidth(), getScreenHeight()));
 		doodle = new Doodle(getScreenWidth() / 2 - DOODLE_WIDTH, DOODLE_START_Y, DOODLE_WIDTH, DOODLE_HEIGHT, DOODLE_JUMP_SIZE, DOODLE_GRAVITY);
 
-		Animation doodleAnimation = Animation.fromBitmaps(1000, doodleBitmapPink, doodleBitmapBlue, doodleBitmapGreen);
+		Animation doodleAnimation = Animation.fromBitmaps(1000, AssetManager.getInstance().getBitmapFromMemCache(R.drawable.circle), AssetManager.getInstance().getBitmapFromMemCache(R.drawable.circle_blue), AssetManager.getInstance().getBitmapFromMemCache(R.drawable.circle_green));
 		doodle.setAnimation(doodleAnimation);
 
 
 		entities.add(doodle);
 
 		// Add a platform right below the Doodle to stop it from failing the game when started
-		Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), PLATFORM_WIDTH, PLATFORM_HEIGHT, platformBitmap);
+		Entity platform = new Entity(doodle.getX() - (doodle.getWidth() / 2), doodle.getY() + doodle.getHeight(), PLATFORM_WIDTH, PLATFORM_HEIGHT, AssetManager.getInstance().getBitmapFromMemCache(R.drawable.platform));
 		entities.add(platform);
 
 		// Reset the last y generated
@@ -282,12 +267,6 @@ public class DoodleGame implements ScreenListener {
 			float resultScore = doodle.getHighestY() * -1;
 			doodleListener.gameOver(Math.round(resultScore));
 		}
-
-		// Recycle the bitmaps, since no need for them anymore.
-		this.doodleBitmapBlue.recycle();
-		this.doodleBitmapGreen.recycle();
-		this.doodleBitmapPink.recycle();
-		this.platformBitmap.recycle();
 	}
 
 	/**
@@ -357,7 +336,7 @@ public class DoodleGame implements ScreenListener {
 
 			lastYGenerated = platformY;
 
-			Entity entity = new Entity(x, platformY, difficultyHandler.getPlatformWidth(), PLATFORM_HEIGHT, platformBitmap);
+			Entity entity = new Entity(x, platformY, difficultyHandler.getPlatformWidth(), PLATFORM_HEIGHT, AssetManager.getInstance().getBitmapFromMemCache(R.drawable.platform));
 			entities.add(entity);
 		}
 
@@ -398,17 +377,10 @@ public class DoodleGame implements ScreenListener {
 	 */
 	private void loadResources() {
 		Log.i(TAG, "Starting load resources.");
-		if (platformBitmap == null || platformBitmap.isRecycled())
-			platformBitmap = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.platform, (int) PLATFORM_WIDTH, (int) PLATFORM_HEIGHT);
-
-		if (doodleBitmapPink == null || doodleBitmapPink.isRecycled())
-			doodleBitmapPink = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.circle, (int) DOODLE_WIDTH, (int) DOODLE_HEIGHT);
-
-		if (doodleBitmapBlue == null || doodleBitmapBlue.isRecycled())
-			doodleBitmapBlue = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.circle_blue, (int) DOODLE_WIDTH, (int) DOODLE_HEIGHT);
-
-		if (doodleBitmapGreen == null || doodleBitmapGreen.isRecycled())
-			doodleBitmapGreen = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.circle_green, (int) DOODLE_WIDTH, (int) DOODLE_HEIGHT);
+		AssetManager.getInstance().addBitmapToMemoryCache(R.drawable.platform, AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.platform, PLATFORM_WIDTH, PLATFORM_HEIGHT));
+		AssetManager.getInstance().addBitmapToMemoryCache(R.drawable.circle, AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.circle, DOODLE_WIDTH, DOODLE_HEIGHT));
+		AssetManager.getInstance().addBitmapToMemoryCache(R.drawable.circle_blue, AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.circle_blue, DOODLE_WIDTH, DOODLE_HEIGHT));
+		AssetManager.getInstance().addBitmapToMemoryCache(R.drawable.circle_green, AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.circle_green, DOODLE_WIDTH, DOODLE_HEIGHT));
 
 		Log.i(TAG, "Done loading resources.");
 	}
