@@ -21,7 +21,7 @@ public class GameOverlayFragment extends Fragment {
 
     private UiListener mUiListener;
 
-    private TextView scoreTextView;
+    //private TextView scoreTextView;
     private TextView timerTextView;
 
     @Override
@@ -37,7 +37,7 @@ public class GameOverlayFragment extends Fragment {
             }
         });
 
-        scoreTextView = (TextView) fragmentView.findViewById(R.id.score_text_view);
+        //scoreTextView = (TextView) fragmentView.findViewById(R.id.score_text_view);
         timerTextView = (TextView) fragmentView.findViewById(R.id.timer_text_view);
 
         return fragmentView;
@@ -57,7 +57,7 @@ public class GameOverlayFragment extends Fragment {
     }
 
     public void setScore(int score) {
-        scoreTextView.setText(String.valueOf(score));
+        //scoreTextView.setText(String.valueOf(score));
     }
 
     public void setRemainingTime(float timeLeft) {

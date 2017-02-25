@@ -8,6 +8,7 @@ import android.util.Log;
 import com.anthony.marco.doodlelibrary.R;
 import com.anthony.marco.doodlelibrary.graphics.AssetManager;
 import com.anthony.marco.doodlelibrary.graphics.animation.Animation;
+import com.anthony.marco.doodlelibrary.graphics.view.GameplayOverlay;
 import com.anthony.marco.doodlelibrary.logic.DifficultyHandler;
 import com.anthony.marco.doodlelibrary.logic.DoodleGame;
 import com.anthony.marco.doodlelibrary.logic.ScrollingCamera;
@@ -92,7 +93,10 @@ public class GameplayScene extends Scene {
 	/**
 	 * Determines if the timer is enabled!
 	 */
-	private static final boolean TIMER_ENABLED = false;
+	private static final boolean TIMER_ENABLED = true;
+
+	public static final int VAL_SCORE = 1;
+	public static final int VAL_TIME_REMAINING = 2;
 
 	private boolean isStarted;
 
@@ -141,7 +145,6 @@ public class GameplayScene extends Scene {
 	 */
 	private ScheduledExecutorService ses;
 
-
 	/**
 	 * Determines if the timer needs a reset
 	 */
@@ -164,6 +167,8 @@ public class GameplayScene extends Scene {
 		timerTimeToCountDownInS = 8;
 		timerTimeToCountDownInMS = timerTimeToCountDownInS * 1000;
 		this.isStarted = false;
+
+		overlays.add(new GameplayOverlay(this));
 	}
 
 	@Override
@@ -199,11 +204,10 @@ public class GameplayScene extends Scene {
 		ses.scheduleAtFixedRate(new Runnable() {
 			@Override
 			public void run() {
-				// Update the score label
-				/*if (doodleListener != null && doodle != null) {
-					float resultScore = doodle.getHighestY() * -1;
-					doodleListener.scoreChanged(Math.round(resultScore));
-				}*/
+				if (doodle != null) {
+					int resultScore = Math.round(doodle.getHighestY() * -1);
+					values.put(GameplayScene.VAL_SCORE, resultScore);
+				}
 			}
 		}, 0, SCORE_UPDATE_INTERVAL, TimeUnit.MILLISECONDS);
 
@@ -216,7 +220,7 @@ public class GameplayScene extends Scene {
 
 	@Override
 	public void update(double deltaTime) {
-		if(!isStarted)
+		if (!isStarted)
 			return;
 
 		if (doodle.checkCollision(entities)) {
@@ -243,14 +247,18 @@ public class GameplayScene extends Scene {
 		if (difficultyHandler.needNewValues(doodle.getHighestY())) {
 			difficultyHandler.setNewValues(doodle.getHighestY());
 		}
+
+		super.update(deltaTime);
 	}
 
 	@Override
 	public void draw(Canvas canvas) {
-		if(!isStarted)
+		if (!isStarted)
 			return;
 
 		camera.draw(canvas);
+
+		super.draw(canvas);
 	}
 
 	@Override
@@ -266,7 +274,7 @@ public class GameplayScene extends Scene {
 	public void onScreenTouched(float x, float y) {
 		super.onScreenTouched(x, y);
 
-		if(!isStarted)
+		if (!isStarted)
 			return;
 
 		if (doodle != null)
@@ -283,7 +291,7 @@ public class GameplayScene extends Scene {
 	public void onRotationChanged(float newRotation) {
 		super.onRotationChanged(newRotation);
 
-		if(!isStarted)
+		if (!isStarted)
 			return;
 
 		// Roll -90 is device rotated completely to the eg. landscape mode
@@ -370,6 +378,7 @@ public class GameplayScene extends Scene {
 				@Override
 				public void run() {
 					timerTimeToCountDownInMS -= 100;
+					values.append(GameplayScene.VAL_TIME_REMAINING, timerTimeToCountDownInMS);
 				}
 			}, 0, 100, TimeUnit.MILLISECONDS);
 
@@ -395,7 +404,7 @@ public class GameplayScene extends Scene {
 			Log.i(TAG, "Timer reseted");
 			timerTimeToCountDownInS = difficultyHandler.getInitialCountDownTimerInS();
 			timerTimeToCountDownInMS = timerTimeToCountDownInS * 1000;
-			//doodleListener.updateTimer(timerTimeToCountDownInS);
+			values.append(GameplayScene.VAL_TIME_REMAINING, timerTimeToCountDownInMS);
 			timerCountDown.cancel(true);
 			isTimerStarted = false;
 			timerLoop.cancel(true);
