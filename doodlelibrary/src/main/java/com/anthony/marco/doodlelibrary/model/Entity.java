@@ -57,7 +57,7 @@ public class Entity {
 	}
 
 	public Entity(float x, float y, float width, float height, Bitmap bitmap) {
-		this(x, y, width, height, 0, 0, Animation.fromBitmaps(1000f, bitmap));
+		this(x, y, width, height, 0, 0, Animation.fromBitmaps(1, bitmap));
 	}
 
 	public Entity(float x, float y, float width, float height, float velocityX, float velocityY) {

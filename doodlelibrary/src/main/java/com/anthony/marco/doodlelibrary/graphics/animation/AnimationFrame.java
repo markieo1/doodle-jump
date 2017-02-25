@@ -13,7 +13,7 @@ public class AnimationFrame {
 	private Bitmap bitmap;
 
 	/**
-	 * The time this bitmap is allowed to be displayed
+	 * The time (MILLISECONDS) this bitmap is allowed to be displayed
 	 */
 	private float frameTime;
 
