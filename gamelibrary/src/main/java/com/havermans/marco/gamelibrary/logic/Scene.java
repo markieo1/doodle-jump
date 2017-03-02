@@ -1,11 +1,11 @@
-package com.anthony.marco.doodlelibrary.logic.scene;
+package com.havermans.marco.gamelibrary.logic;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.SparseArray;
 
-import com.anthony.marco.doodlelibrary.graphics.view.Overlay;
-import com.anthony.marco.doodlelibrary.logic.DoodleGame;
+import com.havermans.marco.gamelibrary.Game;
+import com.havermans.marco.gamelibrary.graphics.Overlay;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +15,13 @@ import java.util.List;
  */
 
 public abstract class Scene {
-	protected DoodleGame game;
+	protected Game game;
 
 	protected SparseArray<Object> values;
 
 	protected List<Overlay> overlays;
 
-	public Scene(DoodleGame game) {
+	public Scene(Game game) {
 		this.game = game;
 		this.values = new SparseArray<>();
 		this.overlays = new ArrayList<>();
@@ -41,11 +41,7 @@ public abstract class Scene {
 		}
 	}
 
-	public void draw(Canvas canvas) {
-		for (Overlay overlay : overlays) {
-			overlay.draw(canvas);
-		}
-	}
+	public abstract void draw(Canvas canvas);
 
 	public abstract void cleanup();
 
@@ -65,6 +61,10 @@ public abstract class Scene {
 	}
 
 	public void onRotationChanged(float newRotation) {
+	}
+
+	public List<Overlay> getOverlays() {
+		return this.overlays;
 	}
 
 }

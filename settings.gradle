@@ -1,1 +1,1 @@
-include ':app', ':doodlelibrary'
+include ':app', ':doodlelibrary', ':gamelibrary'

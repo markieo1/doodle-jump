@@ -3,9 +3,6 @@ package com.anthony.marco.doodlejump.view;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,276 +19,244 @@ import com.anthony.marco.doodlejump.view.fragment.MainMenuFragment;
 import com.anthony.marco.doodlejump.view.fragment.ScoreboardFragment;
 import com.anthony.marco.doodlelibrary.listener.DoodleListener;
 import com.anthony.marco.doodlelibrary.model.Score;
-import com.anthony.marco.doodlelibrary.graphics.view.DoodleSurfaceView;
 
 public class MainActivity extends Activity implements DoodleListener, UiListener {
-    private final String TAG = "MainActivity";
+	private final String TAG = "MainActivity";
 
-    /**
-     * The time (MILLISECONDS) before the game goes into attract mode
-     */
-    private static final long IDLE_TIME = 10000;
+	/**
+	 * The time (MILLISECONDS) before the game goes into attract mode
+	 */
+	private static final long IDLE_TIME = 10000;
 
-    private DoodleSurfaceView doodleSurfaceView;
+	private UiState currentUiState;
 
-    private SensorManager mSensorManager;
-    private Sensor mSensor;
+	private Score currentScore;
 
-    private UiState currentUiState;
+	private Handler idleHandler;
+	private Runnable idleRunnable;
 
-    private Score currentScore;
+	private Fragment currentFragment;
 
-    private Handler idleHandler;
-    private Runnable idleRunnable;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
-    private Fragment currentFragment;
+		setUiState(UiState.MAIN_MENU);
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+		currentScore = new Score();
 
-        setUiState(UiState.MAIN_MENU);
+		idleHandler = new Handler(Looper.getMainLooper());
+		idleRunnable = new Runnable() {
+			@Override
+			public void run() {
+				//handle your IDLE state
+				goAttractMode();
+			}
+		};
 
-        currentScore = new Score();
+		hideSystemUI();
 
-        idleHandler = new Handler(Looper.getMainLooper());
-        idleRunnable = new Runnable() {
-            @Override
-            public void run() {
-                //handle your IDLE state
-                goAttractMode();
-            }
-        };
+		getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+			@Override
+			public void onSystemUiVisibilityChange(int visibility) {
+				hideSystemUI();
+			}
+		});
 
-        doodleSurfaceView = (DoodleSurfaceView) findViewById(R.id.doodle_surface_view);
+		// Add wake lock to prevent the screen from sleeping
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	}
 
-        hideSystemUI();
+	@Override
+	protected void onPause() {
+		super.onPause();
 
-        getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-            @Override
-            public void onSystemUiVisibilityChange(int visibility) {
-                hideSystemUI();
-            }
-        });
+		idleHandler.removeCallbacks(idleRunnable);
 
-        // Add wake lock to prevent the screen from sleeping
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		//if (currentUiState == UiState.GAME)
+//            unregisterListeners();
+	}
 
-        // Load the sensors
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-    }
+	@Override
+	protected void onResume() {
+		super.onResume();
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+		//if (currentUiState == UiState.GAME)
+		//registerListeners();
 
-        doodleSurfaceView.pause();
+		if (currentUiState == UiState.MAIN_MENU) {
+			scheduleIdleCallback();
+		}
 
-        idleHandler.removeCallbacks(idleRunnable);
+		switchViews();
+	}
 
-        if (currentUiState == UiState.GAME)
-            unregisterListeners();
-    }
+	@Override
+	public void onUserInteraction() {
+		super.onUserInteraction();
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+		if (currentUiState == UiState.MAIN_MENU) {
+			scheduleIdleCallback();
+		}
+	}
 
-        doodleSurfaceView.resume();
+	private void scheduleIdleCallback() {
+		Log.i(TAG, "Starting delayed idle runnable.");
+		idleHandler.removeCallbacks(idleRunnable);
+		idleHandler.postDelayed(idleRunnable, IDLE_TIME);
+	}
 
-        if (currentUiState == UiState.GAME)
-            registerListeners();
+	/**
+	 * Switches to attract mode
+	 */
+	private void goAttractMode() {
+		Log.i(TAG, "Switching to attract mode!");
+		setUiState(UiState.ATTRACT);
+		switchViews();
+	}
 
-        if (currentUiState == UiState.MAIN_MENU) {
-            scheduleIdleCallback();
-        }
+	/**
+	 * Hides the SystemUI
+	 */
+	private void hideSystemUI() {
+		int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+				| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+				| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_FULLSCREEN
+				| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
-        switchViews();
-    }
+		getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+	}
 
-    @Override
-    public void onUserInteraction() {
-        super.onUserInteraction();
+	/**
+	 * Changes the UiState
+	 *
+	 * @param uiState the new ui state
+	 */
+	private void setUiState(UiState uiState) {
+		this.currentUiState = uiState;
+		Log.i(TAG, "UI State changed, new = " + uiState);
+	}
 
-        if (currentUiState == UiState.MAIN_MENU) {
-            scheduleIdleCallback();
-        }
-    }
+	/**
+	 * Switches the visibility off the views according to the Ui State
+	 */
+	private void switchViews() {
+		if (currentUiState != UiState.MAIN_MENU)
+			idleHandler.removeCallbacks(idleRunnable);
 
-    private void scheduleIdleCallback() {
-        Log.i(TAG, "Starting delayed idle runnable.");
-        idleHandler.removeCallbacks(idleRunnable);
-        idleHandler.postDelayed(idleRunnable, IDLE_TIME);
-    }
+		String tag;
 
-    /**
-     * Registers the listeners for the sensors
-     */
-    private void registerListeners() {
-        mSensorManager.registerListener(doodleSurfaceView, mSensor, SensorManager.SENSOR_DELAY_GAME);
-    }
+		Bundle arguments = new Bundle();
+		Fragment newFragment;
 
-    /**
-     * Unregisters the listeners for the sensors
-     */
-    private void unregisterListeners() {
-        mSensorManager.unregisterListener(doodleSurfaceView);
-    }
+		switch (currentUiState) {
+			case GAME: {
+				newFragment = new GameOverlayFragment();
+				tag = GameOverlayFragment.TAG;
+				break;
+			}
+			case GAME_OVER: {
+				newFragment = new GameOverFragment();
+				arguments.putSerializable(GameOverFragment.ARG_FINAL_SCORE, currentScore);
+				tag = GameOverFragment.TAG;
+				break;
+			}
+			case SCOREBOARD: {
+				newFragment = new ScoreboardFragment();
+				tag = ScoreboardFragment.TAG;
+				break;
+			}
+			case ATTRACT: {
+				newFragment = new AttractFragment();
+				tag = AttractFragment.TAG;
+				break;
+			}
+			default:
+			case MAIN_MENU: {
+				newFragment = new MainMenuFragment();
+				tag = MainMenuFragment.TAG;
+				break;
+			}
+		}
 
-    /**
-     * Switches to attract mode
-     */
-    private void goAttractMode() {
-        Log.i(TAG, "Switching to attract mode!");
-        setUiState(UiState.ATTRACT);
-        switchViews();
-    }
+		FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-    /**
-     * Hides the SystemUI
-     */
-    private void hideSystemUI() {
-        int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+		newFragment.setArguments(arguments);
+		transaction.replace(R.id.activity_main, newFragment, tag);
+		transaction.commit();
 
-        getWindow().getDecorView().setSystemUiVisibility(uiOptions);
-    }
+		currentFragment = newFragment;
+	}
 
-    /**
-     * Changes the UiState
-     *
-     * @param uiState the new ui state
-     */
-    private void setUiState(UiState uiState) {
-        this.currentUiState = uiState;
-        Log.i(TAG, "UI State changed, new = " + uiState);
-    }
+	@Override
+	public void gameOver(final int score) {
+		// Run On UI Thread since this callback is called from another thread
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				currentScore.setScore(score);
 
-    /**
-     * Switches the visibility off the views according to the Ui State
-     */
-    private void switchViews() {
-        if (currentUiState != UiState.MAIN_MENU)
-            idleHandler.removeCallbacks(idleRunnable);
+				//unregisterListeners();
+				setUiState(UiState.GAME_OVER);
+				switchViews();
+			}
+		});
+	}
 
-        String tag;
+	@Override
+	public void scoreChanged(final int newScore) {
+		// Run On UI Thread since this callback is called from another thread
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				currentScore.setScore(newScore);
+				// Update the score label
+				if (currentFragment instanceof GameOverlayFragment)
+					((GameOverlayFragment) currentFragment).setScore(newScore);
+			}
+		});
+	}
 
-        Bundle arguments = new Bundle();
-        Fragment newFragment;
+	@Override
+	public void updateTimer(final long timeLeft) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (currentFragment instanceof GameOverlayFragment)
+					((GameOverlayFragment) currentFragment).setRemainingTime(timeLeft);
+			}
+		});
+	}
 
-        switch (currentUiState) {
-            case GAME: {
-                newFragment = new GameOverlayFragment();
-                tag = GameOverlayFragment.TAG;
-                break;
-            }
-            case GAME_OVER: {
-                newFragment = new GameOverFragment();
-                arguments.putSerializable(GameOverFragment.ARG_FINAL_SCORE, currentScore);
-                tag = GameOverFragment.TAG;
-                break;
-            }
-            case SCOREBOARD: {
-                newFragment = new ScoreboardFragment();
-                tag = ScoreboardFragment.TAG;
-                break;
-            }
-            case ATTRACT: {
-                newFragment = new AttractFragment();
-                tag = AttractFragment.TAG;
-                break;
-            }
-            default:
-            case MAIN_MENU: {
-                newFragment = new MainMenuFragment();
-                tag = MainMenuFragment.TAG;
-                break;
-            }
-        }
+	@Override
+	public void onMainMenu() {
+		setUiState(UiState.MAIN_MENU);
+		switchViews();
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+		scheduleIdleCallback();
+	}
 
-        newFragment.setArguments(arguments);
-        transaction.replace(R.id.activity_main, newFragment, tag);
-        transaction.commit();
+	@Override
+	public void onStartGame() {
+		setUiState(UiState.GAME);
 
-        currentFragment = newFragment;
-    }
+		//registerListeners();
 
-    @Override
-    public void gameOver(final int score) {
-        // Run On UI Thread since this callback is called from another thread
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                currentScore.setScore(score);
+		switchViews();
 
-                unregisterListeners();
-                setUiState(UiState.GAME_OVER);
-                switchViews();
-            }
-        });
-    }
+	}
 
-    @Override
-    public void scoreChanged(final int newScore) {
-        // Run On UI Thread since this callback is called from another thread
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                currentScore.setScore(newScore);
-                // Update the score label
-                if (currentFragment instanceof GameOverlayFragment)
-                    ((GameOverlayFragment) currentFragment).setScore(newScore);
-            }
-        });
-    }
+	@Override
+	public void onStopGame() {
+		//unregisterListeners();
+	}
 
-    @Override
-    public void updateTimer(final long timeLeft) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (currentFragment instanceof GameOverlayFragment)
-                    ((GameOverlayFragment) currentFragment).setRemainingTime(timeLeft);
-            }
-        });
-    }
-
-    @Override
-    public void onMainMenu() {
-        setUiState(UiState.MAIN_MENU);
-        switchViews();
-
-        scheduleIdleCallback();
-    }
-
-    @Override
-    public void onStartGame() {
-        setUiState(UiState.GAME);
-
-        registerListeners();
-
-        switchViews();
-
-        doodleSurfaceView.startGame(this);
-    }
-
-    @Override
-    public void onStopGame() {
-        unregisterListeners();
-        doodleSurfaceView.stopGame();
-    }
-
-    @Override
-    public void onShowScoreboard() {
-        setUiState(UiState.SCOREBOARD);
-        switchViews();
-    }
+	@Override
+	public void onShowScoreboard() {
+		setUiState(UiState.SCOREBOARD);
+		switchViews();
+	}
 }

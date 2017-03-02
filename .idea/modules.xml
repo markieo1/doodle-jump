@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/doodle-jump.iml" filepath="$PROJECT_DIR$/doodle-jump.iml" />
       <module fileurl="file://$PROJECT_DIR$/doodlelibrary/doodlelibrary.iml" filepath="$PROJECT_DIR$/doodlelibrary/doodlelibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gamelibrary/gamelibrary.iml" filepath="$PROJECT_DIR$/gamelibrary/gamelibrary.iml" />
     </modules>
   </component>
 </project>

@@ -1,9 +1,9 @@
-package com.anthony.marco.doodlelibrary.graphics.view;
+package com.havermans.marco.gamelibrary.graphics;
 
 import android.content.Context;
-import android.graphics.Canvas;
+import android.view.View;
 
-import com.anthony.marco.doodlelibrary.logic.scene.Scene;
+import com.havermans.marco.gamelibrary.logic.Scene;
 
 /**
  * Created by marco on 25-2-2017.
@@ -11,6 +11,8 @@ import com.anthony.marco.doodlelibrary.logic.scene.Scene;
 
 public abstract class Overlay {
 	protected Scene scene;
+
+	protected View overlayView;
 
 	public Overlay(Scene scene) {
 		this.scene = scene;
@@ -22,9 +24,10 @@ public abstract class Overlay {
 	public void update(double dt) {
 	}
 
-	public void draw(Canvas canvas) {
+	public void onTouch(float x, float y) {
 	}
 
-	public void onTouch(float x, float y) {
+	public View getOverlayView() {
+		return overlayView;
 	}
 }

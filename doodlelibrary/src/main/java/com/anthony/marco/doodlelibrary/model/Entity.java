@@ -6,7 +6,7 @@ import android.graphics.RectF;
 
 import com.anthony.marco.doodlelibrary.graphics.animation.Animation;
 import com.anthony.marco.doodlelibrary.graphics.animation.AnimationFrame;
-import com.anthony.marco.doodlelibrary.graphics.view.DoodleSurfaceView;
+import com.anthony.marco.doodlelibrary.logic.DoodleGame;
 import com.anthony.marco.doodlelibrary.logic.ScrollingCamera;
 
 /**
@@ -152,8 +152,8 @@ public class Entity {
 	public void update(double dt) {
 		animationTime += dt;
 
-		float newX = getX() + (float) (getVelocityX() * dt * DoodleSurfaceView.TARGET_FPS / DoodleSurfaceView.SECOND);
-		float newY = getY() + (float) (getVelocityY() * dt * DoodleSurfaceView.TARGET_FPS / DoodleSurfaceView.SECOND);
+		float newX = getX() + (float) (getVelocityX() * dt * DoodleGame.TARGET_FPS / DoodleGame.SECOND);
+		float newY = getY() + (float) (getVelocityY() * dt * DoodleGame.TARGET_FPS / DoodleGame.SECOND);
 
 		setX(newX);
 		setY(newY);

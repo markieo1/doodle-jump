@@ -1,47 +1,31 @@
 package com.anthony.marco.doodlelibrary.logic;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.util.Log;
+import android.view.SurfaceHolder;
 
 import com.anthony.marco.doodlelibrary.listener.DoodleListener;
-import com.anthony.marco.doodlelibrary.listener.ScreenListener;
 import com.anthony.marco.doodlelibrary.logic.scene.GameplayScene;
-import com.anthony.marco.doodlelibrary.logic.scene.Scene;
+import com.havermans.marco.gamelibrary.Game;
+import com.havermans.marco.gamelibrary.GameListener;
 
 /**
  * Created by marco on 3-1-2017.
  */
 
-public class DoodleGame implements ScreenListener {
-	private final String TAG = "DoodleGame";
-
-	/**
-	 * The screen width used for the game
-	 */
-	private int screenWidth;
-
-	/**
-	 * The screen height used for the game
-	 */
-	private int screenHeight;
+public class DoodleGame extends Game {
 
 	/**
 	 * The listener that handles game changes
 	 */
 	private DoodleListener doodleListener;
 
-	/**
-	 * The Android context
-	 */
-	private Context context;
+	public DoodleGame(Context context, SurfaceHolder surfaceHolder, GameListener gameListener) {
+		super(context, surfaceHolder, gameListener);
 
-	private Scene currentScene;
-
-	public DoodleGame(Context context) {
-		this.context = context;
-		this.currentScene = new GameplayScene(this);
+		switchScene(new GameplayScene(this));
 	}
+
 
 	/**
 	 * Starts the game
@@ -70,42 +54,9 @@ public class DoodleGame implements ScreenListener {
 		}
 	}
 
-	/**
-	 * Updates all entities
-	 */
-	public void update(double dt) {
-		currentScene.update(dt);
-	}
-
-	/**
-	 * Draws the camera using the specified canvas
-	 *
-	 * @param canvas The canvas to draw onto
-	 */
-	public void draw(Canvas canvas) {
-		currentScene.draw(canvas);
-	}
-
-
-	/**
-	 * Loads all the resources that are needed
-	 */
-	private void loadResources() {
-		Log.i(TAG, "Starting load resources.");
-
-		currentScene.loadResources(context);
-		Log.i(TAG, "Done loading resources.");
-	}
-
 	@Override
 	public void screenTouched(float xPosition, float yPosition) {
 		currentScene.onScreenTouched(xPosition, yPosition);
-	}
-
-	@Override
-	public void screenSizeChanged(int width, int height) {
-		this.screenWidth = width;
-		this.screenHeight = height;
 	}
 
 	@Override
@@ -113,21 +64,22 @@ public class DoodleGame implements ScreenListener {
 		this.currentScene.onRotationChanged(newRotation);
 	}
 
-	/**
-	 * Gets the current screenWidth
-	 *
-	 * @return The current screenWidth
-	 */
-	public int getScreenWidth() {
-		return screenWidth;
+
+
+	@Override
+	public void surfaceCreated(SurfaceHolder surfaceHolder) {
+
 	}
 
-	/**
-	 * Gets the current screenHeight
-	 *
-	 * @return The current screenHeight
-	 */
-	public int getScreenHeight() {
-		return screenHeight;
+	@Override
+	public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
 	}
+
+	@Override
+	public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+		pause();
+	}
+
+
 }

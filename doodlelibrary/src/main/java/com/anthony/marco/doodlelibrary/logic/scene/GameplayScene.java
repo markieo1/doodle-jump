@@ -10,10 +10,11 @@ import com.anthony.marco.doodlelibrary.graphics.AssetManager;
 import com.anthony.marco.doodlelibrary.graphics.animation.Animation;
 import com.anthony.marco.doodlelibrary.graphics.view.GameplayOverlay;
 import com.anthony.marco.doodlelibrary.logic.DifficultyHandler;
-import com.anthony.marco.doodlelibrary.logic.DoodleGame;
 import com.anthony.marco.doodlelibrary.logic.ScrollingCamera;
 import com.anthony.marco.doodlelibrary.model.Doodle;
 import com.anthony.marco.doodlelibrary.model.Entity;
+import com.havermans.marco.gamelibrary.Game;
+import com.havermans.marco.gamelibrary.logic.Scene;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -160,7 +161,7 @@ public class GameplayScene extends Scene {
 	 */
 	private ScheduledFuture timerCountDown;
 
-	public GameplayScene(DoodleGame game) {
+	public GameplayScene(Game game) {
 		super(game);
 		entities = new ArrayList<>();
 
@@ -257,8 +258,6 @@ public class GameplayScene extends Scene {
 			return;
 
 		camera.draw(canvas);
-
-		super.draw(canvas);
 	}
 
 	@Override

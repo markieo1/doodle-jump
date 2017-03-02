@@ -7,7 +7,8 @@ import android.graphics.Paint;
 
 import com.anthony.marco.doodlelibrary.R;
 import com.anthony.marco.doodlelibrary.logic.scene.GameplayScene;
-import com.anthony.marco.doodlelibrary.logic.scene.Scene;
+import com.havermans.marco.gamelibrary.graphics.Overlay;
+import com.havermans.marco.gamelibrary.logic.Scene;
 
 /**
  * Created by marco on 25-2-2017.
@@ -30,6 +31,7 @@ public class GameplayOverlay extends Overlay {
 		super(scene);
 		scoreTextPositionX = 0;
 	}
+
 
 	@Override
 	public void loadResources(Context context) {
@@ -61,9 +63,9 @@ public class GameplayOverlay extends Overlay {
 		timeRemainingTextPositionX = (scene.getWidth() / 2) - (textWidth / 2);
 	}
 
-	@Override
+	//@Override
 	public void draw(Canvas canvas) {
-		super.draw(canvas);
+		//super.draw(canvas);
 
 		if (scoreText != null)
 			canvas.drawText(scoreText, scoreTextPositionX, textPositionY, paint);
