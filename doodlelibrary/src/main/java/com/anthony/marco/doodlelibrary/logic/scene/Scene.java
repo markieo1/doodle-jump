@@ -57,11 +57,18 @@ public abstract class Scene {
 		return game.getScreenHeight();
 	}
 
+	public DoodleGame getGame() {
+		return game;
+	}
+
 	public SparseArray<Object> getValues() {
 		return values;
 	}
 
 	public void onScreenTouched(float x, float y) {
+		for (Overlay overlay : overlays) {
+			overlay.onTouch(x, y);
+		}
 	}
 
 	public void onRotationChanged(float newRotation) {

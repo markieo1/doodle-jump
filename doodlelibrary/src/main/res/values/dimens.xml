@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="textSize">14sp</dimen>
+    <dimen name="btnStopWidth">96dp</dimen>
+    <dimen name="btnStopHeight">32dp</dimen>
 </resources>

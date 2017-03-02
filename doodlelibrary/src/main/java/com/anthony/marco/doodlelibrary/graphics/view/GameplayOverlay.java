@@ -1,11 +1,14 @@
 package com.anthony.marco.doodlelibrary.graphics.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.anthony.marco.doodlelibrary.R;
+import com.anthony.marco.doodlelibrary.graphics.AssetManager;
+import com.anthony.marco.doodlelibrary.listener.OnClickListener;
 import com.anthony.marco.doodlelibrary.logic.scene.GameplayScene;
 import com.anthony.marco.doodlelibrary.logic.scene.Scene;
 
@@ -44,6 +47,21 @@ public class GameplayOverlay extends Overlay {
 		Paint.FontMetrics metric = paint.getFontMetrics();
 		int textHeight = (int) Math.ceil(metric.descent - metric.ascent);
 		textPositionY = (int) (textHeight - metric.descent);
+
+		float btnStopWidth = context.getResources().getDimension(R.dimen.btnStopWidth);
+		float btnStopHeight = context.getResources().getDimension(R.dimen.btnStopHeight);
+
+		Bitmap btnStop = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.btn_stop, (int) btnStopWidth, (int) btnStopHeight);
+		float xPos = scene.getWidth() - btnStopWidth;
+		GButton button = new GButton(xPos, 0, btnStopWidth, btnStopHeight, btnStop);
+		button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick() {
+				int score = (int) scene.getValues().get(GameplayScene.VAL_SCORE, 0);
+				scene.getGame().stopGame(score);
+			}
+		});
+		buttons.add(button);
 	}
 
 	@Override

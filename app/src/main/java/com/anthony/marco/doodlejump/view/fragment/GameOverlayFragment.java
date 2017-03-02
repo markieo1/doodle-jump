@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.anthony.marco.doodlejump.R;
@@ -28,14 +27,14 @@ public class GameOverlayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.game_overlay_fragment, container, false);
 
-        Button stopGameButton = (Button) fragmentView.findViewById(R.id.stop_game_button);
+        /*Button stopGameButton = (Button) fragmentView.findViewById(R.id.stop_game_button);
         stopGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mUiListener != null)
                     mUiListener.onStopGame();
             }
-        });
+        })*/
 
         //scoreTextView = (TextView) fragmentView.findViewById(R.id.score_text_view);
         timerTextView = (TextView) fragmentView.findViewById(R.id.timer_text_view);
