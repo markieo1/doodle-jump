@@ -8,6 +8,7 @@ import android.graphics.Paint;
 
 import com.anthony.marco.doodlelibrary.R;
 import com.anthony.marco.doodlelibrary.graphics.AssetManager;
+import com.anthony.marco.doodlelibrary.graphics.util.TextHelper;
 import com.anthony.marco.doodlelibrary.listener.OnClickListener;
 import com.anthony.marco.doodlelibrary.logic.scene.GameplayScene;
 import com.anthony.marco.doodlelibrary.logic.scene.Scene;
@@ -24,14 +25,15 @@ public class GameplayOverlay extends Overlay {
 
 	private Paint paint;
 
-	private int scoreTextPositionX;
-	private int textPositionY;
+	private float scoreTextPositionX;
+	private float textPositionY;
 
-	private int timeRemainingTextPositionX;
+	private float timeRemainingTextPositionX;
 
 	public GameplayOverlay(Scene scene) {
 		super(scene);
 		scoreTextPositionX = 0;
+		//scoreText = String.valueOf(0);
 	}
 
 	@Override
@@ -44,16 +46,17 @@ public class GameplayOverlay extends Overlay {
 		paint.setTextSize(textSize);
 		paint.setAntiAlias(true);
 
-		Paint.FontMetrics metric = paint.getFontMetrics();
-		int textHeight = (int) Math.ceil(metric.descent - metric.ascent);
-		textPositionY = (int) (textHeight - metric.descent);
+		// Times two since it started the counting from 0
+		textPositionY = (TextHelper.getYToCenterText(scoreText, paint, 0) * 2);
 
 		float btnStopWidth = context.getResources().getDimension(R.dimen.btnStopWidth);
 		float btnStopHeight = context.getResources().getDimension(R.dimen.btnStopHeight);
 
-		Bitmap btnStop = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.btn_stop, (int) btnStopWidth, (int) btnStopHeight);
+		Bitmap btnStop = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.btn_background, (int) btnStopWidth, (int) btnStopHeight);
 		float xPos = scene.getWidth() - btnStopWidth;
-		GButton button = new GButton(xPos, 0, btnStopWidth, btnStopHeight, btnStop);
+		Paint buttonPaint = new Paint(paint);
+		buttonPaint.setTextSize(TextHelper.getTextSize("STOP", textSize, btnStopWidth, btnStopHeight));
+		GButton button = new GButton(xPos, 0, btnStopWidth, btnStopHeight, "STOP", btnStop, buttonPaint);
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick() {
@@ -75,8 +78,7 @@ public class GameplayOverlay extends Overlay {
 		if (timeRemaining != 0)
 			timeRemainingText = String.valueOf((float) timeRemaining / 1000);
 
-		int textWidth = (int) paint.measureText(timeRemainingText);
-		timeRemainingTextPositionX = (scene.getWidth() / 2) - (textWidth / 2);
+		timeRemainingTextPositionX = TextHelper.getXToCenterText(timeRemainingText, paint, scene.getWidth());
 	}
 
 	@Override

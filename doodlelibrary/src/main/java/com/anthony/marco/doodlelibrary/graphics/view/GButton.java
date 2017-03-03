@@ -2,10 +2,12 @@ package com.anthony.marco.doodlelibrary.graphics.view;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.RectF;
 
 import com.anthony.marco.doodlelibrary.graphics.animation.Animation;
 import com.anthony.marco.doodlelibrary.graphics.animation.AnimationFrame;
+import com.anthony.marco.doodlelibrary.graphics.util.TextHelper;
 import com.anthony.marco.doodlelibrary.listener.OnClickListener;
 
 /**
@@ -33,25 +35,37 @@ public class GButton {
 	 */
 	protected float height;
 
+	protected String text;
+
 	protected RectF drawingRectangle;
 
-	protected Animation currentAnimation;
+	protected Animation backgroundAnimation;
 
 	private float animationTime;
 
+	private float textPositionX;
+	private float textPositionY;
+
+	private Paint paint;
+
 	private OnClickListener onClickListener;
 
-	public GButton(float x, float y, float width, float height, Bitmap bitmap) {
-		this(x, y, width, height, Animation.fromBitmaps(1, bitmap));
+	public GButton(float x, float y, float width, float height, String text, Bitmap bitmap, Paint paint) {
+		this(x, y, width, height, text, Animation.fromBitmaps(1, bitmap), paint);
 	}
 
-	public GButton(float x, float y, float width, float height, Animation animation) {
+	public GButton(float x, float y, float width, float height, String text, Animation background, Paint paint) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.currentAnimation = animation;
+		this.text = text;
+		this.backgroundAnimation = background;
 		this.drawingRectangle = new RectF();
+		this.paint = paint;
+		this.textPositionY = y + TextHelper.getYToCenterText(text, paint, height);
+		this.textPositionX = x + TextHelper.getXToCenterText(text, paint, width);
+		this.drawingRectangle.set(x, y, x + width, y + height);
 	}
 
 	public float getX() {
@@ -96,18 +110,19 @@ public class GButton {
 
 	public void update(double dt) {
 		animationTime += dt;
-		drawingRectangle.set(getX(), getY(), getX() + getWidth(), getY() + getHeight());
 	}
 
 	public void draw(Canvas canvas) {
-		if (currentAnimation == null)
-			return;
+		if (backgroundAnimation != null) {
+			AnimationFrame currentFrame = backgroundAnimation.getFrame(animationTime);
+			if (currentFrame != null)
+				canvas.drawBitmap(currentFrame.getBitmap(), null, drawingRectangle, null);
+		}
 
-		AnimationFrame currentFrame = currentAnimation.getFrame(animationTime);
-		if (currentFrame == null)
-			return;
-
-		canvas.drawBitmap(currentFrame.getBitmap(), null, drawingRectangle, null);
+		if (text != null) {
+			// Now we draw the text
+			canvas.drawText(text, textPositionX, textPositionY, paint);
+		}
 	}
 
 	public void click() {
