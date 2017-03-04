@@ -15,16 +15,20 @@ import java.util.List;
  */
 
 public abstract class Overlay {
-	protected Scene scene;
+	private Scene scene;
 
 	protected List<GuiItem> guiItems;
+
+	protected boolean initialized;
 
 	public Overlay(Scene scene) {
 		this.guiItems = new ArrayList<>();
 		this.scene = scene;
+		this.initialized = false;
 	}
 
 	public void loadResources(Context context) {
+		this.initialized = true;
 	}
 
 	public void update(double dt) {
@@ -46,5 +50,9 @@ public abstract class Overlay {
 					((Button) guiItem).click();
 			}
 		}
+	}
+
+	public Scene getScene() {
+		return scene;
 	}
 }
