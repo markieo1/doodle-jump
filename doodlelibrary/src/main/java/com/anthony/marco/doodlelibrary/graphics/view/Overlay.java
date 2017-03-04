@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 
 import com.anthony.marco.doodlelibrary.graphics.view.ui.Button;
+import com.anthony.marco.doodlelibrary.graphics.view.ui.GuiItem;
 import com.anthony.marco.doodlelibrary.logic.scene.Scene;
 
 import java.util.ArrayList;
@@ -16,10 +17,10 @@ import java.util.List;
 public abstract class Overlay {
 	protected Scene scene;
 
-	protected List<Button> buttons;
+	protected List<GuiItem> guiItems;
 
 	public Overlay(Scene scene) {
-		this.buttons = new ArrayList<>();
+		this.guiItems = new ArrayList<>();
 		this.scene = scene;
 	}
 
@@ -27,22 +28,22 @@ public abstract class Overlay {
 	}
 
 	public void update(double dt) {
-		for (Button button : buttons) {
-			button.update(dt);
+		for (GuiItem guiItem : guiItems) {
+			guiItem.update(dt);
 		}
 	}
 
 	public void draw(Canvas canvas) {
-		for (Button button : buttons) {
-			button.draw(canvas);
+		for (GuiItem guiItem : guiItems) {
+			guiItem.draw(canvas);
 		}
 	}
 
 	public void onTouch(float x, float y) {
-		for (Button button : buttons) {
-			// Check if there is a click on it
-			if (button.getDrawingRectangle().contains(x, y)) {
-				button.click();
+		for (GuiItem guiItem : guiItems) {
+			if (guiItem instanceof Button) {
+				if (((Button) guiItem).getDrawingRectangle().contains(x, y))
+					((Button) guiItem).click();
 			}
 		}
 	}

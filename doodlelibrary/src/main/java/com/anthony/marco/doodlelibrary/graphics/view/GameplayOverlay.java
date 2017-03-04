@@ -45,6 +45,7 @@ public class GameplayOverlay extends Overlay {
 		float btnStopHeight = context.getResources().getDimension(R.dimen.btnStopHeight);
 		Bitmap btnStop = AssetManager.decodeSampledBitmapFromResource(context.getResources(), R.drawable.btn_background, btnStopWidth, btnStopHeight);
 		String stopText = context.getResources().getString(R.string.gameplay_btn_stop);
+		float stopButtonXPosition = scene.getWidth() - btnStopWidth;
 
 		paint = new Paint();
 		paint.setColor(Color.RED);
@@ -54,11 +55,9 @@ public class GameplayOverlay extends Overlay {
 		// Times two since it started the counting from 0
 		textPositionY = (TextHelper.getYToCenterText(scoreText, paint, 0) * 2);
 
-
-		float xPos = scene.getWidth() - btnStopWidth;
 		Paint buttonPaint = new Paint(paint);
 		buttonPaint.setTextSize(TextHelper.getTextSize(stopText, textSize, btnStopWidth, btnStopHeight));
-		Button button = new Button(xPos, 0, btnStopWidth, btnStopHeight, stopText, btnStop, buttonPaint);
+		Button button = new Button(stopButtonXPosition, 0, btnStopWidth, btnStopHeight, stopText, btnStop, buttonPaint);
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick() {

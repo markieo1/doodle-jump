@@ -14,17 +14,7 @@ import com.anthony.marco.doodlelibrary.listener.OnClickListener;
  * Created by marco on 2-3-2017.
  */
 
-public class Button {
-	/**
-	 * The X position
-	 */
-	protected float x;
-
-	/**
-	 * The Y position
-	 */
-	protected float y;
-
+public class Button extends GuiItem {
 	/**
 	 * The width
 	 */
@@ -46,8 +36,6 @@ public class Button {
 	private float textPositionX;
 	private float textPositionY;
 
-	private Paint paint;
-
 	private OnClickListener onClickListener;
 
 	public Button(float x, float y, float width, float height, String text, Bitmap bitmap, Paint paint) {
@@ -55,6 +43,7 @@ public class Button {
 	}
 
 	public Button(float x, float y, float width, float height, String text, Animation background, Paint paint) {
+		super(x, y, paint);
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -66,22 +55,6 @@ public class Button {
 		this.textPositionX = x + TextHelper.getXToCenterText(text, paint, width);
 		this.textPositionY = y + TextHelper.getYToCenterText(text, paint, height);
 		this.drawingRectangle.set(x, y, x + width, y + height);
-	}
-
-	public float getX() {
-		return x;
-	}
-
-	public void setX(float x) {
-		this.x = x;
-	}
-
-	public float getY() {
-		return y;
-	}
-
-	public void setY(float y) {
-		this.y = y;
 	}
 
 	public float getHeight() {
@@ -112,6 +85,7 @@ public class Button {
 		animationTime += dt;
 	}
 
+	@Override
 	public void draw(Canvas canvas) {
 		if (backgroundAnimation != null) {
 			AnimationFrame currentFrame = backgroundAnimation.getFrame(animationTime);
