@@ -109,10 +109,10 @@ public class TextHelper {
 		float textHeight = textBounds.height();
 
 		if (heightToFitStringInto == 0) {
-			return (textHeight / 2);
+			return (textHeight / 2f);
 		}
 
-		return (heightToFitStringInto / 2) + (textHeight / 2);
+		return (heightToFitStringInto / 2f) + (textHeight / 2f);
 	}
 
 	/**

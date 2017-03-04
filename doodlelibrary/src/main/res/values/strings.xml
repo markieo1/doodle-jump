@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">DoodleLibrary</string>
+    <string name="gameplay_btn_stop">Stop</string>
 </resources>

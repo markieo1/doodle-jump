@@ -1,4 +1,4 @@
-package com.anthony.marco.doodlelibrary.graphics.view;
+package com.anthony.marco.doodlelibrary.graphics.view.ui;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -14,7 +14,7 @@ import com.anthony.marco.doodlelibrary.listener.OnClickListener;
  * Created by marco on 2-3-2017.
  */
 
-public class GButton {
+public class Button {
 	/**
 	 * The X position
 	 */
@@ -50,11 +50,11 @@ public class GButton {
 
 	private OnClickListener onClickListener;
 
-	public GButton(float x, float y, float width, float height, String text, Bitmap bitmap, Paint paint) {
+	public Button(float x, float y, float width, float height, String text, Bitmap bitmap, Paint paint) {
 		this(x, y, width, height, text, Animation.fromBitmaps(1, bitmap), paint);
 	}
 
-	public GButton(float x, float y, float width, float height, String text, Animation background, Paint paint) {
+	public Button(float x, float y, float width, float height, String text, Animation background, Paint paint) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -63,8 +63,8 @@ public class GButton {
 		this.backgroundAnimation = background;
 		this.drawingRectangle = new RectF();
 		this.paint = paint;
-		this.textPositionY = y + TextHelper.getYToCenterText(text, paint, height);
 		this.textPositionX = x + TextHelper.getXToCenterText(text, paint, width);
+		this.textPositionY = y + TextHelper.getYToCenterText(text, paint, height);
 		this.drawingRectangle.set(x, y, x + width, y + height);
 	}
 
@@ -116,7 +116,7 @@ public class GButton {
 		if (backgroundAnimation != null) {
 			AnimationFrame currentFrame = backgroundAnimation.getFrame(animationTime);
 			if (currentFrame != null)
-				canvas.drawBitmap(currentFrame.getBitmap(), null, drawingRectangle, null);
+				canvas.drawBitmap(currentFrame.getBitmap(), null, drawingRectangle, paint);
 		}
 
 		if (text != null) {

@@ -61,11 +61,11 @@ public class AssetManager {
 		return getBitmapFromMemCache(key);
 	}
 
-	private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+	private static int calculateInSampleSize(BitmapFactory.Options options, float reqWidth, float reqHeight) {
 		// Raw height and width of image
 		final int height = options.outHeight;
 		final int width = options.outWidth;
-		int inSampleSize = 1;
+		float inSampleSize = 1;
 
 		if (height > reqHeight || width > reqWidth) {
 
@@ -80,10 +80,10 @@ public class AssetManager {
 			}
 		}
 
-		return inSampleSize;
+		return (int) inSampleSize;
 	}
 
-	public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
+	public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, float reqWidth, float reqHeight) {
 		// First decode with inJustDecodeBounds=true to check dimensions
 		final BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
